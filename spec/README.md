@@ -193,12 +193,12 @@ MCP treats tools and function calls as separate entities, but LCP merges them in
 
 | Feature | MCP (Model Context Protocol) | LCP (Lean Context Protocol) |
 |---------|------------------------------|-----------------------------|
-| Requires a dedicated server? | ✅ Yes | ❌ No |
-| Supports stateless context passing? | ❌ No | ✅ Yes |
-| Uses standard API headers? | ❌ No | ✅ Yes |
-| Storage requirement? | ✅ Required | ❌ Optional |
-| Supports OpenAI, Claude, Mistral? | ❌ No | ✅ Yes |
-| Complex transport system? | ✅ Yes | ❌ No |
+| Requires a dedicated server? | `✅ Yes` | `❌ No` |
+| Supports stateless context passing? | `❌ No` | `✅ Yes` |
+| Uses standard API headers? | `❌ No` | `✅ Yes` |
+| Storage requirement? | `✅ Required` | `❌ Optional` |
+| Supports OpenAI, Claude, Mistral? | `❌ No` | `✅ Yes` |
+| Complex transport system? | `✅ Yes` | `❌ No` |
 
 ## 7. Roadmap
 

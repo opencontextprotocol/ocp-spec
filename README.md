@@ -2,7 +2,7 @@
 
 This repository contains the specification for the Lean Context Protocol, a lightweight approach to AI context management.
 
-## 📌 Contributing
+## Contributing
 
 LCP is evolving.. your input helps shape its future:
 
