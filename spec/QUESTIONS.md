@@ -3,16 +3,48 @@
 *(to be addressed before implementation)*
 
 ## 1. Context Object & Size Limits
-- What’s the maximum practical size for a context object?
-  - Can LCP fit within HTTP headers (~8 KB limit on most servers)?
-  - If too large, should we fallback to request bodies or external storage?
-  - Should we standardize compression for large payloads?
-- Should LCP enforce a structure for history length?
-  - Do we limit history (e.g., last 20 messages) or let clients decide?
-  - Should there be a recommended “max context size”?
-- Do we need a "context pruning" guideline?
-  - Should we suggest automatic trimming of older messages?
-  - Should LCP define a default expiration for stored context?
+
+**🙋‍♂️ What’s the maximum practical size for a context object?**
+- HTTP Headers: Most servers limit headers to 8 KB total. If LCP context is passed via headers, we need to keep it under ~4 KB to avoid issues.
+- Alternative Options: If the context grows too large, we could:
+  - Fallback to request bodies (for APIs that allow structured input).
+  - Use external storage for large context histories (stateful mode).
+  - Support compression (e.g., Base64+gzip).
+
+**💡 Proposal:**
+- For Stateless Mode: Recommend keeping the full context under 4 KB.
+- If context exceeds limit: Clients can:
+  - Trim history (remove older messages).
+  - Use storage mode (pass a `context_id` and fetch from an external store).
+- Storage API: If needed, define an optional context storage mechanism (see Stateful Mode).
+
+---
+
+**🙋‍♂️ Should LCP enforce a structure for history length?**
+- Do we limit conversation history?
+  - OpenAI-style chat APIs let clients manage history (LCP could do the same).
+  - MCP doesn’t seem to define this, but LCP should at least offer guidance.
+- Should context include system metadata?
+  - Would it be useful to track model versions, timestamps, user agents?
+  - Or should we keep LCP minimal and leave metadata out?
+
+**💡 Proposal:**
+- History: No hard limit, but we recommend trimming older messages if context size becomes an issue.
+- Metadata: Optional, but not required in the spec (can be implementation-specific).
+
+---
+
+**🙋‍♂️ Do we need a "context pruning" guideline?**
+- Use case: If a chatbot stores long-running history, should LCP suggest an expiration policy?
+- Options:
+  - No expiration (let the client decide)
+  - Soft TTL (e.g., recommend expiring after 24 hours of inactivity)
+  - Hard TTL (force expiration after a fixed time)
+
+**💡 Proposal:**
+- LCP itself doesn’t enforce expiration, but we recommend:
+  - Short-lived interactions: Context lasts only for the session.
+  - Long-lived conversations: Expiration should be set by the application (e.g., 24-48 hours).
 
 ## 2. Security & Validation
 - How do we ensure context integrity?
