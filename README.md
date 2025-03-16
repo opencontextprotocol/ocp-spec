@@ -1,12 +1,13 @@
-# Lean Context Protocol (LCP)
+# Open Context Protocol specification
 
-This repository contains the specification for the Lean Context Protocol, a lightweight approach to AI context management.
+This repo contains the specification and protocol schema for the Open Context Protocol.
+
+The schema is defined in TypeScript first, but made available as JSON Schema as well, for wider compatibility.
 
 ## Contributing
 
-LCP is evolving.. your input helps shape its future:
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
 
-- Propose changes → [Open a pull request](https://github.com/leancontextprotocol/specification/pulls)  
-- Report issues → [Submit an issue](https://github.com/leancontextprotocol/specification/issues)  
-- Discuss ideas → [GitHub Discussions](https://github.com/leancontextprotocol/specification/discussions)  
+License
 
+This project is licensed under the MIT License; see the [LICENSE](LICENSE) file for details.
