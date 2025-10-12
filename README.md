@@ -290,21 +290,21 @@ resp, err := client.Get("https://api.github.com/user")
 ## � Repository Structure
 
 ```
-├── SPECIFICATION.md         # Complete OCP specification
-├── README.md               # This file
-├── ROADMAP.md              # Public development roadmap
-├── LICENSE                 # MIT License
-├── CODE_OF_CONDUCT.md      # Community guidelines
-├── schemas/                # JSON schemas
-│   ├── ocp-context.json         # Context object schema
+├── SPECIFICATION.md                # Complete OCP specification
+├── README.md                       # This file
+├── ROADMAP.md                      # Public development roadmap
+├── LICENSE                         # MIT License
+├── CODE_OF_CONDUCT.md              # Community guidelines
+├── schemas/                        # JSON schemas
+│   ├── ocp-context.json            # Context object schema
 │   └── ocp-openapi-extensions.json # OpenAPI extensions
-├── examples/               # Working examples
-│   ├── github-api/         # GitHub integration
-│   └── stripe-api/         # Payment processing
-├── tools/                  # Reference implementations
-│   ├── ocp-cli             # Command line tool
-│   └── ocp-validator       # Validation utilities
-└── site/                   # Specification website (Hugo)
+├── examples/                       # Working examples
+│   ├── github-api/                 # GitHub integration
+│   └── stripe-api/                 # Payment processing
+├── tools/                          # Reference implementations
+│   ├── ocp-cli                     # Command line tool
+│   └── ocp-validator               # Validation utilities
+└── site/                           # Specification website (Hugo)
 ```
 
 ## �📄 License
