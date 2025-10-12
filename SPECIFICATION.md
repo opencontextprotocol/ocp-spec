@@ -286,6 +286,31 @@ paths:
 
 ---
 
+## Client Library Design Philosophy
+
+**Protocol-Only Specification**: This specification defines the HTTP protocol layer only. OCP focuses on standardizing how context flows between agents and APIs via HTTP headers, not how client libraries should be structured.
+
+**Language-Idiomatic Implementations**: Client libraries should follow idiomatic patterns for their respective languages while correctly implementing the OCP HTTP protocol. This approach:
+
+- Enables **natural APIs** for each programming language
+- Encourages **innovation** in client design patterns  
+- Reduces **adoption friction** by feeling familiar to developers
+- Ensures **interoperability** through the shared HTTP protocol
+
+**Examples of Acceptable Variance**:
+- Method names: `wrap_api()` vs `enhance_client()` vs `with_context()`
+- Class structure: `AgentContext` vs `OCPContext` vs functional approaches
+- Async patterns: Promises vs Futures vs async/await
+- Error handling: Exceptions vs Result types vs error callbacks
+
+**What Must Be Consistent**:
+- HTTP header format (`OCP-Context-ID`, `OCP-Session`, etc.)
+- Context object JSON schema
+- Base64 encoding and compression rules
+- OpenAPI extension patterns
+
+---
+
 ## Implementation Examples
 
 ### 1. Convert Any OpenAPI Service
