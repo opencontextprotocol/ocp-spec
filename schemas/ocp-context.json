@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OCP Context Schema",
+  "description": "Minimal context object for Open Context Protocol 2.0",
+  "type": "object",
+  "properties": {
+    "context_id": {
+      "type": "string",
+      "description": "Unique identifier for this context session",
+      "format": "uuid"
+    },
+    "user": {
+      "type": "string", 
+      "description": "User identifier for this context"
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "URLs to OpenAPI specs that define available operations",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "deprecated": true
+    },
+    "api_specs": {
+      "type": "array", 
+      "description": "URLs to OpenAPI specifications for APIs being used",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "session": {
+      "type": "object",
+      "description": "Session state and history",
+      "properties": {
+        "history": {
+          "type": "array",
+          "description": "Conversation or interaction history",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": ["user", "assistant", "system", "tool"]
+              },
+              "content": {
+                "type": "string"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": ["role", "content"]
+          }
+        },
+        "state": {
+          "type": "object",
+          "description": "Arbitrary session state",
+          "additionalProperties": true
+        }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "description": "Authentication tokens and credentials",
+      "properties": {
+        "tokens": {
+          "type": "object",
+          "description": "OAuth2/API tokens keyed by service",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When auth tokens expire"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object", 
+      "description": "Additional metadata",
+      "additionalProperties": true
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string", 
+      "format": "date-time"
+    }
+  },
+  "required": ["context_id", "session"],
+  "additionalProperties": false
+}
