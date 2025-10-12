@@ -64,7 +64,7 @@ graph LR
 
 **Revolutionary Insight**: APIs become intelligent conversation participants when they receive agent context.
 
-## � IDE Agent Example
+## 🤖 IDE Agent Example
 
 ### **Problem**: "Debug this failing test"
 
@@ -96,7 +96,7 @@ const response = await github.searchIssues("payment test failure", context);
 
 **Result**: Agent gets targeted, intelligent responses instead of generic data.
 
-## � Target Use Cases (Agent-First)
+## 🎯 Target Use Cases (Agent-First)
 
 ### **1. IDE Coding Assistants**
 - **GitHub Copilot Chat** - Enhanced with conversation memory
@@ -114,7 +114,7 @@ const response = await github.searchIssues("payment test failure", context);
 - **Knowledge Base** - Answers based on conversation history
 - **Escalation Management** - Rich context for human agents
 
-## � vs MCP for Agents
+## ⚔️ vs MCP for Agents
 
 | Feature | MCP | OCP 2.0 |
 |---------|-----|---------|
@@ -287,7 +287,7 @@ resp, err := client.Get("https://api.github.com/user")
 3. **Write Docs**: Improve documentation and tutorials
 4. **Test Integration**: Try with real-world APIs
 
-## � Repository Structure
+## 📁 Repository Structure
 
 ```
 ├── SPECIFICATION.md                # Complete OCP specification
@@ -307,7 +307,7 @@ resp, err := client.Get("https://api.github.com/user")
 └── site/                           # Specification website (Hugo)
 ```
 
-## �📄 License
+## 📄 License
 
 MIT License - See [LICENSE](LICENSE)
 
