@@ -9,13 +9,15 @@
 
 ### **Day 1-2: Foundation**
 1. **Polish the V2 spec** ✅ (DONE!)
-2. **Create project website** (GitHub Pages)
-3. **Build core Python library**
+2. **Build core Python library** 
+3. **Create basic CLI tooling**
 
 ### **Day 3-5: VS Code Proof of Concept**
 4. **Create minimal VS Code extension**
 5. **Build "conversation memory" demo**
 6. **Record comparison video**
+
+**Note**: Website comes AFTER we have working MVP components that people can actually use.
 
 ---
 
@@ -138,13 +140,18 @@ vscode-ocp/
 ### **Spec & Documentation**
 - [x] ✅ Agent-focused OCP 2.0 specification
 - [x] ✅ Implementation roadmap
-- [ ] 🔧 GitHub Pages website with spec
-- [ ] 📝 "Getting Started" developer guide
+- [ ]  "Getting Started" developer guide
+- [ ] 📝 Basic usage examples
 
 ### **Working Code**
 - [ ] 🔧 Python `ocp-agent` library (installable via pip)
 - [ ] 🔧 VS Code extension (basic OCP context management)
 - [ ] 🔧 CLI tools for testing and validation
+
+### **Website & Polish** (Week 2+)
+- [ ] 🌐 GitHub Pages website with spec
+- [ ] 📝 Interactive examples and demos
+- [ ] 🎨 Professional styling and branding
 
 ### **Proof of Value**
 - [ ] 📹 5-minute "MCP vs OCP" comparison video
@@ -193,6 +200,12 @@ vscode-ocp/
 **The spec is done. The plan is clear. The value is obvious.**
 
 **Start with the Python library** - it's the foundation everything else builds on.
+
+**Priority Order**: 
+1. **Python Library** - Core functionality
+2. **VS Code Extension** - Proof of concept  
+3. **Killer Demo** - Show superiority over MCP
+4. **Website & Polish** - After we have working code
 
 **Goal**: By Friday, we have a working demo that makes MCP look like ancient technology.
 
