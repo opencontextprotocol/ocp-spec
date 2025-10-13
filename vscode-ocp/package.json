@@ -1,0 +1,147 @@
+{
+  "name": "vscode-ocp",
+  "displayName": "OCP Agent Context",
+  "description": "Zero-infrastructure context sharing for AI agents in VS Code",
+  "version": "0.1.0",
+  "publisher": "opencontextprotocol",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "context",
+    "http",
+    "api",
+    "mcp",
+    "copilot"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "OCP Agent Context",
+      "properties": {
+        "ocp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable OCP context management"
+        },
+        "ocp.agentType": {
+          "type": "string",
+          "default": "ide_copilot",
+          "enum": [
+            "ide_copilot",
+            "debug_assistant", 
+            "code_reviewer",
+            "api_tester"
+          ],
+          "description": "Type of AI agent for context"
+        },
+        "ocp.contextTracking": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically track workspace and file context"
+        },
+        "github.token": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub personal access token for API calls"
+        },
+        "ocp.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show OCP headers in console for debugging"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "ocp.showContext",
+        "title": "Show Current Context",
+        "category": "OCP"
+      },
+      {
+        "command": "ocp.clearContext",
+        "title": "Clear Context History",
+        "category": "OCP"
+      },
+      {
+        "command": "ocp.demoMcpVsOcp",
+        "title": "Demo: MCP vs OCP Setup",
+        "category": "OCP"
+      },
+      {
+        "command": "ocp.demoContextMemory",
+        "title": "Demo: Context Memory",
+        "category": "OCP"
+      },
+      {
+        "command": "ocp.testGitHubApi",
+        "title": "Test GitHub API with OCP",
+        "category": "OCP"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "ocp.showContext",
+          "when": "config.ocp.enabled"
+        },
+        {
+          "command": "ocp.clearContext",
+          "when": "config.ocp.enabled"
+        },
+        {
+          "command": "ocp.demoMcpVsOcp"
+        },
+        {
+          "command": "ocp.demoContextMemory",
+          "when": "config.ocp.enabled"
+        },
+        {
+          "command": "ocp.testGitHubApi",
+          "when": "config.ocp.enabled && config.github.token"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.39.0",
+    "typescript": "^5.0.4",
+    "@vscode/test-electron": "^2.3.0",
+    "@vscode/vsce": "^2.19.0"
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opencontextprotocol/specification.git",
+    "directory": "vscode-ocp"
+  },
+  "homepage": "https://opencontextprotocol.org",
+  "bugs": {
+    "url": "https://github.com/opencontextprotocol/specification/issues"
+  },
+  "license": "MIT"
+}

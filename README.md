@@ -25,7 +25,29 @@ OCP enables AI agents to share context across API calls using standard HTTP head
 # Result: Zero servers, direct API calls
 ```
 
-## 🎯 The Agent Context Problem
+## � Live Demo: VS Code Extension
+
+**Try OCP vs MCP setup comparison in VS Code:**
+
+```bash
+# Clone and test the VS Code extension
+cd vscode-ocp/
+npm install && npm run compile
+
+# Open in VS Code and press F5 to launch extension host
+# Run: "OCP: Demo Workflow" to see complete demonstration
+```
+
+**What you'll see:**
+- ⚡ **Instant Setup**: OCP works immediately vs MCP's complex server configuration
+- 🧠 **Context Memory**: Persistent context across interactions (vs MCP's stateless servers)
+- 🌐 **HTTP Headers**: Rich context automatically added to API calls
+- 📊 **Real-time Tracking**: Live workspace, file, and activity context
+- 🆚 **Side-by-side Comparison**: Interactive demo showing OCP advantages
+
+The extension demonstrates why developers are switching from MCP to OCP for IDE-based AI agents.
+
+## �🎯 The Agent Context Problem
 
 **MCP Limitations for AI Agents**:
 - ❌ Deploy custom servers for each integration
