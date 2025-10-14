@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "types": ["vscode", "node"]
+    "types": ["vscode", "node", "mocha"]
   },
   "exclude": [
     "node_modules",

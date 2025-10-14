@@ -38,7 +38,7 @@
           "default": "ide_copilot",
           "enum": [
             "ide_copilot",
-            "debug_assistant", 
+            "debug_assistant",
             "code_reviewer",
             "api_tester"
           ],
@@ -119,17 +119,26 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "package": "vsce package"
+    "test:unit": "npm run compile && mocha out/test/suite/*.test.js",
+    "test:coverage": "npm run compile && nyc mocha out/test/suite/*.test.js",
+    "package": "vsce package",
+    "clean": "rimraf out"
   },
   "devDependencies": {
-    "@types/vscode": "^1.80.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
     "@types/node": "16.x",
+    "@types/vscode": "^1.80.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",
     "@typescript-eslint/parser": "^5.59.1",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^2.19.0",
     "eslint": "^8.39.0",
-    "typescript": "^5.0.4",
-    "@vscode/test-electron": "^2.3.0",
-    "@vscode/vsce": "^2.19.0"
+    "glob": "^11.0.3",
+    "mocha": "^11.7.4",
+    "nyc": "^17.1.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "axios": "^1.4.0"
