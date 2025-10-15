@@ -1,7 +1,7 @@
 # Open Context Protocol (OCP)
-## Zero-Infrastructure Context for AI Agents
+## Complete MCP Alternative with Zero Infrastructure
 
-**TL;DR**: OCP enables AI agents to share context across API calls using standard HTTP headers. No servers, no custom protocols, just smarter APIs.
+**TL;DR**: OCP provides everything MCP does (API discovery, tool invocation, parameter validation) PLUS persistent context management, all with zero servers and standard HTTP.
 
 ---
 
@@ -14,27 +14,38 @@
 - ❌ Stateless MCP servers lose conversation memory
 - ❌ Complex setup kills adoption in IDEs
 
-**OCP's Agent-First Solution**:
-- ✅ Context flows in HTTP headers to existing APIs
-- ✅ APIs become intelligent conversation participants
-- ✅ Zero servers - direct API calls from agents
-- ✅ Persistent context across multi-step workflows
-- ✅ IDE integration is trivial
+**OCP's Complete Solution**:
+- ✅ **API Discovery**: Auto-generate tools from OpenAPI specs
+- ✅ **Tool Invocation**: Call any API operation with validation
+- ✅ **Context Management**: Persistent context across interactions  
+- ✅ **Zero Infrastructure**: No servers, just standard HTTP
+- ✅ **IDE Integration**: Trivial setup compared to MCP
 
 ---
 
-## Core Principle: Agents + Context + Existing APIs
+## Core Principle: MCP Features + Context Intelligence
 
-OCP transforms existing APIs into intelligent conversation participants for AI agents.
+OCP provides complete feature parity with MCP while adding persistent context management:
 
-### The Agent Context Flow:
+**MCP Capabilities (Provided by OCP)**:
+- ✅ API discovery from specifications
+- ✅ Tool invocation with parameter validation
+- ✅ Structured request/response handling
+
+**OCP Advantages (Not in MCP)**:
+- ✅ Persistent context across tool calls
+- ✅ Zero server infrastructure required
+- ✅ Standard HTTP protocol only
+- ✅ Automatic context injection
+
+### The Agent Tool Flow:
 ```mermaid
 graph LR
-    A[AI Agent] -->|HTTP + Context Headers| B[GitHub API]
-    B -->|Enhanced Response| A
-    A -->|Accumulated Context| C[Jira API] 
-    C -->|Smart Response| A
-    A -->|Full Context| D[Slack API]
+    A[AI Agent] -->|1. Discover Tools| B[OpenAPI Spec]
+    B -->|2. Available Tools| A
+    A -->|3. Tool Call + Context| C[API Endpoint]
+    C -->|4. Context-Aware Response| A
+    A -->|5. Updated Context| D[Next Tool Call]
     
     subgraph "Zero Additional Infrastructure"
         B
@@ -43,13 +54,27 @@ graph LR
     end
 ```
 
-**Key Insight**: Context accumulates across API calls, making each subsequent call smarter.
+**Key Insight**: Agents discover tools dynamically AND maintain context across calls.
 
 ---
 
-## Agent-First Architecture
+## Core OCP Components
 
-### 1. **Agent Context Object**
+OCP provides two fundamental capabilities that together create a complete MCP alternative:
+
+### 1. **Context Management** (Header-Based)
+Smart context injection into existing HTTP APIs using standard headers.
+
+### 2. **Schema Discovery** (OpenAPI-Based)  
+Automatic API tool discovery and invocation from OpenAPI specifications.
+
+**Together**: Context + Discovery = Complete agent-ready API integration with zero infrastructure.
+
+---
+
+## Context Management: Smart HTTP Headers
+
+### **Agent Context Object**
 ```json
 {
   "context_id": "agent-session-123",
@@ -190,24 +215,131 @@ const response = await fetch('https://api.github.com/search/issues', {
 
 ---
 
-## OpenAPI Integration (Optional Enhancement)
+## Schema Discovery: API Tool Generation
 
-### **Phase 1: Works with Existing OpenAPI Specs**
-OCP works immediately with any REST API that has an OpenAPI specification:
+### **Automatic Tool Discovery from OpenAPI**
+OCP automatically converts OpenAPI specifications into callable tools for AI agents:
 
 ```javascript
-// Agent discovers tools from existing OpenAPI spec
-const githubSpec = await fetch('https://api.github.com/rest/openapi.json');
-const tools = parseOpenAPIToTools(githubSpec);
+// Agent discovers GitHub API capabilities
+const ocpClient = new OCPClient();
+await ocpClient.registerAPI('github', 'https://api.github.com/rest/openapi.json');
 
-// Agent can now call any GitHub API operation with context
-await callTool('createIssue', {
-  title: "Bug report",
-  body: "Found in payment flow"
-}, context);
+// List available tools
+const tools = ocpClient.listTools('github');
+console.log(tools.map(t => `${t.name}: ${t.description}`));
+// Output:
+// createIssue: Create a new issue in a repository
+// getRepository: Get repository information
+// listBranches: List branches in a repository
+// ...
+
+// Call tools with automatic context injection
+const issue = await ocpClient.callTool('createIssue', {
+  owner: 'myorg',
+  repo: 'myproject', 
+  title: 'Bug found in payment flow',
+  body: 'Discovered during debugging session'
+});
 ```
 
-### **Phase 2: OCP-Enhanced OpenAPI Specs**
+### **Tool Schema Generation**
+Each OpenAPI operation becomes a callable tool with full parameter validation:
+
+```javascript
+// Tool generated from OpenAPI operation
+{
+  name: 'createIssue',
+  description: 'Create an issue',
+  method: 'POST',
+  path: '/repos/{owner}/{repo}/issues',
+  parameters: {
+    owner: { type: 'string', required: true, location: 'path' },
+    repo: { type: 'string', required: true, location: 'path' },
+    title: { type: 'string', required: true, location: 'body' },
+    body: { type: 'string', required: false, location: 'body' },
+    labels: { type: 'array', required: false, location: 'body' }
+  },
+  responseSchema: { /* OpenAPI response schema */ }
+}
+```
+
+### **Context + Discovery Integration**
+Schema discovery works seamlessly with context management:
+
+```javascript
+// Single client provides both capabilities
+const agent = new OCPAgent(context);
+
+// Register APIs (auto-discovers tools)
+await agent.registerAPI('github', 'https://api.github.com/rest/openapi.json');
+await agent.registerAPI('jira', 'https://mycompany.atlassian.net/rest/api/openapi.json');
+
+// Agent can now:
+// 1. Discover available tools across all APIs
+// 2. Call tools with rich context automatically injected
+// 3. Maintain conversation state across tool calls
+// 4. Provide intelligent suggestions based on context
+
+const tools = agent.searchTools('create issue');  // Find issue creation across APIs
+const result = await agent.callTool('createIssue', params);  // Auto-adds context headers
+```
+
+### **Deterministic Tool Naming**
+OCP ensures predictable tool names for consistent agent behavior:
+
+```javascript
+// Tool naming follows deterministic rules:
+// 1. Use operationId when present in OpenAPI spec
+{
+  "operationId": "listRepositories",  // → Tool name: "listRepositories"
+  "operationId": "createIssue"        // → Tool name: "createIssue"
+}
+
+// 2. Generate from HTTP method + path when operationId missing
+{
+  "GET /items":     // → Tool name: "get_items"
+  "POST /items":    // → Tool name: "post_items"  
+  "GET /items/{id}" // → Tool name: "get_items_id"
+}
+
+// This ensures:
+// - Agents can reliably reference tools across sessions
+// - Tool names remain consistent across API spec updates
+// - Integration scripts don't break due to name changes
+```
+
+---
+
+## MCP Feature Parity Comparison
+
+| Capability | MCP | OCP |
+|------------|-----|-----|
+| **API Discovery** | ✅ Custom servers expose tools | ✅ Auto-generate from OpenAPI specs |
+| **Tool Invocation** | ✅ JSON-RPC protocol | ✅ Standard HTTP + context headers |
+| **Parameter Validation** | ✅ Server-side validation | ✅ Client-side OpenAPI validation |
+| **Context Management** | ❌ Stateless servers | ✅ Persistent context across calls |
+| **Infrastructure** | ❌ Requires custom servers | ✅ Zero servers needed |
+| **Setup Complexity** | ❌ High (server deployment) | ✅ Low (register OpenAPI URL) |
+| **Maintenance** | ❌ Server lifecycle management | ✅ No maintenance needed |
+
+---
+
+## OpenAPI Integration Levels
+
+### **Level 1: Standard OpenAPI (Works Today)**
+OCP works immediately with any existing OpenAPI specification:
+
+```javascript
+// Works with GitHub's existing OpenAPI spec
+const agent = new OCPAgent(context);
+await agent.registerAPI('github', 'https://api.github.com/rest/openapi.json');
+
+// All GitHub API operations become available as tools
+const repos = await agent.callTool('listUserRepos', { username: 'octocat' });
+```
+
+### **Level 2: OCP-Enhanced OpenAPI (Future)**
 APIs can optionally add OCP extensions to their OpenAPI specs to provide smarter responses:
 
 ```yaml
@@ -286,9 +418,97 @@ paths:
 
 ---
 
+## API Registration & Discovery Process
+
+When agents register APIs with OCP, the following standardized process occurs:
+
+### **1. Fetch OpenAPI Specification**
+```javascript
+// Agent requests OpenAPI spec from provided URL
+const response = await fetch('https://api.github.com/rest/openapi.json');
+const openApiSpec = await response.json();
+```
+
+### **2. Parse Operations into Tools**
+```javascript
+// Each OpenAPI operation becomes a callable tool
+for (const [path, methods] of Object.entries(openApiSpec.paths)) {
+  for (const [method, operation] of Object.entries(methods)) {
+    const tool = {
+      name: operation.operationId || generateToolName(method, path),
+      description: operation.summary || operation.description,
+      method: method.toUpperCase(),
+      path: path,
+      parameters: parseParameters(operation.parameters),
+      responseSchema: operation.responses['200']?.content?.['application/json']?.schema
+    };
+  }
+}
+```
+
+### **3. Store for Agent Context**
+```javascript
+// Add API spec to agent's context for persistent access
+agent.context.add_api_spec('github', 'https://api.github.com/rest/openapi.json');
+
+// Log discovery results
+agent.context.add_interaction(
+  'api_registered',
+  'https://api.github.com/rest/openapi.json', 
+  `Discovered ${tools.length} tools`
+);
+```
+
+### **4. Enable Tool Invocation**
+```javascript
+// Tools become immediately available for agent use
+const issues = await agent.callTool('listRepositoryIssues', {
+  owner: 'myorg',
+  repo: 'myproject'
+});
+// Context headers automatically added to HTTP request
+```
+
+This process ensures **deterministic behavior**, **consistent tool availability**, and **automatic context enhancement** across all API interactions.
+
+---
+
 ## Client Library Design Philosophy
 
 **Protocol-Only Specification**: This specification defines the HTTP protocol layer only. OCP focuses on standardizing how context flows between agents and APIs via HTTP headers, not how client libraries should be structured.
+
+**Core Requirements**: All OCP client libraries must provide:
+1. **Context Management**: Create, update, and inject OCP context headers
+2. **Schema Discovery**: Parse OpenAPI specs and generate callable tools
+3. **Tool Invocation**: Execute API operations with automatic context injection
+4. **Parameter Validation**: Validate tool parameters against OpenAPI schemas
+
+**Reference Implementation Testing Standards**: To ensure reliability and specification compliance, OCP client libraries should include comprehensive test coverage:
+
+### **Required Test Categories**:
+- **Context Management**: 100% coverage for context creation, updates, and serialization
+- **Schema Discovery**: Deterministic tool name generation and OpenAPI parsing validation
+- **HTTP Enhancement**: Header encoding/decoding with compression and error handling
+- **Agent Orchestration**: Complete workflow testing from API registration to tool execution
+
+### **Test Quality Requirements**:
+```python
+# Example: Deterministic tool naming validation
+def test_tool_naming_consistency():
+    spec = load_openapi_spec("test-api.json")
+    tools = agent.discover_tools(spec)
+    
+    # Tools must have predictable names
+    assert "get_items" in [t.name for t in tools]      # GET /items
+    assert "post_items" in [t.name for t in tools]     # POST /items  
+    assert "get_items_id" in [t.name for t in tools]   # GET /items/{id}
+    
+    # Names must be stable across repeated parsing
+    tools2 = agent.discover_tools(spec)
+    assert [t.name for t in tools] == [t.name for t in tools2]
+```
+
+This ensures **predictable behavior**, **reliable integrations**, and **consistent developer experience** across different OCP client implementations.
 
 **Language-Idiomatic Implementations**: Client libraries should follow idiomatic patterns for their respective languages while correctly implementing the OCP HTTP protocol. This approach:
 
@@ -298,8 +518,8 @@ paths:
 - Ensures **interoperability** through the shared HTTP protocol
 
 **Examples of Acceptable Variance**:
-- Method names: `wrap_api()` vs `enhance_client()` vs `with_context()`
-- Class structure: `AgentContext` vs `OCPContext` vs functional approaches
+- Method names: `register_api()` vs `add_service()` vs `discover_tools()`
+- Class structure: `OCPAgent` vs `AgentContext` vs functional approaches
 - Async patterns: Promises vs Futures vs async/await
 - Error handling: Exceptions vs Result types vs error callbacks
 
@@ -307,13 +527,45 @@ paths:
 - HTTP header format (`OCP-Context-ID`, `OCP-Session`, etc.)
 - Context object JSON schema
 - Base64 encoding and compression rules
-- OpenAPI extension patterns
+- OpenAPI parsing and tool generation
+- Tool invocation parameter mapping
 
 ---
 
 ## Implementation Examples
 
-### 1. Convert Any OpenAPI Service
+### 1. Agent with Schema Discovery
+```python
+from ocp import OCPAgent
+
+# Create agent with context
+agent = OCPAgent(
+    agent_type="ide_coding_assistant",
+    user="alice", 
+    workspace="payment-service"
+)
+
+# Register APIs (automatically discovers tools)
+await agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+await agent.register_api('jira', 'https://company.atlassian.net/openapi.json')
+
+# Discover available tools
+tools = agent.list_tools()
+print(f"Discovered {len(tools)} tools across all APIs")
+
+# Search for specific capabilities
+issue_tools = agent.search_tools('create issue')
+
+# Call tools with automatic context injection
+issue = await agent.call_tool('createIssue', {
+    'owner': 'myorg',
+    'repo': 'payment-service',
+    'title': 'Payment processing bug',
+    'body': 'Found during debugging session'
+})
+```
+
+### 2. Convert Any OpenAPI Service
 ```python
 from ocp import wrap_openapi
 
@@ -327,7 +579,7 @@ result = weather_service.get_weather(
 )
 ```
 
-### 2. Add OCP to Existing API
+### 3. Add OCP to Existing API
 ```python
 from flask import Flask, request
 from ocp import parse_context, add_context_headers
