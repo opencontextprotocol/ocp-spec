@@ -47,8 +47,7 @@ coverage = "^7.0"
 [tool.poetry.group.examples.dependencies]
 requests = "^2.25.0"
 
-[tool.poetry.scripts]
-ocp = "ocp.cli:main"
+# No CLI scripts - ocp-agent is a pure library
 
 [build-system]
 requires = ["poetry-core"]

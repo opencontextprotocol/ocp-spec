@@ -221,16 +221,13 @@ print(result)
 4. **Existing Tooling**: Works with curl, Postman, any HTTP client
 5. **AI Integration**: Easy to use with AI agents and LLMs
 
-## Migration from MCP
+## Implementation Benefits
 
-If you had an MCP GitHub server, the equivalent OCP implementation:
+This OCP implementation provides:
 
-| MCP Approach | OCP Approach |
-|--------------|--------------|
-| Deploy MCP server | Use GitHub API directly |
-| Custom tool definitions | OpenAPI spec (already exists) |
-| MCP transport protocol | Standard HTTP with OCP headers |
-| MCP authentication | GitHub token auth (unchanged) |
-| Server maintenance | No server to maintain |
+- **Zero Infrastructure**: Direct calls to api.github.com, no proxy servers
+- **Standard Protocols**: Uses existing GitHub APIs with OCP context headers  
+- **Simple Authentication**: Standard GitHub token authentication
+- **No Maintenance**: No servers or additional infrastructure to manage
 
-**Result**: Same functionality, zero infrastructure, standard protocols.
+**Result**: Full GitHub API integration with persistent context and zero setup complexity.

@@ -1,8 +1,8 @@
 """
-OCP Agent - Complete MCP Feature Parity
+OCP Agent - Context-Aware API Discovery and Execution
 
 Combines OCP's context management with automatic API discovery,
-providing complete MCP feature parity with zero infrastructure.
+providing intelligent API interactions with zero infrastructure.
 """
 
 import requests
@@ -16,7 +16,7 @@ from .http_client import OCPHTTPClient
 
 class OCPAgent:
     """
-    OCP Agent with Complete MCP Feature Parity
+    OCP Agent for Context-Aware API Interactions
     
     Provides:
     1. API Discovery (from OpenAPI specs) 
@@ -324,7 +324,7 @@ def create_github_agent(context: Optional[AgentContext] = None) -> OCPAgent:
     
     agent.register_api(
         name="github",
-        spec_url="https://api.github.com/rest/openapi.json",
+        spec_url="https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json",
         base_url="https://api.github.com"
     )
     return agent

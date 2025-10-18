@@ -2,7 +2,7 @@
 OCP Schema Discovery
 
 Provides automatic API discovery and tool generation from OpenAPI specifications,
-making OCP a complete MCP alternative with zero-infrastructure advantage.
+enabling context-aware API interactions with zero infrastructure requirements.
 """
 
 import json
@@ -37,7 +37,7 @@ class OCPSchemaDiscovery:
     """
     Automatic API discovery and tool generation from OpenAPI specifications.
     
-    This provides MCP-like API discovery while maintaining OCP's zero-infrastructure
+    This enables automatic API discovery while maintaining OCP's zero-infrastructure
     approach by parsing OpenAPI specs directly.
     """
     

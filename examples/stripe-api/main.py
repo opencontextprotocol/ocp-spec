@@ -1,7 +1,7 @@
 """
 Stripe API Integration with OCP
 
-Demonstrates OCP's complete MCP feature parity with payment processing APIs.
+Demonstrates OCP's context-aware API integration with payment processing APIs.
 Shows automatic API discovery, tool validation, and persistent context management.
 """
 
@@ -52,7 +52,7 @@ def main():
     print(f"   • Zero infrastructure setup")
     print(f"   • Automatic API discovery")
     print(f"   • Persistent context tracking") 
-    print(f"   • Complete MCP feature parity")
+    print(f"   • Context-aware API interactions")
     print(f"   • Works with any OpenAPI spec")
 
 if __name__ == "__main__":

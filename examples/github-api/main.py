@@ -1,14 +1,14 @@
 """
 GitHub API Integration with OCP
 
-Demonstrates OCP's complete MCP feature parity:
+Demonstrates OCP's core capabilities:
 - Automatic API discovery from OpenAPI specs
 - Tool validation and invocation
 - Persistent context management
 - Zero infrastructure required
 
-Shows how OCP provides the same capabilities as MCP but with
-simpler setup and persistent context across interactions.
+Shows how OCP enables context-aware API interactions with
+simple setup and persistent context across interactions.
 """
 
 import os
@@ -66,7 +66,7 @@ def main():
     try:
         api_spec = custom_agent.register_api(
             name="github_manual",
-            spec_url="https://api.github.com/rest/openapi.json"
+            spec_url="https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json"
         )
         print(f"✅ Registered GitHub API:")
         print(f"   Title: {api_spec.title}")
@@ -75,7 +75,7 @@ def main():
         
     except Exception as e:
         print(f"⚠️  API registration failed: {e}")
-        print("   (This is expected without proper network access)")
+        print("   (This indicates a network issue or invalid OpenAPI spec)")
     
     # Demonstrate context persistence
     print(f"\n📈 Context Evolution:")
@@ -86,7 +86,7 @@ def main():
     print(f"   • Zero infrastructure setup")
     print(f"   • Automatic API discovery")
     print(f"   • Persistent context tracking") 
-    print(f"   • Complete MCP feature parity")
+    print(f"   • Context-aware API interactions")
     print(f"   • Works with any OpenAPI spec")
 
 if __name__ == "__main__":

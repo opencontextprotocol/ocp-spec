@@ -4,7 +4,7 @@ Open Context Protocol (OCP) - Python Library
 A zero-infrastructure protocol that provides conversational context
 and automatic API discovery to enhance AI agent interactions.
 
-Combines the best of MCP's API discovery with persistent context management,
+Enables persistent context sharing across HTTP API calls using standard headers,
 requiring no servers or infrastructure setup.
 """
 
@@ -37,7 +37,7 @@ __all__ = [
     "OCPTool",
     "OCPAPISpec",
     
-    # Complete agent with MCP parity
+    # Complete agent functionality
     "OCPAgent",
     "create_github_agent",
     "create_stripe_agent"
