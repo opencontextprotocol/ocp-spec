@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "ocp-registry"
+version = "0.1.0"
+description = "OCP Community Registry - Searchable database of API configurations"
+authors = ["OCP Community"]
+readme = "README.md"
+packages = [{include = "registry", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.104.0"
+uvicorn = "^0.24.0"
+pydantic = "^2.5.0"
+httpx = "^0.24.0"
+sqlalchemy = "^2.0.0"
+alembic = "^1.13.0"
+ocp-agent = {path = "../ocp-python", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+black = "^23.10.0"
+isort = "^5.12.0"
+mypy = "^1.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+ocp-registry = "registry.main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

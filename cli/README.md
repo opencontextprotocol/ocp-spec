@@ -1,6 +1,6 @@
 # OCP CLI
 
-A standalone command-line interface for Open Context Protocol operations.
+A standalone command-line interface for Open Context Protocol operations including context management, API testing, and registry operations.
 
 ## Installation
 
@@ -25,6 +25,35 @@ ocp context create --user alice --type ide_copilot --goal "debug tests"
 # Show current context
 ocp context show
 ocp context show --format yaml
+```
+
+### Registry Operations
+
+```bash
+# List all APIs in registry
+ocp registry list
+
+# Search for APIs
+ocp registry search github
+ocp registry search "payment apis"
+
+# Get detailed information about an API
+ocp registry get github
+
+# List available categories
+ocp registry categories
+
+# Show registry statistics
+ocp registry stats
+
+# Register a new API from JSON file
+ocp registry register my-api.json
+
+# Validate an API specification
+ocp registry validate https://api.github.com/rest/openapi.json --base-url https://api.github.com
+
+# Use custom registry URL
+ocp registry --url https://registry.example.com list
 ```
 
 ### API Testing

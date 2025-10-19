@@ -2,8 +2,8 @@
 """
 OCP CLI - Command line interface for Open Context Protocol
 
-A standalone CLI tool for context management, API testing, and validation.
-Focused on developer workflow support, not importing examples.
+A standalone CLI tool for context management, API testing, registry operations,
+and validation. Focused on developer workflow support.
 
 Usage:
     ocp context create [--user USER] [--type TYPE] [--goal GOAL]
@@ -11,6 +11,13 @@ Usage:
     ocp call METHOD URL [--context CONTEXT_ID] [--data DATA] [--auth AUTH]
     ocp validate context FILE
     ocp test api URL [--spec SPEC_URL] [--auth AUTH]
+    ocp registry list [--category CATEGORY] [--status STATUS]
+    ocp registry search QUERY [--page PAGE] [--per-page COUNT]
+    ocp registry get NAME
+    ocp registry register FILE
+    ocp registry validate OPENAPI_URL [--base-url BASE_URL]
+    ocp registry categories
+    ocp registry stats
     ocp --version
     ocp --help
 
@@ -23,6 +30,15 @@ Examples:
 
     # Test API with OCP context
     ocp test api https://api.github.com --spec https://api.github.com/rest/openapi.json
+
+    # Search for APIs in registry
+    ocp registry search github
+
+    # Get details about a specific API
+    ocp registry get github
+
+    # Register new API from JSON file
+    ocp registry register my-api.json
 
     # Validate context file
     ocp validate context my-context.json
@@ -48,6 +64,70 @@ try:
     HAS_YAML = True
 except ImportError:
     HAS_YAML = False
+
+
+class RegistryClient:
+    """Client for interacting with OCP Registry."""
+    
+    def __init__(self, base_url: str = "http://localhost:8000"):
+        self.base_url = base_url.rstrip('/')
+        
+    def list_apis(self, category: Optional[str] = None, status: Optional[str] = None):
+        """List APIs in the registry."""
+        params = {}
+        if category:
+            params['category'] = category
+        if status:
+            params['status'] = status
+            
+        response = requests.get(f"{self.base_url}/api/v1/registry", params=params)
+        response.raise_for_status()
+        return response.json()
+    
+    def get_api(self, name: str):
+        """Get specific API by name."""
+        response = requests.get(f"{self.base_url}/api/v1/registry/{name}")
+        response.raise_for_status()
+        return response.json()
+    
+    def search_apis(self, query: str, page: int = 1, per_page: int = 20):
+        """Search APIs."""
+        params = {
+            'q': query,
+            'page': page,
+            'per_page': per_page
+        }
+        response = requests.get(f"{self.base_url}/api/v1/search", params=params)
+        response.raise_for_status()
+        return response.json()
+    
+    def register_api(self, api_data: dict):
+        """Register a new API."""
+        response = requests.post(f"{self.base_url}/api/v1/registry", json=api_data)
+        response.raise_for_status()
+        return response.json()
+    
+    def validate_api(self, openapi_url: str, base_url: Optional[str] = None):
+        """Validate an API specification."""
+        data = {"openapi_url": openapi_url}
+        if base_url:
+            data["base_url"] = base_url
+            
+        response = requests.post(f"{self.base_url}/api/v1/validate", json=data)
+        response.raise_for_status()
+        return response.json()
+    
+    def get_categories(self):
+        """Get all categories."""
+        response = requests.get(f"{self.base_url}/api/v1/categories")
+        response.raise_for_status()
+        return response.json()
+    
+    def get_stats(self):
+        """Get registry statistics."""
+        response = requests.get(f"{self.base_url}/api/v1/stats")
+        response.raise_for_status()
+        return response.json()
 
 
 class OCPContext:
@@ -250,6 +330,123 @@ class OCPCli:
         except Exception as e:
             print(f"API test failed: {e}")
 
+    # Registry methods
+    def _get_registry_client(self, url: str = None) -> RegistryClient:
+        """Get registry client with default or specified URL."""
+        return RegistryClient(url or "http://localhost:8000")
+    
+    def registry_list(self, category: str = None, status: str = None, registry_url: str = None):
+        """List APIs in the registry."""
+        try:
+            client = self._get_registry_client(registry_url)
+            result = client.list_apis(category=category, status=status)
+            print(json.dumps(result, indent=2))
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+    
+    def registry_search(self, query: str, page: int = 1, per_page: int = 20, registry_url: str = None):
+        """Search APIs in the registry."""
+        try:
+            client = self._get_registry_client(registry_url)
+            result = client.search_apis(query, page=page, per_page=per_page)
+            print(json.dumps(result, indent=2))
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+    
+    def registry_get(self, name: str, registry_url: str = None):
+        """Get detailed information about an API."""
+        try:
+            client = self._get_registry_client(registry_url)
+            result = client.get_api(name)
+            print(json.dumps(result, indent=2, default=str))
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                print(json.dumps({"error": f"API '{name}' not found"}, indent=2))
+            else:
+                print(json.dumps({"error": f"HTTP {e.response.status_code}"}, indent=2))
+            sys.exit(1)
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+    
+    def registry_register(self, file_path: str, registry_url: str = None):
+        """Register an API from a JSON file."""
+        try:
+            with open(file_path, 'r') as f:
+                api_data = json.load(f)
+            
+            client = self._get_registry_client(registry_url)
+            result = client.register_api(api_data)
+            print(json.dumps(result, indent=2, default=str))
+        except FileNotFoundError:
+            print(json.dumps({"error": f"File not found: {file_path}"}, indent=2))
+            sys.exit(1)
+        except json.JSONDecodeError:
+            print(json.dumps({"error": f"Invalid JSON in file: {file_path}"}, indent=2))
+            sys.exit(1)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 400:
+                print(json.dumps({"error": e.response.json().get('detail', 'Bad request')}, indent=2))
+            else:
+                print(json.dumps({"error": f"HTTP {e.response.status_code}"}, indent=2))
+            sys.exit(1)
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+    
+    def registry_validate(self, openapi_url: str, base_url: str = None, registry_url: str = None):
+        """Validate an API specification."""
+        try:
+            client = self._get_registry_client(registry_url)
+            result = client.validate_api(openapi_url, base_url)
+            print(json.dumps(result, indent=2))
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+    
+    def registry_categories(self, registry_url: str = None):
+        """List available categories."""
+        try:
+            client = self._get_registry_client(registry_url)
+            result = client.get_categories()
+            print(json.dumps(result, indent=2))
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+    
+    def registry_stats(self, registry_url: str = None):
+        """Show registry statistics."""
+        try:
+            client = self._get_registry_client(registry_url)
+            result = client.get_stats()
+            print(json.dumps(result, indent=2, default=str))
+        except requests.exceptions.ConnectionError:
+            print(json.dumps({"error": "Could not connect to registry"}, indent=2))
+            sys.exit(1)
+        except Exception as e:
+            print(json.dumps({"error": str(e)}, indent=2))
+            sys.exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser(description="OCP CLI - Context management and API testing")
@@ -291,6 +488,41 @@ def main():
     test_api_parser.add_argument('--spec', help='OpenAPI spec URL')
     test_api_parser.add_argument('--auth', help='Authorization header value')
     
+    # Registry commands
+    registry_parser = subparsers.add_parser('registry', help='OCP Registry operations')
+    registry_parser.add_argument('--url', help='Registry URL (default: http://localhost:8000)')
+    registry_subparsers = registry_parser.add_subparsers(dest='registry_action')
+    
+    # Registry list
+    registry_list_parser = registry_subparsers.add_parser('list', help='List APIs in registry')
+    registry_list_parser.add_argument('--category', help='Filter by category')
+    registry_list_parser.add_argument('--status', help='Filter by status')
+    
+    # Registry search
+    registry_search_parser = registry_subparsers.add_parser('search', help='Search APIs in registry')
+    registry_search_parser.add_argument('query', help='Search query')
+    registry_search_parser.add_argument('--page', type=int, default=1, help='Page number')
+    registry_search_parser.add_argument('--per-page', type=int, default=20, help='Results per page')
+    
+    # Registry get
+    registry_get_parser = registry_subparsers.add_parser('get', help='Get API details')
+    registry_get_parser.add_argument('name', help='API name')
+    
+    # Registry register
+    registry_register_parser = registry_subparsers.add_parser('register', help='Register API from JSON file')
+    registry_register_parser.add_argument('file', help='JSON file with API registration data')
+    
+    # Registry validate
+    registry_validate_parser = registry_subparsers.add_parser('validate', help='Validate API specification')
+    registry_validate_parser.add_argument('openapi_url', help='OpenAPI specification URL')
+    registry_validate_parser.add_argument('--base-url', help='API base URL')
+    
+    # Registry categories
+    registry_categories_parser = registry_subparsers.add_parser('categories', help='List available categories')
+    
+    # Registry stats
+    registry_stats_parser = registry_subparsers.add_parser('stats', help='Show registry statistics')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -321,6 +553,26 @@ def main():
             cli.test_api(args.url, args.spec, args.auth)
         else:
             test_parser.print_help()
+    
+    elif args.command == 'registry':
+        registry_url = getattr(args, 'url', None)
+        
+        if args.registry_action == 'list':
+            cli.registry_list(args.category, args.status, registry_url)
+        elif args.registry_action == 'search':
+            cli.registry_search(args.query, args.page, getattr(args, 'per_page', 20), registry_url)
+        elif args.registry_action == 'get':
+            cli.registry_get(args.name, registry_url)
+        elif args.registry_action == 'register':
+            cli.registry_register(args.file, registry_url)
+        elif args.registry_action == 'validate':
+            cli.registry_validate(args.openapi_url, getattr(args, 'base_url', None), registry_url)
+        elif args.registry_action == 'categories':
+            cli.registry_categories(registry_url)
+        elif args.registry_action == 'stats':
+            cli.registry_stats(registry_url)
+        else:
+            registry_parser.print_help()
     
     else:
         parser.print_help()
