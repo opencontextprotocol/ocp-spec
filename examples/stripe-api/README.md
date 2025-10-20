@@ -1,51 +1,83 @@
 # Stripe API with OCP
 
-This example demonstrates how payment processing with Stripe can work with OCP context, enabling AI agents to handle financial transactions while maintaining session continuity.
+This example demonstrates using the Stripe API with OCP context headers for persistent payment agent sessions.
 
-## Key Benefits
+## Overview
 
-1. **No Stripe Integration Changes**: Use existing Stripe API endpoints
-2. **Context-Aware Payments**: Track user payment history and preferences
-3. **AI Agent Ready**: Easy integration with LLMs for payment workflows
-4. **Secure by Default**: Uses Stripe's existing security model
-5. **⚠️ Current Status**: Stripe doesn't read OCP headers yet - context is managed client-side
+- **API Registration**: Automatically discovers Stripe API endpoints from OpenAPI specification
+- **Context Tracking**: Maintains payment session state across multiple API interactions
+- **Tool Discovery**: Finds and validates available Stripe operations
+- **HTTP Client**: Context-aware requests with automatic header injection
 
-## How It Works Today vs Future
+## Setup
 
-### **Current Reality (Phase 1)**
-- Stripe API **ignores** OCP headers (which is fine!)
-- Client (your agent) **manages context** locally  
-- Payment history and user preferences stored in OCP context
-- Context flows between payment operations
+1. **Install Dependencies**
+   ```bash
+   cd ../../ocp-python
+   poetry install
+   ```
 
-### **Future Enhancement (Phase 2)**
-- Stripe could optionally **read** OCP headers
-- Provide **personalized payment experiences** based on context
-- Example: Auto-suggest payment methods based on previous transactions in the session
+2. **Set Stripe Secret Key**
+   ```bash
+   export STRIPE_SECRET_KEY="sk_test_your_key_here"
+   ```
 
-## Example: Payment Processing Flow
+3. **Run Example**
+   ```bash
+   poetry run python main.py
+   ```
 
-### 1. Create Customer with Context
+## Code Structure
 
-```bash
-curl -X POST https://api.stripe.com/v1/customers \
-  -H "Authorization: Bearer sk_test_..." \
-  -H "OCP-Context-ID: payment-session-123" \
-  -H "OCP-User: alice" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "email=alice@example.com&name=Alice Johnson"
+```python
+from ocp import OCPAgent, wrap_api
+
+# Create agent with context
+agent = OCPAgent(
+    agent_type="payment_processor",
+    workspace="stripe-demo", 
+    current_goal="Process payments and manage customer data"
+)
+
+# Register Stripe API from OpenAPI spec
+api_spec = agent.register_api(
+    name="stripe",
+    spec_url="https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json"
+)
+
+# Create context-aware HTTP client
+stripe_client = wrap_api(
+    "https://api.stripe.com", 
+    agent.context,
+    auth="Bearer sk_test_your_key_here"
+)
 ```
 
-### 2. Create Payment Intent with Preserved Context
+## Features Demonstrated
 
-```bash
-curl -X POST https://api.stripe.com/v1/payment_intents \
-  -H "Authorization: Bearer sk_test_..." \
-  -H "OCP-Context-ID: payment-session-123" \
-  -H "OCP-Session: eyJwYXltZW50X2hpc3RvcnkiOltdLCJjdXN0b21lcl9pZCI6ImN1c19hYmMxMjMifQ==" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "amount=2000&currency=usd&customer=cus_abc123"
+- **OpenAPI Discovery**: Automatic tool extraction from Stripe's OpenAPI specification
+- **Context Persistence**: Payment session state maintained across API calls
+- **Tool Validation**: Schema-based validation of payment operations
+- **HTTP Enhancement**: Standard HTTP clients enhanced with OCP headers
+- **Session Tracking**: Persistent payment history and customer interactions
+
+## HTTP Headers
+
+OCP adds these headers to all Stripe API requests:
+
 ```
+OCP-Context-ID: ocp-12345678
+OCP-Agent-Type: payment_processor
+OCP-Version: 1.0
+OCP-Goal: Process payments and manage customer data
+OCP-Session: eyJjb250ZXh0X2lkIjoi...
+```
+
+## Requirements
+
+- Python 3.8+
+- Stripe test secret key
+- Internet connection for OpenAPI spec retrieval
 
 ## Python Usage
 

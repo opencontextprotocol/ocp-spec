@@ -1,58 +1,83 @@
 # GitHub API with OCP
 
-This example shows how the existing GitHub API can work with OCP context with zero changes to GitHub's infrastructure.
+This example demonstrates using the GitHub API with OCP context headers for persistent agent sessions.
 
-## Key Points
+## Overview
 
-1. **GitHub API doesn't need to change** - OCP context travels in HTTP headers
-2. **Standard authentication** - Uses existing GitHub token auth
-3. **Zero additional infrastructure** - Direct HTTP calls to api.github.com
-4. **Immediate compatibility** - Works with existing GitHub API clients
-5. **⚠️ Current Status**: GitHub doesn't read OCP headers yet - context is managed client-side
+- **API Registration**: Automatically discovers GitHub API endpoints from OpenAPI specification
+- **Context Tracking**: Maintains session state across multiple API interactions
+- **Tool Discovery**: Finds and validates available GitHub operations
+- **HTTP Client**: Context-aware requests with automatic header injection
 
-## How It Works Today vs Future
+## Setup
 
-### **Current Reality (Phase 1)**
-- GitHub API **ignores** OCP headers (which is fine!)
-- Client (your agent) **manages context** locally
-- Each API call includes context headers for future compatibility
-- Context accumulates on the client side between calls
+1. **Install Dependencies**
+   ```bash
+   cd ../../ocp-python
+   poetry install
+   ```
 
-### **Future Enhancement (Phase 2)**  
-- GitHub could optionally **read** OCP headers
-- Provide **smarter responses** based on agent context
-- Example: Return deployment-focused data when context shows "debugging deployment failure"
+2. **Set GitHub Token**
+   ```bash
+   export GITHUB_TOKEN="ghp_your_token_here"
+   ```
 
-## Example: User Information Flow
+3. **Run Example**
+   ```bash
+   poetry run python main.py
+   ```
 
-### 1. Initial Request with OCP Context
+## Code Structure
 
-```bash
-curl -H "Authorization: token ghp_your_token_here" \
-     -H "OCP-Context-ID: session-123" \
-     -H "OCP-User: alice" \
-     -H "OCP-Capabilities: https://api.github.com/.well-known/ocp-capabilities" \
-     https://api.github.com/user
+```python
+from ocp import OCPAgent, wrap_api
+
+# Create agent with context
+agent = OCPAgent(
+    agent_type="api_explorer", 
+    workspace="github-demo",
+    current_goal="Analyze repository activity and manage issues"
+)
+
+# Register GitHub API from OpenAPI spec
+api_spec = agent.register_api(
+    name="github",
+    spec_url="https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json"
+)
+
+# Create context-aware HTTP client
+github_client = wrap_api(
+    "https://api.github.com",
+    agent.context,
+    auth="token your_token_here"
+)
 ```
 
-Response:
-```json
-{
-  "login": "alice",
-  "id": 12345,
-  "name": "Alice Developer",
-  "email": "alice@example.com"
-}
+## Features Demonstrated
+
+- **OpenAPI Discovery**: Automatic tool extraction from GitHub's OpenAPI specification
+- **Context Persistence**: Agent context maintained across API calls
+- **Tool Validation**: Schema-based validation of API operations
+- **HTTP Enhancement**: Standard HTTP clients enhanced with OCP headers
+- **Session Tracking**: Persistent conversation and interaction history
+
+## HTTP Headers
+
+OCP adds these headers to all GitHub API requests:
+
+```
+OCP-Context-ID: ocp-12345678
+OCP-Agent-Type: api_explorer  
+OCP-Version: 1.0
+OCP-Goal: Analyze repository activity and manage issues
+OCP-Session: eyJjb250ZXh0X2lkIjoi...
 ```
 
-### 2. Follow-up Request (Context Preserved)
+## Requirements
 
-```bash
-curl -H "Authorization: token ghp_your_token_here" \
-     -H "OCP-Context-ID: session-123" \
-     -H "OCP-Session: eyJ1c2VyIjoiYWxpY2UiLCJoaXN0b3J5IjpbXX0=" \
-     https://api.github.com/user/repos
-```
+- Python 3.8+
+- GitHub personal access token
+- Internet connection for OpenAPI spec retrieval
 
 The context carries forward automatically, enabling:
 - Session continuity across multiple API calls
