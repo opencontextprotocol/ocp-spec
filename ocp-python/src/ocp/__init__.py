@@ -11,7 +11,7 @@ requiring no servers or infrastructure setup.
 from .context import AgentContext
 from .http_client import enhance_http_client, wrap_api, OCPHTTPClient
 from .headers import OCPHeaders, create_ocp_headers, extract_context_from_response
-from .schemas import validate_context
+from .validation import validate_context
 from .schema_discovery import OCPSchemaDiscovery, OCPTool, OCPAPISpec
 from .agent import OCPAgent
 
