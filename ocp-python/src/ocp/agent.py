@@ -311,35 +311,3 @@ class OCPAgent:
     def update_goal(self, goal: str, summary: Optional[str] = None):
         """Update agent goal and context."""
         self.context.update_goal(goal, summary)
-
-
-# Convenience functions for common APIs
-def create_github_agent(context: Optional[AgentContext] = None) -> OCPAgent:
-    """Create OCP agent with GitHub API pre-registered."""
-    if context:
-        agent = OCPAgent()
-        agent.context = context
-    else:
-        agent = OCPAgent(agent_type="github_assistant")
-    
-    agent.register_api(
-        name="github",
-        spec_url="https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json",
-        base_url="https://api.github.com"
-    )
-    return agent
-
-def create_stripe_agent(context: Optional[AgentContext] = None) -> OCPAgent:
-    """Create OCP agent with Stripe API pre-registered."""
-    if context:
-        agent = OCPAgent()
-        agent.context = context
-    else:
-        agent = OCPAgent(agent_type="payment_assistant")
-    
-    agent.register_api(
-        name="stripe", 
-        spec_url="https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json",
-        base_url="https://api.stripe.com"
-    )
-    return agent

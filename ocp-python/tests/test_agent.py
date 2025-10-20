@@ -4,7 +4,7 @@ Tests for OCP Agent functionality.
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from ocp.agent import OCPAgent, create_github_agent, create_stripe_agent
+from ocp.agent import OCPAgent
 from ocp.context import AgentContext
 from ocp.schema_discovery import OCPTool, OCPAPISpec
 
@@ -314,49 +314,3 @@ class TestOCPAgent:
         
         assert agent.context.current_goal == "new goal"
         assert agent.context.context_summary == "goal summary"
-
-
-class TestConvenienceFunctions:
-    """Test convenience functions for creating pre-configured agents."""
-    
-    @patch('ocp.agent.OCPAgent.register_api')
-    def test_create_github_agent(self, mock_register):
-        """Test creating GitHub agent."""
-        mock_api_spec = Mock()
-        mock_register.return_value = mock_api_spec
-        
-        agent = create_github_agent()
-        
-        assert agent.context.agent_type == "github_assistant"
-        mock_register.assert_called_once_with(
-            name="github",
-            spec_url="https://api.github.com/rest/openapi.json",
-            base_url="https://api.github.com"
-        )
-    
-    @patch('ocp.agent.OCPAgent.register_api')
-    def test_create_stripe_agent(self, mock_register):
-        """Test creating Stripe agent."""
-        mock_api_spec = Mock()
-        mock_register.return_value = mock_api_spec
-        
-        agent = create_stripe_agent()
-        
-        assert agent.context.agent_type == "payment_assistant"
-        mock_register.assert_called_once_with(
-            name="stripe",
-            spec_url="https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json",
-            base_url="https://api.stripe.com"
-        )
-    
-    @patch('ocp.agent.OCPAgent.register_api')
-    def test_create_agent_with_existing_context(self, mock_register):
-        """Test creating agent with existing context."""
-        existing_context = AgentContext(agent_type="existing_agent")
-        mock_api_spec = Mock()
-        mock_register.return_value = mock_api_spec
-        
-        agent = create_github_agent(existing_context)
-        
-        assert agent.context == existing_context
-        assert agent.context.agent_type == "existing_agent"

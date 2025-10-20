@@ -8,20 +8,17 @@ Enables persistent context sharing across HTTP API calls using standard headers,
 requiring no servers or infrastructure setup.
 """
 
-from .context import AgentContext, create_ide_agent, create_debug_agent, create_devops_agent
+from .context import AgentContext
 from .http_client import enhance_http_client, wrap_api, OCPHTTPClient
 from .headers import OCPHeaders, create_ocp_headers, extract_context_from_response
 from .schemas import validate_context
 from .schema_discovery import OCPSchemaDiscovery, OCPTool, OCPAPISpec
-from .agent import OCPAgent, create_github_agent, create_stripe_agent
+from .agent import OCPAgent
 
 __version__ = "0.1.0"
 __all__ = [
     # Core context management
     "AgentContext",
-    "create_ide_agent",
-    "create_debug_agent", 
-    "create_devops_agent",
     
     # HTTP client enhancement
     "enhance_http_client", 
@@ -38,7 +35,5 @@ __all__ = [
     "OCPAPISpec",
     
     # Complete agent functionality
-    "OCPAgent",
-    "create_github_agent",
-    "create_stripe_agent"
+    "OCPAgent"
 ]

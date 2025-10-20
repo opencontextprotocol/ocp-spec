@@ -5,7 +5,7 @@ Tests for AgentContext class functionality.
 import pytest
 import json
 from datetime import datetime, timezone
-from ocp.context import AgentContext, create_ide_agent, create_debug_agent, create_devops_agent
+from ocp.context import AgentContext
 
 
 class TestAgentContextCreation:
@@ -186,50 +186,6 @@ class TestAgentContextUtilities:
         assert cloned.user == sample_context.user
         assert cloned.workspace == sample_context.workspace
         assert len(cloned.history) == len(sample_context.history)
-
-
-class TestConvenienceFunctions:
-    """Test convenience functions for creating contexts."""
-    
-    def test_create_ide_agent(self):
-        """Test creating IDE agent context."""
-        context = create_ide_agent(
-            user="developer",
-            workspace="my-app",
-            current_file="main.py"
-        )
-        
-        assert context.agent_type == "ide_copilot"
-        assert context.user == "developer"
-        assert context.workspace == "my-app"
-        assert context.current_file == "main.py"
-        assert context.current_goal == "assist_with_coding"
-    
-    def test_create_debug_agent(self):
-        """Test creating debug agent context."""
-        context = create_debug_agent(
-            error="Test error",
-            file_path="error_file.py",
-            workspace="my-app"
-        )
-        
-        assert context.agent_type == "debug_assistant"
-        assert context.workspace == "my-app"
-        assert context.current_file == "error_file.py"
-        assert context.current_goal == "debug_issue"
-        assert context.error_context == "Test error"
-    
-    def test_create_devops_agent(self):
-        """Test creating DevOps agent context."""
-        context = create_devops_agent(
-            workspace="infrastructure",
-            environment="production"
-        )
-        
-        assert context.agent_type == "devops_agent"
-        assert context.workspace == "infrastructure"
-        assert context.current_goal == "infrastructure_management"
-        assert context.session["environment"] == "production"
 
 
 class TestAgentContextEdgeCases:
