@@ -6,7 +6,7 @@ Shows automatic API discovery, tool validation, and persistent context managemen
 """
 
 import os
-from ocp import OCPAgent, create_stripe_agent
+from ocp import OCPAgent, wrap_api
 
 def main():
     """
@@ -15,10 +15,26 @@ def main():
     print("💳 OCP + Stripe API Demo")
     print("=" * 40)
     
-    # Create Stripe agent
+    # Create Stripe agent using generic OCP approach
     print("\n📋 Creating Stripe agent...")
-    stripe_agent = create_stripe_agent()
-    stripe_agent.update_goal("Process payments and manage customer data")
+    stripe_agent = OCPAgent(
+        agent_type="payment_processor",
+        workspace="stripe-demo", 
+        current_goal="Process payments and manage customer data"
+    )
+    
+    # Register Stripe API
+    print("🔗 Registering Stripe API...")
+    try:
+        api_spec = stripe_agent.register_api(
+            name="stripe",
+            spec_url="https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json"
+        )
+        print(f"✅ Stripe API registered: {api_spec.title} v{api_spec.version}")
+    except Exception as e:
+        print(f"⚠️  Stripe API registration failed: {e}")
+        print("   (This indicates a network issue or invalid OpenAPI spec)")
+        return
     
     # List discovered tools
     tools = stripe_agent.list_tools("stripe")
@@ -48,12 +64,24 @@ def main():
     print(f"   Goal: {stripe_agent.context.current_goal}")
     print(f"   Interactions: {len(stripe_agent.context.history)}")
     
+    # Demonstrate OCP HTTP client
+    print(f"\n🌐 OCP HTTP Client Demo:")
+    stripe_http = wrap_api(
+        "https://api.stripe.com", 
+        stripe_agent.context,
+        auth=f"Bearer {os.getenv('STRIPE_SECRET_KEY', 'sk_test_your_key_here')}"
+    )
+    print("   • Context-aware HTTP client created")
+    print("   • Automatic OCP headers added to requests")
+    print("   • All interactions tracked in agent context")
+    
     print(f"\n✨ OCP Advantages Demonstrated:")
     print(f"   • Zero infrastructure setup")
     print(f"   • Automatic API discovery")
     print(f"   • Persistent context tracking") 
     print(f"   • Context-aware API interactions")
     print(f"   • Works with any OpenAPI spec")
+    print(f"   • Generic framework - no hardcoded APIs")
 
 if __name__ == "__main__":
     main()

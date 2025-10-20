@@ -12,7 +12,7 @@ simple setup and persistent context across interactions.
 """
 
 import os
-from ocp import OCPAgent, create_github_agent
+from ocp import OCPAgent, AgentContext
 
 def main():
     """
@@ -21,10 +21,26 @@ def main():
     print("🚀 OCP + GitHub API Demo")
     print("=" * 40)
     
-    # Option 1: Use convenience function
+    # Create GitHub agent using generic OCP approach
     print("\n📋 Creating GitHub agent...")
-    github_agent = create_github_agent()
-    github_agent.update_goal("Analyze repository activity and manage issues")
+    github_agent = OCPAgent(
+        agent_type="api_explorer", 
+        workspace="github-demo",
+        current_goal="Analyze repository activity and manage issues"
+    )
+    
+    # Register GitHub API
+    print("🔗 Registering GitHub API...")
+    try:
+        api_spec = github_agent.register_api(
+            name="github",
+            spec_url="https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json"
+        )
+        print(f"✅ GitHub API registered: {api_spec.title} v{api_spec.version}")
+    except Exception as e:
+        print(f"⚠️  GitHub API registration failed: {e}")
+        print("   (This indicates a network issue or invalid OpenAPI spec)")
+        return
     
     # List discovered tools
     tools = github_agent.list_tools("github")
@@ -54,28 +70,21 @@ def main():
     print(f"   Goal: {github_agent.context.current_goal}")
     print(f"   Interactions: {len(github_agent.context.history)}")
     
-    # Option 2: Manual agent setup
-    print(f"\n🔧 Manual API Registration Demo:")
-    custom_agent = OCPAgent(
-        agent_type="api_explorer",
-        workspace="demo-project",
-        agent_goal="Explore GitHub API capabilities"
+    # Demonstrate additional OCP capabilities
+    print(f"\n🔧 Advanced OCP Features:")
+    
+    # Show context-aware HTTP client capabilities
+    from ocp import wrap_api
+    github_http = wrap_api(
+        "https://api.github.com",
+        github_agent.context,
+        auth=os.getenv("GITHUB_TOKEN", "your_token_here")
     )
     
-    # Register API manually
-    try:
-        api_spec = custom_agent.register_api(
-            name="github_manual",
-            spec_url="https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.json"
-        )
-        print(f"✅ Registered GitHub API:")
-        print(f"   Title: {api_spec.title}")
-        print(f"   Version: {api_spec.version}")
-        print(f"   Tools: {len(api_spec.tools)}")
-        
-    except Exception as e:
-        print(f"⚠️  API registration failed: {e}")
-        print("   (This indicates a network issue or invalid OpenAPI spec)")
+    print("🌐 OCP HTTP client created with context awareness")
+    print("   • Automatic OCP headers added to all requests")
+    print("   • Context tracking for all API interactions")
+    print("   • Persistent session management")
     
     # Demonstrate context persistence
     print(f"\n📈 Context Evolution:")
