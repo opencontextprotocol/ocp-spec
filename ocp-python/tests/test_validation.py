@@ -9,8 +9,6 @@ from ocp.validation import (
     validate_context_dict,
     ValidationResult,
     get_schema,
-    is_valid_agent_type,
-    get_valid_agent_types,
     validate_and_fix_context,
     OCP_CONTEXT_SCHEMA
 )
@@ -68,23 +66,23 @@ class TestContextValidation:
         result = validate_context(context)
         assert result.valid is True
     
-    def test_validate_context_with_invalid_agent_type(self):
-        """Test validation with invalid agent type."""
-        context = AgentContext(agent_type="invalid_agent")
+    def test_validate_context_with_custom_agent_type(self):
+        """Test validation with custom agent type (should be valid)."""
+        context = AgentContext(agent_type="custom_agent")
         
         result = validate_context(context)
-        # Should be invalid due to schema validation
-        assert result.valid is False
-        assert len(result.errors) > 0
+        # Should be valid since any string is allowed
+        assert result.valid is True
+        assert len(result.errors) == 0
     
     def test_validate_context_missing_agent_type(self):
         """Test validation with missing agent type."""
         context = AgentContext(agent_type="")
         
         result = validate_context(context)
-        assert result.valid is False
-        # Check for enum validation error since empty string is not in enum
-        assert "not one of" in result.errors[0] or "agent_type" in result.errors[0]
+        # Empty string should still be valid if the schema allows it
+        # The schema now just requires type: string, not specific values
+        assert result.valid is True
     
     def test_validate_context_with_all_fields(self):
         """Test validation with all possible fields filled."""
@@ -194,31 +192,6 @@ class TestSchemaUtilities:
         assert "properties" in schema
         assert "agent_type" in schema["properties"]
     
-    def test_is_valid_agent_type(self):
-        """Test agent type validation."""
-        # Valid types
-        assert is_valid_agent_type("generic_agent") is True
-        assert is_valid_agent_type("ide_copilot") is True
-        assert is_valid_agent_type("debug_assistant") is True
-        assert is_valid_agent_type("devops_agent") is True
-        
-        # Invalid types
-        assert is_valid_agent_type("invalid_agent") is False
-        assert is_valid_agent_type("") is False
-        assert is_valid_agent_type("GENERIC_AGENT") is False  # case sensitive
-    
-    def test_get_valid_agent_types(self):
-        """Test getting list of valid agent types."""
-        valid_types = get_valid_agent_types()
-        assert isinstance(valid_types, list)
-        assert len(valid_types) > 0
-        assert "generic_agent" in valid_types
-        assert "ide_copilot" in valid_types
-        assert "debug_assistant" in valid_types
-        
-        # Should be a copy, not the original
-        valid_types.append("test_type")
-        assert "test_type" not in get_valid_agent_types()
 
 
 class TestValidateAndFix:
@@ -236,18 +209,18 @@ class TestValidateAndFix:
         assert fixed_context.agent_type == "ide_copilot"
         assert fixed_context.user == "test_user"
     
-    def test_validate_and_fix_invalid_agent_type(self):
-        """Test validate and fix with invalid agent type."""
-        context = AgentContext(agent_type="invalid_type")
+    def test_validate_and_fix_custom_agent_type(self):
+        """Test validate and fix with custom agent type (should be preserved)."""
+        context = AgentContext(agent_type="custom_type")
         
         fixed_context, result = validate_and_fix_context(context)
         assert result.valid is True
-        assert fixed_context.agent_type == "generic_agent"  # Should be fixed
+        assert fixed_context.agent_type == "custom_type"  # Should be preserved
     
     def test_validate_and_fix_preserves_other_data(self):
         """Test that fixing preserves other context data."""
         context = AgentContext(
-            agent_type="invalid_type",
+            agent_type="my_custom_agent",
             user="test_user",
             workspace="test_workspace",
             current_goal="test_goal"
@@ -259,7 +232,7 @@ class TestValidateAndFix:
         
         fixed_context, result = validate_and_fix_context(context)
         assert result.valid is True
-        assert fixed_context.agent_type == "generic_agent"
+        assert fixed_context.agent_type == "my_custom_agent"  # Should be preserved
         assert fixed_context.user == "test_user"
         assert fixed_context.workspace == "test_workspace"
         assert fixed_context.current_goal == "test_goal"
@@ -283,24 +256,14 @@ class TestSchemaConstants:
         for field in required_fields:
             assert field in properties
     
-    def test_agent_type_enum_values(self):
-        """Test agent type enum values in schema."""
+    def test_agent_type_schema_structure(self):
+        """Test agent type schema structure (should be free-form string)."""
         agent_type_prop = OCP_CONTEXT_SCHEMA["properties"]["agent_type"]
-        assert "enum" in agent_type_prop
-        
-        enum_values = agent_type_prop["enum"]
-        expected_types = [
-            "generic_agent",
-            "ide_copilot", 
-            "debug_assistant",
-            "devops_agent",
-            "customer_support",
-            "code_reviewer",
-            "api_tester"
-        ]
-        
-        for expected_type in expected_types:
-            assert expected_type in enum_values
+        assert "type" in agent_type_prop
+        assert agent_type_prop["type"] == "string"
+        assert "description" in agent_type_prop
+        # Should not have enum constraint anymore
+        assert "enum" not in agent_type_prop
 
 
 class TestValidationEdgeCases:

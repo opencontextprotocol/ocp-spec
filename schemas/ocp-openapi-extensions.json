@@ -1,66 +1,24 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "OCP Extensions for OpenAPI",
-  "description": "Schema for OCP-specific extensions to OpenAPI 3.x specifications",
+  "description": "Optional OCP extensions for OpenAPI specifications to declare context support",
   "type": "object",
   "properties": {
     "x-ocp-enabled": {
       "type": "boolean",
-      "description": "Indicates this API supports OCP context headers",
+      "description": "Indicates this API acknowledges OCP context headers",
       "default": false
     },
     "x-ocp-context-aware": {
       "type": "boolean", 
-      "description": "Indicates this API can read and use context data",
+      "description": "Indicates this API can read and utilize context data in responses",
       "default": false
     },
-    "x-ocp-context": {
-      "type": "object",
-      "description": "Context behavior for this operation",
-      "properties": {
-        "requires": {
-          "type": "array",
-          "description": "Context fields this operation needs",
-          "items": {
-            "type": "string"
-          }
-        },
-        "provides": {
-          "type": "array", 
-          "description": "Context fields this operation adds/updates",
-          "items": {
-            "type": "string"
-          }
-        },
-        "preserves": {
-          "type": "array",
-          "description": "Context fields this operation passes through unchanged",
-          "items": {
-            "type": "string"
-          }
-        },
-        "clears": {
-          "type": "array",
-          "description": "Context fields this operation removes",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "x-ocp-auth": {
-      "type": "object",
-      "description": "OCP-specific authentication requirements",
-      "properties": {
-        "context_required": {
-          "type": "boolean",
-          "description": "Whether valid OCP context is required for auth",
-          "default": false
-        },
-        "token_from_context": {
-          "type": "string",
-          "description": "Key in context.auth.tokens to use for this API"
-        }
+    "x-ocp-agent-types": {
+      "type": "array",
+      "description": "Agent types this API is optimized for",
+      "items": {
+        "type": "string"
       }
     }
   }

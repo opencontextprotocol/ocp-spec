@@ -33,15 +33,6 @@ OCP_CONTEXT_SCHEMA = {
         },
         "agent_type": {
             "type": "string",
-            "enum": [
-                "generic_agent",
-                "ide_copilot", 
-                "debug_assistant",
-                "devops_agent",
-                "customer_support",
-                "code_reviewer",
-                "api_tester"
-            ],
             "description": "Type of agent creating this context"
         },
         "user": {
@@ -273,30 +264,6 @@ def get_schema() -> Dict[str, Any]:
     return OCP_CONTEXT_SCHEMA.copy()
 
 
-def is_valid_agent_type(agent_type: str) -> bool:
-    """
-    Check if an agent type is valid according to the schema.
-    
-    Args:
-        agent_type: Agent type string to validate
-        
-    Returns:
-        True if agent type is valid
-    """
-    valid_types = OCP_CONTEXT_SCHEMA["properties"]["agent_type"]["enum"]
-    return agent_type in valid_types
-
-
-def get_valid_agent_types() -> List[str]:
-    """
-    Get list of valid agent types.
-    
-    Returns:
-        List of valid agent type strings
-    """
-    return OCP_CONTEXT_SCHEMA["properties"]["agent_type"]["enum"].copy()
-
-
 def validate_and_fix_context(context: AgentContext) -> tuple[AgentContext, ValidationResult]:
     """
     Validate context and attempt to fix common issues.
@@ -313,9 +280,6 @@ def validate_and_fix_context(context: AgentContext) -> tuple[AgentContext, Valid
     # Fix common issues
     if not fixed_context.context_id.startswith("ocp-"):
         fixed_context.context_id = f"ocp-{fixed_context.context_id}"
-    
-    if fixed_context.agent_type not in get_valid_agent_types():
-        fixed_context.agent_type = "generic_agent"
     
     # Ensure required collections exist
     if not isinstance(fixed_context.session, dict):

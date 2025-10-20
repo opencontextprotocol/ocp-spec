@@ -1,99 +1,127 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "OCP Context Schema",
-  "description": "Minimal context object for Open Context Protocol 2.0",
+  "$id": "https://opencontextprotocol.org/schemas/ocp-context.json",
+  "title": "OCP Context Object",
+  "description": "Agent context for Open Context Protocol",
   "type": "object",
   "properties": {
     "context_id": {
       "type": "string",
-      "description": "Unique identifier for this context session",
-      "format": "uuid"
+      "pattern": "^ocp-[a-f0-9]{8,}$",
+      "description": "Unique identifier for this context"
+    },
+    "agent_type": {
+      "type": "string",
+      "description": "Type of agent creating this context"
     },
     "user": {
-      "type": "string", 
-      "description": "User identifier for this context"
+      "type": ["string", "null"],
+      "description": "User identifier"
     },
-    "capabilities": {
-      "type": "array",
-      "description": "URLs to OpenAPI specs that define available operations",
-      "items": {
-        "type": "string",
-        "format": "uri"
-      },
-      "deprecated": true
+    "workspace": {
+      "type": ["string", "null"],
+      "description": "Current workspace or project path"
     },
-    "api_specs": {
-      "type": "array", 
-      "description": "URLs to OpenAPI specifications for APIs being used",
-      "items": {
-        "type": "string",
-        "format": "uri"
-      }
+    "current_file": {
+      "type": ["string", "null"],
+      "description": "Currently active file"
+    },
+    "current_goal": {
+      "type": ["string", "null"],
+      "description": "Current objective or task"
+    },
+    "context_summary": {
+      "type": ["string", "null"],
+      "description": "Summary of current context"
+    },
+    "error_context": {
+      "type": ["string", "null"],
+      "description": "Information about current errors or issues"
     },
     "session": {
       "type": "object",
-      "description": "Session state and history",
+      "description": "Session metadata and tracking",
       "properties": {
-        "history": {
-          "type": "array",
-          "description": "Conversation or interaction history",
-          "items": {
-            "type": "object",
-            "properties": {
-              "role": {
-                "type": "string",
-                "enum": ["user", "assistant", "system", "tool"]
-              },
-              "content": {
-                "type": "string"
-              },
-              "timestamp": {
-                "type": "string",
-                "format": "date-time"
-              }
-            },
-            "required": ["role", "content"]
-          }
-        },
-        "state": {
-          "type": "object",
-          "description": "Arbitrary session state",
-          "additionalProperties": true
-        }
-      }
-    },
-    "auth": {
-      "type": "object",
-      "description": "Authentication tokens and credentials",
-      "properties": {
-        "tokens": {
-          "type": "object",
-          "description": "OAuth2/API tokens keyed by service",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "expires_at": {
+        "start_time": {
           "type": "string",
           "format": "date-time",
-          "description": "When auth tokens expire"
+          "description": "When session started"
+        },
+        "interaction_count": {
+          "type": "integer",
+          "description": "Number of interactions in session"
+        },
+        "agent_type": {
+          "type": "string",
+          "description": "Type of agent for this session"
         }
+      },
+      "required": ["start_time", "interaction_count", "agent_type"]
+    },
+    "history": {
+      "type": "array",
+      "description": "Interaction history",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "description": "Type of action performed"
+          },
+          "api_endpoint": {
+            "type": "string",
+            "description": "API endpoint called"
+          },
+          "result": {
+            "type": ["string", "null"],
+            "description": "Result of the action"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": ["timestamp", "action"]
       }
     },
-    "metadata": {
-      "type": "object", 
-      "description": "Additional metadata",
-      "additionalProperties": true
+    "recent_changes": {
+      "type": "array",
+      "description": "Recent changes or modifications",
+      "items": {
+        "type": "string"
+      }
+    },
+    "api_specs": {
+      "type": "object",
+      "description": "API specifications for enhanced responses",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
     },
     "created_at": {
       "type": "string",
       "format": "date-time"
     },
-    "updated_at": {
-      "type": "string", 
+    "last_updated": {
+      "type": "string",
       "format": "date-time"
     }
   },
-  "required": ["context_id", "session"],
+  "required": [
+    "context_id",
+    "agent_type", 
+    "session",
+    "history",
+    "api_specs",
+    "created_at",
+    "last_updated"
+  ],
   "additionalProperties": false
 }
