@@ -220,93 +220,104 @@ const response = await fetch('https://api.github.com/search/issues', {
 ### **Automatic Tool Discovery from OpenAPI**
 OCP automatically converts OpenAPI specifications into callable tools for AI agents:
 
-```javascript
-// Agent discovers GitHub API capabilities
-const ocpClient = new OCPClient();
-await ocpClient.registerAPI('github', 'https://api.github.com/rest/openapi.json');
+```python
+from ocp import OCPAgent
 
-// List available tools
-const tools = ocpClient.listTools('github');
-console.log(tools.map(t => `${t.name}: ${t.description}`));
-// Output:
-// createIssue: Create a new issue in a repository
-// getRepository: Get repository information
-// listBranches: List branches in a repository
-// ...
+# Create agent with context
+agent = OCPAgent(
+    agent_type="api_explorer",
+    workspace="my-project"
+)
 
-// Call tools with automatic context injection
-const issue = await ocpClient.callTool('createIssue', {
-  owner: 'myorg',
-  repo: 'myproject', 
-  title: 'Bug found in payment flow',
-  body: 'Discovered during debugging session'
-});
+# Register GitHub API (auto-discovers tools)
+api_spec = agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+
+# List available tools
+tools = agent.list_tools('github')
+print(f"Discovered {len(tools)} tools")
+
+# Search for specific tools
+issue_tools = agent.search_tools('create issue')
+
+# Call tools with automatic context injection
+response = agent.call_tool('createIssue', {
+    'owner': 'myorg',
+    'repo': 'myproject', 
+    'title': 'Bug found in payment flow',
+    'body': 'Discovered during debugging session'
+})
 ```
 
 ### **Tool Schema Generation**
 Each OpenAPI operation becomes a callable tool with full parameter validation:
 
-```javascript
-// Tool generated from OpenAPI operation
+```python
+# Tool generated from OpenAPI operation
 {
-  name: 'createIssue',
-  description: 'Create an issue',
-  method: 'POST',
-  path: '/repos/{owner}/{repo}/issues',
-  parameters: {
-    owner: { type: 'string', required: true, location: 'path' },
-    repo: { type: 'string', required: true, location: 'path' },
-    title: { type: 'string', required: true, location: 'body' },
-    body: { type: 'string', required: false, location: 'body' },
-    labels: { type: 'array', required: false, location: 'body' }
-  },
-  responseSchema: { /* OpenAPI response schema */ }
+    'name': 'createIssue',
+    'description': 'Create an issue',
+    'method': 'POST',
+    'path': '/repos/{owner}/{repo}/issues',
+    'parameters': {
+        'owner': {'type': 'string', 'required': True, 'location': 'path'},
+        'repo': {'type': 'string', 'required': True, 'location': 'path'},
+        'title': {'type': 'string', 'required': True, 'location': 'body'},
+        'body': {'type': 'string', 'required': False, 'location': 'body'},
+        'labels': {'type': 'array', 'required': False, 'location': 'body'}
+    },
+    'response_schema': {...}  # OpenAPI response schema
 }
 ```
 
 ### **Context + Discovery Integration**
 Schema discovery works seamlessly with context management:
 
-```javascript
-// Single client provides both capabilities
-const agent = new OCPAgent(context);
+```python
+from ocp import OCPAgent
 
-// Register APIs (auto-discovers tools)
-await agent.registerAPI('github', 'https://api.github.com/rest/openapi.json');
-await agent.registerAPI('jira', 'https://mycompany.atlassian.net/rest/api/openapi.json');
+# Create agent with integrated context and discovery
+agent = OCPAgent(
+    agent_type="ide_coding_assistant",
+    user="alice",
+    workspace="payment-service"
+)
 
-// Agent can now:
-// 1. Discover available tools across all APIs
-// 2. Call tools with rich context automatically injected
-// 3. Maintain conversation state across tool calls
-// 4. Provide intelligent suggestions based on context
+# Register APIs (auto-discovers tools)
+agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+agent.register_api('jira', 'https://mycompany.atlassian.net/rest/api/openapi.json')
 
-const tools = agent.searchTools('create issue');  // Find issue creation across APIs
-const result = await agent.callTool('createIssue', params);  // Auto-adds context headers
+# Agent can now:
+# 1. Discover available tools across all APIs
+# 2. Call tools with rich context automatically injected
+# 3. Maintain conversation state across tool calls
+# 4. Provide intelligent suggestions based on context
+
+tools = agent.search_tools('create issue')  # Find issue creation across APIs
+result = agent.call_tool('createIssue', params)  # Auto-adds context headers
 ```
 
 ### **Deterministic Tool Naming**
 OCP ensures predictable tool names for consistent agent behavior:
 
-```javascript
-// Tool naming follows deterministic rules:
-// 1. Use operationId when present in OpenAPI spec
+```python
+# Tool naming follows deterministic rules:
+# 1. Use operationId when present in OpenAPI spec
 {
-  "operationId": "listRepositories",  // → Tool name: "listRepositories"
-  "operationId": "createIssue"        // → Tool name: "createIssue"
+    "operationId": "listRepositories",  # → Tool name: "listRepositories"
+    "operationId": "createIssue"        # → Tool name: "createIssue"
 }
 
-// 2. Generate from HTTP method + path when operationId missing
+# 2. Generate from HTTP method + path when operationId missing
 {
-  "GET /items":     // → Tool name: "get_items"
-  "POST /items":    // → Tool name: "post_items"  
-  "GET /items/{id}" // → Tool name: "get_items_id"
+    "GET /items":     # → Tool name: "get_items"
+    "POST /items":    # → Tool name: "post_items"  
+    "GET /items/{id}" # → Tool name: "get_items_id"
 }
 
-// This ensures:
-// - Agents can reliably reference tools across sessions
-// - Tool names remain consistent across API spec updates
-// - Integration scripts don't break due to name changes
+# This ensures:
+# - Agents can reliably reference tools across sessions
+# - Tool names remain consistent across API spec updates
+# - Integration scripts don't break due to name changes
 ```
 
 ---
@@ -330,13 +341,18 @@ OCP ensures predictable tool names for consistent agent behavior:
 ### **Level 1: Standard OpenAPI (Works Today)**
 OCP works immediately with any existing OpenAPI specification:
 
-```javascript
-// Works with GitHub's existing OpenAPI spec
-const agent = new OCPAgent(context);
-await agent.registerAPI('github', 'https://api.github.com/rest/openapi.json');
+```python
+from ocp import OCPAgent
 
-// All GitHub API operations become available as tools
-const repos = await agent.callTool('listUserRepos', { username: 'octocat' });
+# Works with GitHub's existing OpenAPI spec
+agent = OCPAgent(
+    agent_type="api_client",
+    user="alice"
+)
+agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+
+# All GitHub API operations become available as tools
+response = agent.call_tool('listUserRepos', {'username': 'octocat'})
 ```
 
 ### **Level 2: OCP-Enhanced OpenAPI (Future)**
@@ -375,19 +391,23 @@ paths:
 ### **Discovery Mechanism**
 Agents discover OCP capabilities through standard OpenAPI specs:
 
-```javascript
-// Check if API supports OCP
-const spec = await fetch('https://api.github.com/rest/openapi.json');
-const ocpEnabled = spec.info['x-ocp-enabled'];
+```python
+import requests
+from ocp import OCPAgent
 
-if (ocpEnabled) {
-  // Use OCP context headers for enhanced responses
-  headers['OCP-Context-ID'] = context.id;
-  headers['OCP-Session'] = encodeContext(context);
-} else {
-  // Standard API calls (still works!)
-  // Context managed client-side only
-}
+# Check if API supports OCP (future enhancement)
+spec = requests.get('https://api.github.com/rest/openapi.json').json()
+ocp_enabled = spec.get('info', {}).get('x-ocp-enabled', False)
+
+agent = OCPAgent(agent_type="api_client")
+
+if ocp_enabled:
+    # API will provide enhanced responses with OCP context
+    agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+else:
+    # Standard API calls (still works!)
+    # Context managed client-side only
+    agent.register_api('github', 'https://api.github.com/rest/openapi.json')
 ```
 
 ### **Key Points**:
@@ -423,50 +443,49 @@ paths:
 When agents register APIs with OCP, the following standardized process occurs:
 
 ### **1. Fetch OpenAPI Specification**
-```javascript
-// Agent requests OpenAPI spec from provided URL
-const response = await fetch('https://api.github.com/rest/openapi.json');
-const openApiSpec = await response.json();
+```python
+# Agent requests OpenAPI spec from provided URL
+api_spec = agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+# Internally fetches and parses the OpenAPI specification
 ```
 
 ### **2. Parse Operations into Tools**
-```javascript
-// Each OpenAPI operation becomes a callable tool
-for (const [path, methods] of Object.entries(openApiSpec.paths)) {
-  for (const [method, operation] of Object.entries(methods)) {
-    const tool = {
-      name: operation.operationId || generateToolName(method, path),
-      description: operation.summary || operation.description,
-      method: method.toUpperCase(),
-      path: path,
-      parameters: parseParameters(operation.parameters),
-      responseSchema: operation.responses['200']?.content?.['application/json']?.schema
-    };
-  }
+```python
+# Each OpenAPI operation becomes a callable tool
+# (This happens automatically in agent.register_api())
+
+# Example of generated tool structure:
+tool = {
+    'name': operation.get('operationId') or generate_tool_name(method, path),
+    'description': operation.get('summary') or operation.get('description'),
+    'method': method.upper(),
+    'path': path,
+    'parameters': parse_parameters(operation.get('parameters', [])),
+    'response_schema': operation.get('responses', {}).get('200', {}).get('content', {}).get('application/json', {}).get('schema')
 }
 ```
 
 ### **3. Store for Agent Context**
-```javascript
-// Add API spec to agent's context for persistent access
-agent.context.add_api_spec('github', 'https://api.github.com/rest/openapi.json');
+```python
+# Add API spec to agent's context for persistent access
+# (This happens automatically in agent.register_api())
 
-// Log discovery results
+# Discovery results are logged in context
 agent.context.add_interaction(
-  'api_registered',
-  'https://api.github.com/rest/openapi.json', 
-  `Discovered ${tools.length} tools`
-);
+    'api_registered',
+    'https://api.github.com/rest/openapi.json', 
+    f'Discovered {len(tools)} tools'
+)
 ```
 
 ### **4. Enable Tool Invocation**
-```javascript
-// Tools become immediately available for agent use
-const issues = await agent.callTool('listRepositoryIssues', {
-  owner: 'myorg',
-  repo: 'myproject'
-});
-// Context headers automatically added to HTTP request
+```python
+# Tools become immediately available for agent use
+response = agent.call_tool('listRepositoryIssues', {
+    'owner': 'myorg',
+    'repo': 'myproject'
+})
+# Context headers automatically added to HTTP request
 ```
 
 This process ensures **deterministic behavior**, **consistent tool availability**, and **automatic context enhancement** across all API interactions.
@@ -495,17 +514,24 @@ This process ensures **deterministic behavior**, **consistent tool availability*
 ```python
 # Example: Deterministic tool naming validation
 def test_tool_naming_consistency():
-    spec = load_openapi_spec("test-api.json")
-    tools = agent.discover_tools(spec)
+    agent = OCPAgent(agent_type="test_agent")
+    
+    # Register API twice and ensure consistent tool names
+    spec1 = agent.register_api("test", "test-api.json")
+    tools1 = agent.list_tools("test")
+    
+    # Clear and re-register
+    agent = OCPAgent(agent_type="test_agent")
+    spec2 = agent.register_api("test", "test-api.json") 
+    tools2 = agent.list_tools("test")
     
     # Tools must have predictable names
-    assert "get_items" in [t.name for t in tools]      # GET /items
-    assert "post_items" in [t.name for t in tools]     # POST /items  
-    assert "get_items_id" in [t.name for t in tools]   # GET /items/{id}
+    assert "get_items" in [t.name for t in tools1]      # GET /items
+    assert "post_items" in [t.name for t in tools1]     # POST /items  
+    assert "get_items_id" in [t.name for t in tools1]   # GET /items/{id}
     
-    # Names must be stable across repeated parsing
-    tools2 = agent.discover_tools(spec)
-    assert [t.name for t in tools] == [t.name for t in tools2]
+    # Names must be stable across repeated registration
+    assert [t.name for t in tools1] == [t.name for t in tools2]
 ```
 
 This ensures **predictable behavior**, **reliable integrations**, and **consistent developer experience** across different OCP client implementations.
@@ -546,8 +572,8 @@ agent = OCPAgent(
 )
 
 # Register APIs (automatically discovers tools)
-await agent.register_api('github', 'https://api.github.com/rest/openapi.json')
-await agent.register_api('jira', 'https://company.atlassian.net/openapi.json')
+agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+agent.register_api('jira', 'https://company.atlassian.net/openapi.json')
 
 # Discover available tools
 tools = agent.list_tools()
@@ -557,7 +583,7 @@ print(f"Discovered {len(tools)} tools across all APIs")
 issue_tools = agent.search_tools('create issue')
 
 # Call tools with automatic context injection
-issue = await agent.call_tool('createIssue', {
+response = agent.call_tool('createIssue', {
     'owner': 'myorg',
     'repo': 'payment-service',
     'title': 'Payment processing bug',
@@ -565,18 +591,25 @@ issue = await agent.call_tool('createIssue', {
 })
 ```
 
-### 2. Convert Any OpenAPI Service
+### 2. Wrap Any OpenAPI Service
 ```python
-from ocp import wrap_openapi
+from ocp import OCPAgent, wrap_api
 
-# Automatically wrap any OpenAPI service
-weather_service = wrap_openapi("https://weather-api.com/openapi.json")
-
-# Use with OCP context
-result = weather_service.get_weather(
-    location="NYC",
-    context=ocp_context
+# Create agent
+agent = OCPAgent(
+    agent_type="weather_client", 
+    user="alice"
 )
+
+# Create context-aware HTTP client for any API
+weather_client = wrap_api(
+    "https://weather-api.com",
+    agent.context,
+    auth="api_key your_key_here"
+)
+
+# Make context-aware API calls
+result = weather_client.get("/weather", params={"location": "NYC"})
 ```
 
 ### 3. Add OCP to Existing API
@@ -692,47 +725,68 @@ app.get('/weather', (req, res) => {
 
 ### 2. Use Existing APIs with OCP
 ```python
-import ocp
+from ocp import AgentContext, wrap_api
 
 # Create context
-context = ocp.Context(user="alice", session_id="123")
-
-# Call any HTTP API with context
-response = ocp.call(
-    method="GET",
-    url="https://api.github.com/user",
-    context=context,
-    auth={"token": "ghp_xxx"}
+context = AgentContext(
+    agent_type="api_client",
+    user="alice"
 )
+
+# Create context-aware HTTP client
+github_client = wrap_api(
+    "https://api.github.com",
+    context,
+    auth="token ghp_xxx"
+)
+
+# Make API calls with automatic context headers
+response = github_client.get("/user")
 
 # Context automatically flows between calls
-repos = ocp.call(
-    method="GET", 
-    url="https://api.github.com/user/repos",
-    context=context  # Same context, accumulated state
-)
+repos = github_client.get("/user/repos")
+# Same context, accumulated state
+```
 ```
 
 ### 3. Enable AI Agents
 ```python
 from openai import OpenAI
-import ocp
+from ocp import OCPAgent
 
 client = OpenAI()
-context = ocp.Context()
 
-# AI can call any OCP-enabled API
-tools = ocp.discover_from_openapi([
-    "https://weather-api.com/openapi.json",
-    "https://calendar-api.com/openapi.json"
-])
+# Create agent with context
+agent = OCPAgent(
+    agent_type="ai_assistant",
+    user="alice"
+)
+
+# Register multiple APIs
+agent.register_api('weather', 'https://weather-api.com/openapi.json')
+agent.register_api('calendar', 'https://calendar-api.com/openapi.json')
+
+# Get available tools for LLM function calling
+tools = agent.list_tools()
 
 response = client.chat.completions.create(
     model="gpt-4",
     messages=[{"role": "user", "content": "What's the weather in NYC?"}],
-    tools=tools,
-    context=context  # OCP context flows automatically
+    tools=[{
+        "type": "function",
+        "function": {
+            "name": tool.name,
+            "description": tool.description,
+            "parameters": tool.parameters
+        }
+    } for tool in tools]
 )
+
+# Execute tool calls with OCP context
+if response.choices[0].message.tool_calls:
+    for tool_call in response.choices[0].message.tool_calls:
+        result = agent.call_tool(tool_call.function.name, tool_call.function.arguments)
+```
 ```
 
 ---
