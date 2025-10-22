@@ -747,7 +747,6 @@ response = github_client.get("/user")
 repos = github_client.get("/user/repos")
 # Same context, accumulated state
 ```
-```
 
 ### 3. Enable AI Agents
 ```python
@@ -786,7 +785,6 @@ response = client.chat.completions.create(
 if response.choices[0].message.tool_calls:
     for tool_call in response.choices[0].message.tool_calls:
         result = agent.call_tool(tool_call.function.name, tool_call.function.arguments)
-```
 ```
 
 ---
