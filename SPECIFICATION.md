@@ -1,42 +1,42 @@
 # Open Context Protocol (OCP)
-## Complete MCP Alternative with Zero Infrastructure
+## Context-Aware API Integration for AI Agents
 
-**TL;DR**: OCP provides everything MCP does (API discovery, tool invocation, parameter validation) PLUS persistent context management, all with zero servers and standard HTTP.
-
----
-
-## The AI Agent Context Problem
-
-**Current State with MCP**:
-- ❌ Deploy custom MCP servers for each integration
-- ❌ Learn new protocol schemas and JSON-RPC
-- ❌ Maintain server infrastructure for simple context passing
-- ❌ Stateless MCP servers lose conversation memory
-- ❌ Complex setup kills adoption in IDEs
-
-**OCP's Complete Solution**:
-- ✅ **API Discovery**: Auto-generate tools from OpenAPI specs
-- ✅ **Tool Invocation**: Call any API operation with validation
-- ✅ **Context Management**: Persistent context across interactions  
-- ✅ **Zero Infrastructure**: No servers, just standard HTTP
-- ✅ **IDE Integration**: Trivial setup compared to MCP
+**TL;DR**: OCP enables persistent context sharing across HTTP API calls using standard headers, with automatic API discovery from OpenAPI specifications - no servers or infrastructure required.
 
 ---
 
-## Core Principle: MCP Features + Context Intelligence
+## The AI Agent Integration Challenge
 
-OCP provides complete feature parity with MCP while adding persistent context management:
+**Current Limitations**:
+- Agents lose context between API calls
+- Manual integration for each API service
+- Complex server infrastructure for simple context passing
+- No standard way to share conversation state
+- Fragmented tooling across different APIs
 
-**MCP Capabilities (Provided by OCP)**:
-- ✅ API discovery from specifications
-- ✅ Tool invocation with parameter validation
-- ✅ Structured request/response handling
+**OCP's Approach**:
+- ✅ **API Discovery**: Auto-generate tools from OpenAPI specifications
+- ✅ **Tool Invocation**: Call any API operation with parameter validation
+- ✅ **Context Management**: Persistent context across all interactions  
+- ✅ **Zero Infrastructure**: No servers, just standard HTTP headers
+- ✅ **Standards-Based**: Built on HTTP, OpenAPI, and JSON
 
-**OCP Advantages (Not in MCP)**:
-- ✅ Persistent context across tool calls
-- ✅ Zero server infrastructure required
-- ✅ Standard HTTP protocol only
-- ✅ Automatic context injection
+---
+
+## Core OCP Capabilities
+
+OCP provides a complete framework for context-aware API integration:
+
+**API Integration**:
+- Automatic tool discovery from OpenAPI specifications
+- Parameter validation and request building
+- Structured request/response handling
+
+**Context Intelligence**:
+- Persistent context across tool calls
+- Conversation state management
+- Session tracking and interaction history
+- Automatic context injection via HTTP headers
 
 ### The Agent Tool Flow:
 ```mermaid
@@ -60,13 +60,13 @@ graph LR
 
 ## Core OCP Components
 
-OCP provides two fundamental capabilities that together create a complete MCP alternative:
+OCP consists of two fundamental capabilities that work together:
 
 ### 1. **Context Management** (Header-Based)
-Smart context injection into existing HTTP APIs using standard headers.
+Smart context injection into existing HTTP APIs using standard headers. Enables persistent conversation state and session tracking across API calls.
 
 ### 2. **Schema Discovery** (OpenAPI-Based)  
-Automatic API tool discovery and invocation from OpenAPI specifications.
+Automatic API tool discovery and invocation from OpenAPI specifications. Converts any OpenAPI-documented API into callable tools with parameter validation.
 
 **Together**: Context + Discovery = Complete agent-ready API integration with zero infrastructure.
 
@@ -133,41 +133,13 @@ OCP-Session: eyJhZ2VudF9nb2FsIjoiZGVidWdfZGVwbG95bWVudF9mYWlsdXJlIn0=
 
 ---
 
-## Primary Use Case: IDE Coding Agents
+## IDE Integration Example
 
-### **VS Code Copilot Chat** Enhanced with OCP
+### **Context-Aware Debugging Workflow**
 
-#### Current MCP Setup (Complex):
-```json
-{
-  "mcp.servers": {
-    "github": {"command": "node", "args": ["/path/to/github-mcp-server"]},
-    "filesystem": {"command": "node", "args": ["/path/to/fs-mcp-server"]}
-  }
-}
-```
-**Result**: 2 server processes, custom protocols, stateless interactions
+**Scenario**: Developer asks IDE agent "This test is failing, help me debug it"
 
-#### OCP Setup (Simple):
-```json
-{
-  "ocp.enabled": true,
-  "github.token": "ghp_xxx"
-}
-```
-**Result**: Zero servers, direct API calls, persistent context
-
-### **Agent Conversation Example**
-
-**User**: "This test is failing, help me debug it"
-
-#### MCP Flow:
-```
-User → Copilot → MCP Server → GitHub API → Response Chain
-              ↑ (stateless server, no memory of previous conversation)
-```
-
-#### OCP Flow:
+#### OCP-Enhanced Flow:
 ```javascript
 // Agent builds rich context from IDE state + conversation
 const context = {
@@ -319,20 +291,6 @@ OCP ensures predictable tool names for consistent agent behavior:
 # - Tool names remain consistent across API spec updates
 # - Integration scripts don't break due to name changes
 ```
-
----
-
-## MCP Feature Parity Comparison
-
-| Capability | MCP | OCP |
-|------------|-----|-----|
-| **API Discovery** | ✅ Custom servers expose tools | ✅ Auto-generate from OpenAPI specs |
-| **Tool Invocation** | ✅ JSON-RPC protocol | ✅ Standard HTTP + context headers |
-| **Parameter Validation** | ✅ Server-side validation | ✅ Client-side OpenAPI validation |
-| **Context Management** | ❌ Stateless servers | ✅ Persistent context across calls |
-| **Infrastructure** | ❌ Requires custom servers | ✅ Zero servers needed |
-| **Setup Complexity** | ❌ High (server deployment) | ✅ Low (register OpenAPI URL) |
-| **Maintenance** | ❌ Server lifecycle management | ✅ No maintenance needed |
 
 ---
 
@@ -653,47 +611,6 @@ class WeatherAgent:
 ```
 
 ---
-
-## Migration from MCP
-
-| MCP Concept | OCP Equivalent |
-|-------------|----------------|
-| MCP Server | HTTP API with OpenAPI spec |
-| Tool Definition | OpenAPI operation |
-| Resource | HTTP endpoint |
-| Prompt | OpenAPI example |
-| Transport | HTTP with OCP headers |
-
-### MCP to OCP Converter
-```bash
-# Convert MCP server to OCP-compatible API
-ocp convert mcp-server.json --output openapi.json
-
-# Generate OCP client from OpenAPI
-ocp generate client --spec openapi.json --lang python
-```
-
----
-
-## Benefits Over MCP
-
-### For Developers
-- **No new concepts** - Use HTTP, OpenAPI, OAuth2 you already know
-- **Instant tooling** - Postman, curl, Swagger UI work immediately
-- **No servers** - Add OCP headers to existing APIs
-- **Standard auth** - OAuth2, JWT, API keys work as-is
-
-### For Enterprises
-- **Zero infrastructure** - No new servers to deploy/maintain
-- **Security compliance** - Use existing API security policies
-- **Monitoring/logging** - Standard HTTP traffic, existing tools work
-- **Cost effective** - No additional hosting costs
-
-### For AI Applications
-- **Immediate ecosystem** - Every REST API becomes a potential tool
-- **Better performance** - Direct HTTP calls, no proxy servers
-- **Simplified deployment** - No server dependencies
-- **Standards-based** - Future-proof, interoperable
 
 ---
 
