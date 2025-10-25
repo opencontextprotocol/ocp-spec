@@ -314,3 +314,136 @@ class TestHeaderRoundTrip:
         assert decoded.context_id == sample_context.context_id
         assert decoded.current_goal == sample_context.current_goal
         assert len(decoded.history) == len(sample_context.history)
+
+
+class TestNewConvenienceFunctions:
+    """Test the new convenience functions in headers module."""
+    
+    def test_parse_context_with_dict(self, sample_context):
+        """Test parse_context with dictionary headers."""
+        from ocp.headers import parse_context
+        
+        headers = sample_context.to_headers()
+        parsed = parse_context(headers)
+        
+        assert parsed is not None
+        assert parsed.agent_type == sample_context.agent_type
+        assert parsed.user == sample_context.user
+    
+    def test_parse_context_with_headers_object(self, sample_context):
+        """Test parse_context with headers object that has items()."""
+        from unittest.mock import Mock
+        from ocp.headers import parse_context
+        
+        headers_dict = sample_context.to_headers()
+        
+        # Mock headers object with items() method
+        headers_obj = Mock()
+        headers_obj.items.return_value = headers_dict.items()
+        
+        parsed = parse_context(headers_obj)
+        assert parsed is not None
+        assert parsed.agent_type == sample_context.agent_type
+    
+    def test_parse_context_no_ocp_headers(self):
+        """Test parse_context with no OCP headers."""
+        from ocp.headers import parse_context
+        
+        headers = {"content-type": "application/json"}
+        parsed = parse_context(headers)
+        assert parsed is None
+    
+    def test_add_context_headers_flask_style(self, sample_context):
+        """Test add_context_headers with Flask-style response."""
+        from unittest.mock import Mock
+        from ocp.headers import add_context_headers
+        
+        # Mock Flask response with proper headers object
+        headers_mock = Mock()
+        headers_mock.__setitem__ = Mock()
+        
+        response = Mock()
+        response.headers = headers_mock
+        
+        add_context_headers(response, sample_context)
+        
+        # Should have called __setitem__ for each OCP header
+        assert response.headers.__setitem__.called
+    
+    def test_add_context_headers_django_style(self, sample_context):
+        """Test add_context_headers with Django-style response."""
+        from unittest.mock import Mock
+        from ocp.headers import add_context_headers
+        
+        # Mock Django response
+        response = Mock()
+        response.__setitem__ = Mock()
+        # Remove headers attribute to trigger Django path
+        del response.headers
+        
+        add_context_headers(response, sample_context)
+        
+        # Should have called __setitem__ for each OCP header
+        assert response.__setitem__.called
+    
+    def test_add_context_headers_fastapi_style(self, sample_context):
+        """Test add_context_headers with FastAPI-style response."""
+        from unittest.mock import Mock
+        from ocp.headers import add_context_headers
+        
+        # Mock FastAPI response - first condition fails, second condition fails,
+        # third condition (append) succeeds, then falls back to dict assignment
+        headers_mock = {}
+        response = Mock()
+        response.headers = headers_mock
+        
+        add_context_headers(response, sample_context)
+        
+        # Should have added headers to the dict
+        assert len(response.headers) > 0
+        assert any(key.startswith('OCP-') for key in response.headers)
+    
+    def test_add_context_headers_generic_dict(self, sample_context):
+        """Test add_context_headers with generic headers dict."""
+        from unittest.mock import Mock
+        from ocp.headers import add_context_headers
+        
+        # Mock response with headers dict
+        response = Mock()
+        response.headers = {}
+        
+        add_context_headers(response, sample_context)
+        
+        assert len(response.headers) > 0
+        assert any(key.startswith('OCP-') for key in response.headers)
+    
+    def test_add_context_headers_unsupported_type(self, sample_context):
+        """Test add_context_headers with unsupported response type."""
+        from unittest.mock import Mock, PropertyMock
+        from ocp.headers import add_context_headers
+        import pytest
+        
+        # Mock completely unsupported response that fails all attempts
+        response = Mock()
+        # Remove all potential ways to set headers
+        del response.headers
+        del response.__setitem__
+        
+        # Make setting headers attribute fail
+        type(response).headers = PropertyMock(side_effect=AttributeError("Cannot set headers"))
+        
+        with pytest.raises(TypeError, match="Unsupported response type"):
+            add_context_headers(response, sample_context)
+    
+    def test_add_context_headers_with_compression(self, sample_context):
+        """Test add_context_headers with compression option."""
+        from unittest.mock import Mock
+        from ocp.headers import add_context_headers
+        
+        response = Mock()
+        response.headers = {}
+        
+        add_context_headers(response, sample_context, compress=False)
+        
+        assert len(response.headers) > 0
+        assert any(key.startswith('OCP-') for key in response.headers)

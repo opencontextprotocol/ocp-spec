@@ -246,3 +246,73 @@ def extract_context_from_response(response) -> Optional[AgentContext]:
         headers_dict = dict(response.headers)
     
     return OCPHeaders.decode_context(headers_dict)
+
+
+# Convenience functions for cleaner API
+def parse_context(headers) -> Optional[AgentContext]:
+    """
+    Convenience function to parse OCP context from HTTP headers.
+    
+    Works with any headers object that can be converted to a dict.
+    
+    Args:
+        headers: HTTP headers (dict, Headers object, etc.)
+        
+    Returns:
+        AgentContext if OCP headers found, None otherwise
+    """
+    # Convert headers to dict (handle different header types)
+    if hasattr(headers, 'items'):
+        headers_dict = dict(headers.items())
+    elif hasattr(headers, '__iter__') and not isinstance(headers, str):
+        headers_dict = dict(headers)
+    else:
+        headers_dict = headers
+    
+    return OCPHeaders.decode_context(headers_dict)
+
+
+def add_context_headers(response, context: AgentContext, compress: bool = True) -> None:
+    """
+    Convenience function to add OCP headers to HTTP response objects.
+    
+    Automatically detects response type and adds headers appropriately.
+    Supports Flask, Django, FastAPI, and other common frameworks.
+    
+    Args:
+        response: HTTP response object
+        context: Agent context to encode
+        compress: Whether to compress session data
+    """
+    ocp_headers = create_ocp_headers(context, compress=compress)
+    
+    # Flask Response / Werkzeug Response
+    if hasattr(response, 'headers') and hasattr(response.headers, '__setitem__'):
+        for key, value in ocp_headers.items():
+            response.headers[key] = value
+            
+    # Django HttpResponse
+    elif hasattr(response, '__setitem__'):
+        for key, value in ocp_headers.items():
+            response[key] = value
+            
+    # FastAPI Response / Starlette Response  
+    elif hasattr(response, 'headers') and hasattr(response.headers, 'append'):
+        for key, value in ocp_headers.items():
+            response.headers[key] = value
+            
+    # Generic response with headers dict
+    elif hasattr(response, 'headers') and isinstance(response.headers, dict):
+        response.headers.update(ocp_headers)
+        
+    # Fallback - try to set as attributes
+    else:
+        try:
+            if not hasattr(response, 'headers'):
+                response.headers = {}
+            response.headers.update(ocp_headers)
+        except (AttributeError, TypeError):
+            raise TypeError(
+                f"Unsupported response type: {type(response)}. "
+                f"Response must have a 'headers' attribute that supports item assignment."
+            )

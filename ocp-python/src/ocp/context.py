@@ -150,3 +150,55 @@ class AgentContext:
         data = self.to_dict()
         data["context_id"] = f"ocp-{uuid.uuid4().hex[:8]}"  # New ID for clone
         return self.from_dict(data)
+    
+    def to_headers(self, compress: bool = True) -> Dict[str, str]:
+        """
+        Convenience method to convert context to OCP headers.
+        
+        Args:
+            compress: Whether to compress session data (default: True)
+            
+        Returns:
+            Dictionary of HTTP headers ready for requests
+        """
+        # Import here to avoid circular dependency
+        from .headers import create_ocp_headers
+        return create_ocp_headers(self, compress=compress)
+    
+    def update_from_headers(self, headers: Dict[str, str]) -> bool:
+        """
+        Convenience method to update context from HTTP response headers.
+        
+        Args:
+            headers: HTTP headers dictionary
+            
+        Returns:
+            True if context was updated, False if no OCP headers found
+        """
+        # Import here to avoid circular dependency
+        from .headers import OCPHeaders
+        
+        # Convert headers to dict if needed (handle different response types)
+        if hasattr(headers, 'items'):
+            headers_dict = dict(headers.items())
+        else:
+            headers_dict = dict(headers)
+        
+        new_context = OCPHeaders.decode_context(headers_dict)
+        if new_context:
+            # Update current context with relevant fields from response
+            # Keep our identity but update session and goal info
+            if new_context.current_goal and new_context.current_goal != self.current_goal:
+                self.current_goal = new_context.current_goal
+            if new_context.context_summary:
+                self.context_summary = new_context.context_summary
+            if new_context.history:
+                # Merge histories, avoiding duplicates
+                existing_ids = {h.get("interaction_id") for h in self.history}
+                for interaction in new_context.history:
+                    if interaction.get("interaction_id") not in existing_ids:
+                        self.history.append(interaction)
+            # Update timestamp
+            self.last_updated = datetime.now(timezone.utc)
+            return True
+        return False

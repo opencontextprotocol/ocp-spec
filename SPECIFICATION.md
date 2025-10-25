@@ -572,7 +572,7 @@ result = weather_client.get("/weather", params={"location": "NYC"})
 
 ### 3. Add OCP to Existing API
 ```python
-from flask import Flask, request
+from flask import Flask, request, make_response
 from ocp import parse_context, add_context_headers
 
 app = Flask(__name__)
@@ -593,9 +593,12 @@ def get_weather():
 
 ### 3. AI Agent with OCP
 ```python
+from ocp import AgentContext
+import requests
+
 class WeatherAgent:
     def __init__(self):
-        self.context = OCPContext()
+        self.context = AgentContext()
         
     def get_weather(self, location):
         # Standard HTTP call with OCP headers
@@ -609,8 +612,6 @@ class WeatherAgent:
         self.context.update_from_headers(response.headers)
         return response.json()
 ```
-
----
 
 ---
 

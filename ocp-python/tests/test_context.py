@@ -227,3 +227,88 @@ class TestAgentContextEdgeCases:
         assert restored.user == "用户"
         assert restored.workspace == "проект"
         assert restored.current_file == "файл.py"
+
+
+class TestAgentContextConvenienceMethods:
+    """Test the convenience instance methods on AgentContext."""
+    
+    def test_to_headers(self):
+        """Test to_headers method."""
+        context = AgentContext(agent_type="test", user="alice")
+        headers = context.to_headers()
+        
+        assert isinstance(headers, dict)
+        assert any(key.startswith('OCP-') for key in headers)
+        
+        # Should be able to parse back using the headers module
+        from ocp.headers import OCPHeaders
+        parsed = OCPHeaders.decode_context(headers)
+        assert parsed.agent_type == "test"
+        assert parsed.user == "alice"
+    
+    def test_to_headers_with_compression(self):
+        """Test to_headers with compression options."""
+        context = AgentContext(agent_type="test")
+        
+        headers_compressed = context.to_headers(compress=True)
+        headers_uncompressed = context.to_headers(compress=False)
+        
+        assert isinstance(headers_compressed, dict)
+        assert isinstance(headers_uncompressed, dict)
+        
+        # Both should work
+        from ocp.headers import OCPHeaders
+        assert OCPHeaders.decode_context(headers_compressed) is not None
+        assert OCPHeaders.decode_context(headers_uncompressed) is not None
+    
+    def test_update_from_headers_success(self):
+        """Test update_from_headers with valid headers."""
+        context = AgentContext(agent_type="test", current_goal="old goal")
+        original_id = context.context_id
+        
+        # Create new context with different goal
+        new_context = AgentContext(agent_type="test", current_goal="new goal")
+        new_headers = new_context.to_headers()
+        
+        # Update should return True and change the goal
+        result = context.update_from_headers(new_headers)
+        assert result is True
+        assert context.current_goal == "new goal"
+        # Should preserve original context_id
+        assert context.context_id == original_id
+    
+    def test_update_from_headers_no_ocp_headers(self):
+        """Test update_from_headers with no OCP headers."""
+        context = AgentContext(agent_type="test", current_goal="original")
+        headers = {"content-type": "application/json"}
+        
+        result = context.update_from_headers(headers)
+        assert result is False
+        assert context.current_goal == "original"  # Unchanged
+    
+    def test_update_from_headers_with_headers_object(self):
+        """Test update_from_headers with headers object."""
+        from unittest.mock import Mock
+        
+        context = AgentContext(agent_type="test")
+        new_context = AgentContext(agent_type="test", current_goal="updated")
+        
+        # Mock headers object
+        headers_dict = new_context.to_headers()
+        headers_obj = Mock()
+        headers_obj.items.return_value = headers_dict.items()
+        
+        result = context.update_from_headers(headers_obj)
+        assert result is True
+        assert context.current_goal == "updated"
+    
+    def test_update_from_headers_with_context_summary(self):
+        """Test update_from_headers updates context summary."""
+        context = AgentContext(agent_type="test")
+        new_context = AgentContext(agent_type="test", context_summary="Updated summary")
+        
+        new_headers = new_context.to_headers()
+        result = context.update_from_headers(new_headers)
+        
+        assert result is True
+        assert context.context_summary == "Updated summary"
