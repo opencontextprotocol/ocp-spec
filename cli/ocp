@@ -2,13 +2,13 @@
 """
 OCP CLI - Command line interface for Open Context Protocol
 
-A standalone CLI tool for context management, API testing, registry operations,
-and validation. Focused on developer workflow support.
+A CLI tool that uses the OCP Python library for context management, 
+API testing, and validation. Provides zero-infrastructure OCP functionality.
 
 Usage:
-    ocp context create [--user USER] [--type TYPE] [--goal GOAL]
-    ocp context show [--format json|yaml]
-    ocp call METHOD URL [--context CONTEXT_ID] [--data DATA] [--auth AUTH]
+    ocp context create [--user USER] [--type TYPE] [--goal GOAL] [--workspace WORKSPACE]
+    ocp context show
+    ocp call METHOD URL [--data DATA] [--auth AUTH]
     ocp validate context FILE
     ocp test api URL [--spec SPEC_URL] [--auth AUTH]
     ocp registry list [--category CATEGORY] [--status STATUS]
@@ -23,7 +23,7 @@ Usage:
 
 Examples:
     # Create new context
-    ocp context create --user alice --type ide_copilot --goal "debug tests"
+    ocp context create --user alice --type ide_copilot --goal "debug tests" --workspace "payment-service"
 
     # Make OCP-enabled API call
     ocp call GET https://api.github.com/user --auth "token ghp_xxx"
@@ -47,23 +47,11 @@ Examples:
 import argparse
 import json
 import sys
-import uuid
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Any, Optional
-import base64
+from typing import Optional
 
-try:
-    import requests
-except ImportError:
-    print("Error: requests library is required. Install with: pip install requests")
-    sys.exit(1)
-
-try:
-    import yaml
-    HAS_YAML = True
-except ImportError:
-    HAS_YAML = False
+import requests
+from ocp import AgentContext, OCPAgent, wrap_api
 
 
 class RegistryClient:
@@ -72,7 +60,7 @@ class RegistryClient:
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url.rstrip('/')
         
-    def list_apis(self, category: Optional[str] = None, status: Optional[str] = None):
+    def list_apis(self, category: str = None, status: str = None):
         """List APIs in the registry."""
         params = {}
         if category:
@@ -107,7 +95,7 @@ class RegistryClient:
         response.raise_for_status()
         return response.json()
     
-    def validate_api(self, openapi_url: str, base_url: Optional[str] = None):
+    def validate_api(self, openapi_url: str, base_url: str = None):
         """Validate an API specification."""
         data = {"openapi_url": openapi_url}
         if base_url:
@@ -130,65 +118,24 @@ class RegistryClient:
         return response.json()
 
 
-class OCPContext:
-    """Simple OCP context management."""
-    
-    def __init__(self, context_id: str = None, user: str = None, 
-                 agent_type: str = "cli_agent", agent_goal: str = None):
-        self.context_id = context_id or f"cli-{uuid.uuid4().hex[:8]}"
-        self.timestamp = datetime.now(timezone.utc).isoformat()
-        self.user = user
-        self.agent_type = agent_type
-        self.agent_goal = agent_goal
-        self.session_history = []
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert context to dictionary."""
-        context = {
-            "context_id": self.context_id,
-            "timestamp": self.timestamp,
-            "agent_type": self.agent_type,
-            "user": self.user,
-            "agent_goal": self.agent_goal,
-            "session": {
-                "history": self.session_history,
-                "state": {}
-            }
-        }
-        return {k: v for k, v in context.items() if v is not None}
-    
-    def to_headers(self) -> Dict[str, str]:
-        """Convert context to OCP headers."""
-        headers = {
-            "OCP-Context-ID": self.context_id,
-            "OCP-Agent-Type": self.agent_type,
-        }
-        
-        if self.agent_goal:
-            headers["OCP-Agent-Goal"] = self.agent_goal
-        
-        # Encode full context as base64
-        context_json = json.dumps(self.to_dict())
-        headers["OCP-Session"] = base64.b64encode(context_json.encode()).decode()
-        
-        return headers
-
-
 class OCPCli:
-    """OCP command line interface."""
+    """OCP command line interface using the OCP Python library."""
     
     def __init__(self):
         self.context_file = Path.home() / ".ocp" / "context.json"
         self.context_file.parent.mkdir(exist_ok=True)
     
     def create_context(self, user: str = None, agent_type: str = "cli_agent", 
-                      goal: str = None) -> OCPContext:
-        """Create new OCP context."""
-        context = OCPContext(
-            user=user,
+                      goal: str = None, workspace: str = None) -> AgentContext:
+        """Create new OCP context using the OCP library."""
+        context = AgentContext(
             agent_type=agent_type,
-            agent_goal=goal
+            user=user,
+            workspace=workspace
         )
+        
+        if goal:
+            context.update_goal(goal)
         
         # Save to file
         with open(self.context_file, 'w') as f:
@@ -197,7 +144,7 @@ class OCPCli:
         print(f"Created context: {context.context_id}")
         return context
     
-    def load_context(self) -> Optional[OCPContext]:
+    def load_context(self) -> Optional[AgentContext]:
         """Load context from file."""
         if not self.context_file.exists():
             return None
@@ -206,19 +153,25 @@ class OCPCli:
             with open(self.context_file, 'r') as f:
                 data = json.load(f)
             
-            context = OCPContext(
-                context_id=data.get("context_id"),
-                user=data.get("user"),
+            # Create context from saved data
+            context = AgentContext(
                 agent_type=data.get("agent_type", "cli_agent"),
-                agent_goal=data.get("agent_goal")
+                user=data.get("user"),
+                workspace=data.get("workspace")
             )
-            context.session_history = data.get("session", {}).get("history", [])
+            
+            # Update fields from saved data
+            context.context_id = data.get("context_id", context.context_id)
+            context.current_goal = data.get("current_goal")
+            context.context_summary = data.get("context_summary")
+            context.history = data.get("history", [])
+            
             return context
         except Exception as e:
             print(f"Error loading context: {e}")
             return None
     
-    def show_context(self, format_type: str = "json"):
+    def show_context(self):
         """Show current context."""
         context = self.load_context()
         if not context:
@@ -226,43 +179,44 @@ class OCPCli:
             return
         
         data = context.to_dict()
-        
-        if format_type == "yaml" and HAS_YAML:
-            print(yaml.dump(data, default_flow_style=False))
-        else:
-            print(json.dumps(data, indent=2))
+        print(json.dumps(data, indent=2))
     
-    def make_call(self, method: str, url: str, context_id: str = None, 
-                 data: str = None, auth: str = None):
-        """Make OCP-enhanced API call."""
+    def make_call(self, method: str, url: str, data: str = None, auth: str = None):
+        """Make OCP-enhanced API call using the OCP library."""
         context = self.load_context()
         if not context:
             print("No context found. Create one with: ocp context create")
             return
         
-        # Prepare headers
-        headers = context.to_headers()
-        
-        if auth:
-            if auth.startswith(('Bearer ', 'token ', 'Basic ')):
-                headers['Authorization'] = auth
-            else:
-                headers['Authorization'] = f'token {auth}'
-        
-        # Prepare request
-        kwargs = {'headers': headers, 'timeout': 30}
-        
-        if data:
-            try:
-                kwargs['json'] = json.loads(data)
-            except json.JSONDecodeError:
-                kwargs['data'] = data
-        
+        # Create OCP-enhanced HTTP client
         try:
-            response = requests.request(method, url, **kwargs)
+            from urllib.parse import urlparse
+            parsed_url = urlparse(url)
+            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+            
+            # Create context-aware client
+            client = wrap_api(base_url, context)
+            
+            # Prepare request kwargs
+            kwargs = {}
+            if data:
+                try:
+                    kwargs['json'] = json.loads(data)
+                except json.JSONDecodeError:
+                    kwargs['data'] = data
+            
+            if auth:
+                if not auth.startswith(('Bearer ', 'token ', 'Basic ')):
+                    auth = f'token {auth}'
+                kwargs['headers'] = kwargs.get('headers', {})
+                kwargs['headers']['Authorization'] = auth
+            
+            # Make the request
+            path = parsed_url.path + ('?' + parsed_url.query if parsed_url.query else '')
+            response = client.request(method, path, **kwargs)
             
             print(f"Status: {response.status_code} {response.reason}")
-            print(f"Headers sent: {dict(headers)}")
+            print(f"OCP Headers sent: {[h for h in response.request.headers if h.startswith('OCP-')]}")
             
             if response.headers.get('content-type', '').startswith('application/json'):
                 try:
@@ -283,6 +237,14 @@ class OCPCli:
             with open(file_path, 'r') as f:
                 data = json.load(f)
             
+            # Try to create an AgentContext from the data to validate
+            context = AgentContext(
+                agent_type=data.get("agent_type", "unknown"),
+                user=data.get("user"),
+                workspace=data.get("workspace")
+            )
+            
+            # Basic validation
             required_fields = ["context_id", "agent_type"]
             missing = [field for field in required_fields if field not in data]
             
@@ -298,34 +260,42 @@ class OCPCli:
             return False
     
     def test_api(self, base_url: str, spec_url: str = None, auth: str = None):
-        """Test API with OCP context."""
+        """Test API with OCP context using the OCP library."""
         context = self.load_context()
         if not context:
             print("No context found. Create one with: ocp context create")
             return
         
-        headers = context.to_headers()
-        if auth:
-            headers['Authorization'] = auth if auth.startswith(('Bearer ', 'token ', 'Basic ')) else f'token {auth}'
-        
-        # Test basic connectivity
         try:
-            response = requests.get(base_url, headers=headers, timeout=10)
+            # Create OCP agent for testing
+            agent = OCPAgent(
+                agent_type=context.agent_type,
+                user=context.user,
+                workspace=context.workspace,
+                agent_goal=context.current_goal
+            )
+            
+            # Test basic connectivity with OCP headers
+            client = wrap_api(base_url, context)
+            response = client.get("/")
             print(f"API Test: {response.status_code} {response.reason}")
+            print(f"OCP headers sent: {[h for h in response.request.headers if h.startswith('OCP-')]}")
             
             if spec_url:
-                print(f"Fetching OpenAPI spec from: {spec_url}")
-                spec_response = requests.get(spec_url, timeout=10)
-                if spec_response.ok:
-                    print("OpenAPI spec retrieved successfully")
-                    try:
-                        spec_data = spec_response.json()
-                        paths = spec_data.get('paths', {})
-                        print(f"Available endpoints: {len(paths)}")
-                    except:
-                        print("Could not parse OpenAPI spec")
-                else:
-                    print(f"Could not fetch OpenAPI spec: {spec_response.status_code}")
+                print(f"Testing API discovery from: {spec_url}")
+                try:
+                    api_spec = agent.register_api("test_api", spec_url, base_url)
+                    tools = agent.list_tools("test_api")
+                    print(f"✅ OpenAPI spec loaded successfully")
+                    print(f"   API: {api_spec.title} v{api_spec.version}")
+                    print(f"   Tools discovered: {len(tools)}")
+                    
+                    # Show first few tools
+                    for tool in tools[:3]:
+                        print(f"   • {tool.name}: {tool.description[:50]}...")
+                        
+                except Exception as e:
+                    print(f"❌ OpenAPI spec test failed: {e}")
             
         except Exception as e:
             print(f"API test failed: {e}")
@@ -450,7 +420,7 @@ class OCPCli:
 
 def main():
     parser = argparse.ArgumentParser(description="OCP CLI - Context management and API testing")
-    parser.add_argument('--version', action='version', version='ocp-cli 0.1.0')
+    parser.add_argument('--version', action='version', version='ocp-cli 0.2.0')
     
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
@@ -462,15 +432,14 @@ def main():
     create_parser.add_argument('--user', help='User identifier')
     create_parser.add_argument('--type', default='cli_agent', help='Agent type')
     create_parser.add_argument('--goal', help='Agent goal')
+    create_parser.add_argument('--workspace', help='Current workspace/project')
     
     show_parser = context_subparsers.add_parser('show', help='Show current context')
-    show_parser.add_argument('--format', choices=['json', 'yaml'], default='json', help='Output format')
     
     # API call command
     call_parser = subparsers.add_parser('call', help='Make OCP-enhanced API call')
     call_parser.add_argument('method', help='HTTP method (GET, POST, etc.)')
     call_parser.add_argument('url', help='API URL')
-    call_parser.add_argument('--context', help='Context ID')
     call_parser.add_argument('--data', help='Request data (JSON string)')
     call_parser.add_argument('--auth', help='Authorization header value')
     
@@ -487,7 +456,7 @@ def main():
     test_api_parser.add_argument('url', help='API base URL')
     test_api_parser.add_argument('--spec', help='OpenAPI spec URL')
     test_api_parser.add_argument('--auth', help='Authorization header value')
-    
+
     # Registry commands
     registry_parser = subparsers.add_parser('registry', help='OCP Registry operations')
     registry_parser.add_argument('--url', help='Registry URL (default: http://localhost:8000)')
@@ -533,14 +502,14 @@ def main():
     
     if args.command == 'context':
         if args.context_action == 'create':
-            cli.create_context(args.user, args.type, args.goal)
+            cli.create_context(args.user, args.type, args.goal, getattr(args, 'workspace', None))
         elif args.context_action == 'show':
-            cli.show_context(args.format)
+            cli.show_context()
         else:
             context_parser.print_help()
     
     elif args.command == 'call':
-        cli.make_call(args.method, args.url, args.context, args.data, args.auth)
+        cli.make_call(args.method, args.url, args.data, args.auth)
     
     elif args.command == 'validate':
         if args.validate_type == 'context':
