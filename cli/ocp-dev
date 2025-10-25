@@ -1,0 +1,6 @@
+#!/bin/bash
+# OCP CLI Development Wrapper
+# Automatically sets PYTHONPATH to use the local ocp-python library
+
+export PYTHONPATH="$(dirname "$0")/../ocp-python/src:$PYTHONPATH"
+exec python "$(dirname "$0")/ocp" "$@"
