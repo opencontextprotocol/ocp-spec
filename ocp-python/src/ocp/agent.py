@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from .context import AgentContext
 from .schema_discovery import OCPSchemaDiscovery, OCPAPISpec, OCPTool
 from .http_client import OCPHTTPClient
+from .registry import OCPRegistry
 
 
 class OCPAgent:
@@ -19,7 +20,7 @@ class OCPAgent:
     OCP Agent for Context-Aware API Interactions
     
     Provides:
-    1. API Discovery (from OpenAPI specs) 
+    1. API Discovery (from OpenAPI specs or community registry) 
     2. Tool Invocation (with parameter validation)
     3. Context Management (persistent across calls)
     4. Zero Infrastructure (no servers required)
@@ -29,7 +30,8 @@ class OCPAgent:
                  agent_type: str = "ai_agent",
                  user: Optional[str] = None,
                  workspace: Optional[str] = None,
-                 agent_goal: Optional[str] = None):
+                 agent_goal: Optional[str] = None,
+                 registry_url: Optional[str] = None):
         """
         Initialize OCP Agent with context and schema discovery.
         
@@ -38,6 +40,7 @@ class OCPAgent:
             user: User identifier
             workspace: Current workspace/project
             agent_goal: Current objective or goal
+            registry_url: Custom registry URL (uses OCP_REGISTRY_URL env var or default if None)
         """
         self.context = AgentContext(
             agent_type=agent_type,
@@ -46,37 +49,55 @@ class OCPAgent:
             current_goal=agent_goal
         )
         self.discovery = OCPSchemaDiscovery()
+        self.registry = OCPRegistry(registry_url)
         self.known_apis: Dict[str, OCPAPISpec] = {}
         self.http_client = OCPHTTPClient(self.context)
     
-    def register_api(self, name: str, spec_url: str, base_url: Optional[str] = None) -> OCPAPISpec:
+    def register_api(self, name: str, spec_url: Optional[str] = None, base_url: Optional[str] = None) -> OCPAPISpec:
         """
         Register an API for discovery and usage.
         
         Args:
-            name: Human-readable name for the API
-            spec_url: URL to OpenAPI specification  
+            name: Human-readable name for the API or registry API name
+            spec_url: URL to OpenAPI specification (optional if using registry lookup)
             base_url: Optional override for API base URL
             
         Returns:
             Discovered API specification with available tools
+            
+        Examples:
+            # Registry lookup (fast)
+            agent.register_api('github')
+            
+            # Direct OpenAPI discovery
+            agent.register_api('my-api', 'https://api.example.com/openapi.json')
         """
-        api_spec = self.discovery.discover_api(spec_url, base_url)
+        if spec_url:
+            # Direct OpenAPI discovery (existing behavior)
+            api_spec = self.discovery.discover_api(spec_url, base_url)
+            source = spec_url
+        else:
+            # Registry lookup (new behavior)
+            api_spec = self.registry.get_api_spec(name, base_url)
+            source = f"registry:{name}"
+        
+        # Store API spec
         self.known_apis[name] = api_spec
         
         # Add to context's API specs
-        self.context.add_api_spec(name, spec_url)
+        self.context.add_api_spec(name, source)
         
         # Log API registration
         self.context.add_interaction(
             action="api_registered",
-            api_endpoint=spec_url,
+            api_endpoint=source,
             result=f"Discovered {len(api_spec.tools)} tools",
             metadata={
                 'api_name': name,
                 'api_title': api_spec.title,
                 'tool_count': len(api_spec.tools),
-                'base_url': api_spec.base_url
+                'base_url': api_spec.base_url,
+                'source': 'registry' if not spec_url else 'openapi'
             }
         )
         

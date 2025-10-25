@@ -13,7 +13,9 @@ from .http_client import enhance_http_client, wrap_api, OCPHTTPClient
 from .headers import OCPHeaders, create_ocp_headers, extract_context_from_response, parse_context, add_context_headers
 from .validation import validate_context
 from .schema_discovery import OCPSchemaDiscovery, OCPTool, OCPAPISpec
+from .registry import OCPRegistry
 from .agent import OCPAgent
+from .errors import OCPError, RegistryUnavailable, APINotFound, SchemaDiscoveryError, ValidationError
 
 __version__ = "0.1.0"
 __all__ = [
@@ -37,6 +39,16 @@ __all__ = [
     "OCPSchemaDiscovery",
     "OCPTool",
     "OCPAPISpec",
+    
+    # Registry integration
+    "OCPRegistry",
+    
+    # Error handling
+    "OCPError",
+    "RegistryUnavailable", 
+    "APINotFound",
+    "SchemaDiscoveryError",
+    "ValidationError",
     
     # Complete agent functionality
     "OCPAgent"

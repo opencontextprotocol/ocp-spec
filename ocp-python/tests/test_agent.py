@@ -314,3 +314,91 @@ class TestOCPAgent:
         
         assert agent.context.current_goal == "new goal"
         assert agent.context.context_summary == "goal summary"
+    
+    @patch('ocp.agent.OCPRegistry')
+    def test_register_api_from_registry(self, mock_registry_class, agent, sample_api_spec):
+        """Test API registration from registry."""
+        # Setup mock registry
+        mock_registry = Mock()
+        mock_registry.get_api_spec.return_value = sample_api_spec
+        mock_registry_class.return_value = mock_registry
+        
+        # Create new agent to trigger registry initialization
+        agent = OCPAgent(
+            agent_type="test_agent",
+            registry_url="https://test-registry.com"
+        )
+        
+        # Register API from registry
+        result = agent.register_api("test_api")
+        
+        # Verify registry was called correctly
+        mock_registry.get_api_spec.assert_called_once_with("test_api", None)
+        
+        # Verify API was registered
+        assert result == sample_api_spec
+        assert "test_api" in agent.known_apis
+        assert agent.known_apis["test_api"] == sample_api_spec
+        
+        # Verify context tracking
+        assert "test_api" in agent.context.api_specs
+        assert agent.context.api_specs["test_api"] == "registry:test_api"
+        
+        # Verify interaction logging
+        assert len(agent.context.history) == 1
+        interaction = agent.context.history[0]
+        assert interaction["action"] == "api_registered"
+        assert interaction["api_endpoint"] == "registry:test_api"
+        assert interaction["metadata"]["source"] == "registry"
+    
+    @patch('ocp.agent.OCPSchemaDiscovery')
+    def test_register_api_from_openapi_url(self, mock_discovery_class, agent, sample_api_spec):
+        """Test API registration from OpenAPI URL (existing behavior)."""
+        # Setup mock discovery
+        mock_discovery = Mock()
+        mock_discovery.discover_api.return_value = sample_api_spec
+        mock_discovery_class.return_value = mock_discovery
+        
+        # Create new agent
+        agent = OCPAgent(agent_type="test_agent")
+        
+        # Register API with URL
+        result = agent.register_api("test_api", "https://api.test.com/openapi.json")
+        
+        # Verify discovery was called
+        mock_discovery.discover_api.assert_called_once_with("https://api.test.com/openapi.json", None)
+        
+        # Verify API was registered
+        assert result == sample_api_spec
+        assert "test_api" in agent.known_apis
+        
+        # Verify context tracking  
+        assert agent.context.api_specs["test_api"] == "https://api.test.com/openapi.json"
+        
+        # Verify metadata indicates OpenAPI source
+        interaction = agent.context.history[0]
+        assert interaction["metadata"]["source"] == "openapi"
+    
+    @patch('ocp.agent.OCPRegistry')
+    def test_register_api_with_base_url_override(self, mock_registry_class, agent, sample_api_spec):
+        """Test API registration with base URL override."""
+        mock_registry = Mock()
+        mock_registry.get_api_spec.return_value = sample_api_spec
+        mock_registry_class.return_value = mock_registry
+        
+        agent = OCPAgent(agent_type="test_agent")
+        
+        # Register with base URL override
+        agent.register_api("test_api", base_url="https://custom.test.com")
+        
+        # Verify base_url was passed to registry
+        mock_registry.get_api_spec.assert_called_once_with("test_api", "https://custom.test.com")
+    
+    def test_agent_initialization_with_registry_url(self):
+        """Test agent initialization with custom registry URL."""
+        agent = OCPAgent(
+            agent_type="test_agent",
+            registry_url="https://custom-registry.com"
+        )
+        
+        assert agent.registry.registry_url == "https://custom-registry.com"
