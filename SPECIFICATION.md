@@ -1,7 +1,7 @@
 # Open Context Protocol (OCP)
 ## Context-Aware API Integration for AI Agents
 
-**TL;DR**: OCP enables persistent context sharing across HTTP API calls using standard headers, with automatic API discovery from OpenAPI specifications - no servers or infrastructure required.
+**TL;DR**: OCP enables persistent context sharing across HTTP API calls using standard headers, with automatic API discovery from OpenAPI specifications and optional community registry integration for fast tool discovery - no servers or infrastructure required.
 
 ---
 
@@ -19,6 +19,7 @@
 **OCP's Solution**:
 - ✅ **Context Persistence**: HTTP headers carry conversation state across calls
 - ✅ **API Discovery**: Auto-generate tools from OpenAPI specifications
+- ✅ **Community Registry**: Fast API discovery from pre-indexed specifications (optional)
 - ✅ **Zero Infrastructure**: No servers, just standard HTTP headers
 - ✅ **Standards-Based**: Built on HTTP, OpenAPI, and JSON
 - ✅ **Immediate Compatibility**: Works with existing APIs today
@@ -28,6 +29,7 @@
 **What OCP Provides**:
 - Persistent context across tool calls
 - Automatic API discovery from OpenAPI specs
+- Optional community registry for fast tool discovery
 - Parameter validation and request building
 - Session tracking and interaction history
 - Framework-agnostic integration
@@ -459,6 +461,115 @@ OCP ensures predictable tool names for consistent agent behavior:
 
 ---
 
+## Community Registry Integration
+
+### **Fast API Discovery with Pre-indexed Specifications**
+
+For improved performance and developer experience, OCP supports integration with community registries that maintain pre-discovered and validated API specifications. This enables instant tool discovery instead of parsing OpenAPI specs on every request.
+
+### **Registry-First Discovery**
+
+```python
+from ocp import OCPAgent
+
+# Agent automatically uses registry for fast lookup
+agent = OCPAgent(
+    agent_type="api_explorer",
+    registry_url="https://registry.ocp.dev"  # Optional, defaults to env var
+)
+
+# Fast registry lookup (50ms vs 2-5 seconds for OpenAPI parsing)
+api_spec = agent.register_api('github')  # No OpenAPI URL needed
+
+# Fallback to direct OpenAPI if not in registry
+api_spec = agent.register_api('custom-api', 'https://api.example.com/openapi.json')
+
+# Registry integration with base URL override
+api_spec = agent.register_api('github', base_url='https://enterprise.github.com/api/v3')
+```
+
+### **Registry Client Usage**
+
+Direct registry integration for advanced use cases:
+
+```python
+from ocp import OCPRegistry
+
+# Initialize registry client
+registry = OCPRegistry("https://registry.ocp.dev")
+
+# Search for APIs
+apis = registry.search_apis("payment processing")
+# Returns: ["stripe", "paypal", "square", "adyen"]
+
+# Get specific API specification
+api_spec = registry.get_api_spec("stripe")
+print(f"API: {api_spec.title}")
+print(f"Tools: {len(api_spec.tools)}")
+
+# List all available APIs
+all_apis = registry.list_apis()
+```
+
+### **Error Handling with Suggestions**
+
+Registry integration provides helpful developer experience with intelligent suggestions:
+
+```python
+from ocp import OCPAgent, APINotFound
+
+agent = OCPAgent(agent_type="test")
+
+try:
+    agent.register_api('githb')  # Typo in API name
+except APINotFound as e:
+    print(f"API not found: {e.api_name}")
+    print(f"Did you mean: {', '.join(e.suggestions)}")
+    # Output: Did you mean: github, gitlab
+```
+
+### **Environment Configuration**
+
+Registry URL can be configured via environment variable for deployment flexibility:
+
+```bash
+# Set default registry URL
+export OCP_REGISTRY_URL=https://registry.ocp.dev
+
+# Or use custom/internal registry
+export OCP_REGISTRY_URL=https://internal-registry.company.com
+```
+
+```python
+# Agent automatically uses OCP_REGISTRY_URL if set
+agent = OCPAgent(agent_type="production_agent")
+agent.register_api('internal-api')  # Uses configured registry
+```
+
+### **Registry Benefits**
+
+**Performance**: 
+- Registry lookup: ~50ms response time
+- Direct OpenAPI parsing: 2-5 seconds depending on spec size
+- Significant improvement for agent startup and tool discovery
+
+**Reliability**:
+- Pre-validated API specifications
+- Consistent tool naming across versions
+- Cached and optimized for fast access
+
+**Developer Experience**:
+- Typo detection with suggestions
+- Searchable API catalog
+- Base URL override for different environments
+
+**Backward Compatibility**:
+- Seamless fallback to direct OpenAPI URLs
+- No breaking changes to existing code
+- Optional enhancement, not requirement
+
+---
+
 ## OpenAPI Integration Levels
 
 ### **Level 1: Standard OpenAPI (Works Today)**
@@ -721,7 +832,31 @@ response = agent.call_tool('createIssue', {
 })
 ```
 
-### 2. Wrap Any OpenAPI Service
+### 2. Agent with Registry Integration
+```python
+from ocp import OCPAgent
+
+# Create agent with registry for fast API discovery
+agent = OCPAgent(
+    agent_type="api_explorer",
+    user="alice",
+    registry_url="https://registry.ocp.dev"
+)
+
+# Fast registry lookup (50ms vs 2-5 seconds for OpenAPI parsing)
+agent.register_api('github')    # No OpenAPI URL needed
+agent.register_api('stripe')    # Pre-discovered and validated
+agent.register_api('slack')     # Community-maintained specifications
+
+# Fallback to direct OpenAPI for custom APIs
+agent.register_api('internal-api', 'https://api.company.com/openapi.json')
+
+# Same tool discovery and calling experience
+tools = agent.search_tools('payment')
+response = agent.call_tool('createPaymentIntent', {'amount': 2000})
+```
+
+### 3. Wrap Any OpenAPI Service
 ```python
 from ocp import OCPAgent, wrap_api
 
@@ -742,7 +877,7 @@ weather_client = wrap_api(
 result = weather_client.get("/weather", params={"location": "NYC"})
 ```
 
-### 3. Add OCP to Existing API
+### 4. Add OCP to Existing API
 ```python
 from flask import Flask, request, make_response
 from ocp import parse_context, add_context_headers
@@ -763,7 +898,7 @@ def get_weather():
     return response
 ```
 
-### 3. AI Agent with OCP
+### 5. AI Agent with OCP
 ```python
 from ocp import AgentContext
 import requests
