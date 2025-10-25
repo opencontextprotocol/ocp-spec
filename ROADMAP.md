@@ -68,8 +68,13 @@ response = agent.call_tool('listRepositoryIssues', {'owner': 'myorg', 'repo': 'm
 
 ## Phase 2: Ecosystem Expansion 🚀 IN PROGRESS
 
-### IDE Integrations
-- [ ] **VS Code Extension** - Context management across workspace sessions
+### Language Support (Foundation)
+- [ ] **JavaScript/TypeScript Library** - `npm install @ocp/agent` (using Python lib as reference)
+- [ ] **Go Library** - Server-side integrations
+- [ ] **CLI Distribution** - Homebrew, package managers
+
+### IDE Integrations (Requires JS Library)
+- [ ] **VS Code Extension** - Context management using @ocp/agent library
 - [ ] **Cursor AI Integration** - Native OCP support proposal
 - [ ] **JetBrains Plugin** - IntelliJ, PyCharm integration
 
@@ -78,11 +83,6 @@ response = agent.call_tool('listRepositoryIssues', {'owner': 'myorg', 'repo': 'm
 - [ ] **GitHub Pages** - Professional specification website
 - [ ] **Getting Started Guide** - 5-minute setup tutorial
 - [ ] **Demo Videos** - Show OCP advantages
-
-### Language Support
-- [ ] **JavaScript/TypeScript Library** - `npm install @ocp/agent`
-- [ ] **Go Library** - Server-side integrations
-- [ ] **CLI Distribution** - Homebrew, package managers
 
 **Target Metrics**:
 - 1,000+ GitHub stars
@@ -153,20 +153,21 @@ response = agent.call_tool('listRepositoryIssues', {'owner': 'myorg', 'repo': 'm
 ## Immediate Next Steps
 
 ### High Priority (This Month)
-1. **PyPI Release** - Package and publish Python library
-2. **VS Code Extension** - Basic OCP context management  
-3. **GitHub Pages** - Professional specification website
-4. **Demo Content** - Video showing OCP in action
+1. **JavaScript/TypeScript Library** - Port Python library to npm package
+2. **PyPI Release** - Package and publish Python library
+3. **Delete Current VS Code Extension** - Remove marketing garbage, start fresh
+4. **GitHub Pages** - Professional specification website
 
 ### Medium Priority (Next Quarter)
-5. **JavaScript Library** - TypeScript implementation
-6. **API Outreach** - Contact GitHub, GitLab teams
-7. **Community Setup** - Discord, documentation, guides
+5. **VS Code Extension v2** - Rebuild using @ocp/agent library (proper functionality)
+6. **Demo Content** - Video showing OCP in action
+7. **API Outreach** - Contact GitHub, GitLab teams
+8. **Community Setup** - Discord, documentation, guides
 
 ### Future Considerations
-8. **Conference Strategy** - Identify speaking opportunities
-9. **Enterprise Planning** - Security and compliance roadmap
-10. **Partnership Development** - Key integration targets
+9. **Conference Strategy** - Identify speaking opportunities
+10. **Enterprise Planning** - Security and compliance roadmap
+11. **Partnership Development** - Key integration targets
 
 ---
 
