@@ -13,8 +13,7 @@ This example demonstrates using the Stripe API with OCP context headers for pers
 
 1. **Install Dependencies**
    ```bash
-   cd ../../ocp-python
-   poetry install
+   pip install -r requirements.txt
    ```
 
 2. **Set Stripe Secret Key**
@@ -24,7 +23,7 @@ This example demonstrates using the Stripe API with OCP context headers for pers
 
 3. **Run Example**
    ```bash
-   poetry run python main.py
+   python main.py
    ```
 
 ## Code Structure
@@ -36,7 +35,7 @@ from ocp import OCPAgent, wrap_api
 agent = OCPAgent(
     agent_type="payment_processor",
     workspace="stripe-demo", 
-    current_goal="Process payments and manage customer data"
+    agent_goal="Process payments and manage customer data"
 )
 
 # Register Stripe API from OpenAPI spec

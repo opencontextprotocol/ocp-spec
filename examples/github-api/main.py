@@ -26,7 +26,7 @@ def main():
     github_agent = OCPAgent(
         agent_type="api_explorer", 
         workspace="github-demo",
-        current_goal="Analyze repository activity and manage issues"
+        agent_goal="Analyze repository activity and manage issues"
     )
     
     # Register GitHub API

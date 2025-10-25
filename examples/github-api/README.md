@@ -13,8 +13,7 @@ This example demonstrates using the GitHub API with OCP context headers for pers
 
 1. **Install Dependencies**
    ```bash
-   cd ../../ocp-python
-   poetry install
+   pip install -r requirements.txt
    ```
 
 2. **Set GitHub Token**
@@ -24,7 +23,7 @@ This example demonstrates using the GitHub API with OCP context headers for pers
 
 3. **Run Example**
    ```bash
-   poetry run python main.py
+   python main.py
    ```
 
 ## Code Structure
@@ -36,7 +35,7 @@ from ocp import OCPAgent, wrap_api
 agent = OCPAgent(
     agent_type="api_explorer", 
     workspace="github-demo",
-    current_goal="Analyze repository activity and manage issues"
+    agent_goal="Analyze repository activity and manage issues"
 )
 
 # Register GitHub API from OpenAPI spec
