@@ -1,41 +1,22 @@
 # OCP CLI
 
-A command-line interface for Open Context Protocol operations using the OCP Python library. Provides context management, API testing, and registry integration with zero infrastructure requirements.
+A command-line interface for Open Context Protocol operations using the OCP Python library.
 
 ## Installation
 
-### Production Use
+### Using Poetry
 
-1. **Install Dependencies**:
-   ```bash
-   pip install -r cli/requirements.txt
-   ```
+```bash
+poetry install
+poetry run ocp --help
+```
 
-2. **Add CLI to PATH**:
-   ```bash
-   # Option 1: Symlink to /usr/local/bin
-   sudo ln -s /path/to/specification/cli/ocp /usr/local/bin/ocp
+### Using pip
 
-   # Option 2: Add to your shell profile
-   echo 'export PATH="/path/to/specification/cli:$PATH"' >> ~/.bashrc
-   ```
-
-### Development Use
-
-For development with the local OCP Python library:
-
-1. **Use the development wrapper**:
-   ```bash
-   cd cli
-   ./ocp-dev --help
-   ```
-
-   The `ocp-dev` script automatically sets `PYTHONPATH` to use the local `../ocp-python/src` library.
-
-2. **Or manually set PYTHONPATH**:
-   ```bash
-   PYTHONPATH=../ocp-python/src python ocp --help
-   ```
+```bash
+pip install ocp-agent requests
+python -m ocp_cli.main --help
+```
 
 ## Features
 

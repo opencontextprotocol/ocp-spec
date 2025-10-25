@@ -1,5 +1,0 @@
-# Requirements for OCP CLI
-# This CLI requires the OCP Python library and standard dependencies
-
-ocp>=0.1.0
-requests>=2.31.0

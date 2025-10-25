@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ocp-cli"
+version = "0.2.0"
+description = "Command-line interface for Open Context Protocol"
+authors = ["OCP Contributors"]
+license = "MIT"
+packages = [{include = "ocp_cli", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+ocp-agent = {path = "../ocp-python", develop = true}
+requests = "^2.31.0"
+
+[tool.poetry.scripts]
+ocp = "ocp_cli.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

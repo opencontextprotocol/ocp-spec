@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 OCP CLI - Command line interface for Open Context Protocol
 
@@ -51,7 +50,71 @@ from pathlib import Path
 from typing import Optional
 
 import requests
-from ocp import AgentContext, OCPAgent, wrap_api, OCPRegistry, RegistryUnavailable, APINotFound
+from ocp import AgentContext, OCPAgent, wrap_api
+
+
+class RegistryClient:
+    """Client for interacting with OCP Registry."""
+    
+    def __init__(self, base_url: str = "http://localhost:8000"):
+        self.base_url = base_url.rstrip('/')
+        
+    def list_apis(self, category: str = None, status: str = None):
+        """List APIs in the registry."""
+        params = {}
+        if category:
+            params['category'] = category
+        if status:
+            params['status'] = status
+            
+        response = requests.get(f"{self.base_url}/api/v1/registry", params=params)
+        response.raise_for_status()
+        return response.json()
+    
+    def get_api(self, name: str):
+        """Get specific API by name."""
+        response = requests.get(f"{self.base_url}/api/v1/registry/{name}")
+        response.raise_for_status()
+        return response.json()
+    
+    def search_apis(self, query: str, page: int = 1, per_page: int = 20):
+        """Search APIs."""
+        params = {
+            'q': query,
+            'page': page,
+            'per_page': per_page
+        }
+        response = requests.get(f"{self.base_url}/api/v1/search", params=params)
+        response.raise_for_status()
+        return response.json()
+    
+    def register_api(self, api_data: dict):
+        """Register a new API."""
+        response = requests.post(f"{self.base_url}/api/v1/registry", json=api_data)
+        response.raise_for_status()
+        return response.json()
+    
+    def validate_api(self, openapi_url: str, base_url: str = None):
+        """Validate an API specification."""
+        data = {"openapi_url": openapi_url}
+        if base_url:
+            data["base_url"] = base_url
+            
+        response = requests.post(f"{self.base_url}/api/v1/validate", json=data)
+        response.raise_for_status()
+        return response.json()
+    
+    def get_categories(self):
+        """Get all categories."""
+        response = requests.get(f"{self.base_url}/api/v1/categories")
+        response.raise_for_status()
+        return response.json()
+    
+    def get_stats(self):
+        """Get registry statistics."""
+        response = requests.get(f"{self.base_url}/api/v1/stats")
+        response.raise_for_status()
+        return response.json()
 
 
 class OCPCli:
@@ -237,17 +300,17 @@ class OCPCli:
             print(f"API test failed: {e}")
 
     # Registry methods
-    def _get_registry_client(self, url: str = None) -> OCPRegistry:
+    def _get_registry_client(self, url: str = None) -> RegistryClient:
         """Get registry client with default or specified URL."""
-        return OCPRegistry(url or "http://localhost:8000")
+        return RegistryClient(url or "http://localhost:8000")
     
     def registry_list(self, category: str = None, status: str = None, registry_url: str = None):
         """List APIs in the registry."""
         try:
             client = self._get_registry_client(registry_url)
-            result = client.list_apis()
+            result = client.list_apis(category=category, status=status)
             print(json.dumps(result, indent=2))
-        except RegistryUnavailable:
+        except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
             sys.exit(1)
         except Exception as e:
@@ -258,9 +321,9 @@ class OCPCli:
         """Search APIs in the registry."""
         try:
             client = self._get_registry_client(registry_url)
-            result = client.search_apis(query)
+            result = client.search_apis(query, page=page, per_page=per_page)
             print(json.dumps(result, indent=2))
-        except RegistryUnavailable:
+        except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
             sys.exit(1)
         except Exception as e:
@@ -271,33 +334,15 @@ class OCPCli:
         """Get detailed information about an API."""
         try:
             client = self._get_registry_client(registry_url)
-            api_spec = client.get_api_spec(name)
-            # Convert OCPAPISpec to a serializable dict
-            result = {
-                "name": name,
-                "title": api_spec.title,
-                "version": api_spec.version,
-                "description": api_spec.description,
-                "base_url": api_spec.base_url,
-                "tools_count": len(api_spec.tools),
-                "tools": [
-                    {
-                        "name": tool.name,
-                        "description": tool.description,
-                        "method": tool.method,
-                        "path": tool.path
-                    }
-                    for tool in api_spec.tools
-                ]
-            }
+            result = client.get_api(name)
             print(json.dumps(result, indent=2, default=str))
-        except APINotFound as e:
-            error_msg = {"error": f"API '{name}' not found"}
-            if e.suggestions:
-                error_msg["suggestions"] = e.suggestions
-            print(json.dumps(error_msg, indent=2))
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                print(json.dumps({"error": f"API '{name}' not found"}, indent=2))
+            else:
+                print(json.dumps({"error": f"HTTP {e.response.status_code}"}, indent=2))
             sys.exit(1)
-        except RegistryUnavailable:
+        except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
             sys.exit(1)
         except Exception as e:
@@ -310,11 +355,8 @@ class OCPCli:
             with open(file_path, 'r') as f:
                 api_data = json.load(f)
             
-            # Use direct HTTP request for registration (server-side operation)
-            url = (registry_url or "http://localhost:8000").rstrip('/')
-            response = requests.post(f"{url}/api/v1/registry", json=api_data)
-            response.raise_for_status()
-            result = response.json()
+            client = self._get_registry_client(registry_url)
+            result = client.register_api(api_data)
             print(json.dumps(result, indent=2, default=str))
         except FileNotFoundError:
             print(json.dumps({"error": f"File not found: {file_path}"}, indent=2))
@@ -324,11 +366,7 @@ class OCPCli:
             sys.exit(1)
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 400:
-                try:
-                    error_detail = e.response.json().get('detail', 'Bad request')
-                except:
-                    error_detail = 'Bad request'
-                print(json.dumps({"error": error_detail}, indent=2))
+                print(json.dumps({"error": e.response.json().get('detail', 'Bad request')}, indent=2))
             else:
                 print(json.dumps({"error": f"HTTP {e.response.status_code}"}, indent=2))
             sys.exit(1)
@@ -342,15 +380,8 @@ class OCPCli:
     def registry_validate(self, openapi_url: str, base_url: str = None, registry_url: str = None):
         """Validate an API specification."""
         try:
-            # Use direct HTTP request for validation (server-side operation)
-            url = (registry_url or "http://localhost:8000").rstrip('/')
-            data = {"openapi_url": openapi_url}
-            if base_url:
-                data["base_url"] = base_url
-            
-            response = requests.post(f"{url}/api/v1/validate", json=data)
-            response.raise_for_status()
-            result = response.json()
+            client = self._get_registry_client(registry_url)
+            result = client.validate_api(openapi_url, base_url)
             print(json.dumps(result, indent=2))
         except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
@@ -362,11 +393,8 @@ class OCPCli:
     def registry_categories(self, registry_url: str = None):
         """List available categories."""
         try:
-            # Use direct HTTP request for categories (server-side operation)
-            url = (registry_url or "http://localhost:8000").rstrip('/')
-            response = requests.get(f"{url}/api/v1/categories")
-            response.raise_for_status()
-            result = response.json()
+            client = self._get_registry_client(registry_url)
+            result = client.get_categories()
             print(json.dumps(result, indent=2))
         except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
@@ -378,11 +406,8 @@ class OCPCli:
     def registry_stats(self, registry_url: str = None):
         """Show registry statistics."""
         try:
-            # Use direct HTTP request for stats (server-side operation)
-            url = (registry_url or "http://localhost:8000").rstrip('/')
-            response = requests.get(f"{url}/api/v1/stats")
-            response.raise_for_status()
-            result = response.json()
+            client = self._get_registry_client(registry_url)
+            result = client.get_stats()
             print(json.dumps(result, indent=2, default=str))
         except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
