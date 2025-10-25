@@ -10,7 +10,7 @@ Usage:
     ocp call METHOD URL [--data DATA] [--auth AUTH]
     ocp validate context FILE
     ocp test api URL [--spec SPEC_URL] [--auth AUTH]
-    ocp registry list [--category CATEGORY] [--status STATUS]
+    ocp registry list [--category CATEGORY] [--status STATUS] [--summary]
     ocp registry search QUERY [--page PAGE] [--per-page COUNT]
     ocp registry get NAME
     ocp registry register FILE
@@ -304,12 +304,25 @@ class OCPCli:
         """Get registry client with default or specified URL."""
         return RegistryClient(url or "http://localhost:8000")
     
-    def registry_list(self, category: str = None, status: str = None, registry_url: str = None):
+    def registry_list(self, category: str = None, status: str = None, registry_url: str = None, summary: bool = False):
         """List APIs in the registry."""
         try:
             client = self._get_registry_client(registry_url)
             result = client.list_apis(category=category, status=status)
-            print(json.dumps(result, indent=2))
+            
+            if summary:
+                # Show only summary info for each API
+                summary_list = [
+                    {
+                        "name": api.get("name"),
+                        "display_name": api.get("display_name"),
+                        "description": api.get("description")
+                    }
+                    for api in result
+                ]
+                print(json.dumps(summary_list, indent=2))
+            else:
+                print(json.dumps(result, indent=2))
         except requests.exceptions.ConnectionError:
             print(json.dumps({"error": "Could not connect to registry"}, indent=2))
             sys.exit(1)
@@ -465,6 +478,7 @@ def main():
     registry_list_parser = registry_subparsers.add_parser('list', help='List APIs in registry')
     registry_list_parser.add_argument('--category', help='Filter by category')
     registry_list_parser.add_argument('--status', help='Filter by status')
+    registry_list_parser.add_argument('--summary', action='store_true', help='Show only summary info (name, display_name, description)')
     
     # Registry search
     registry_search_parser = registry_subparsers.add_parser('search', help='Search APIs in registry')
@@ -526,7 +540,7 @@ def main():
         registry_url = getattr(args, 'url', None)
         
         if args.registry_action == 'list':
-            cli.registry_list(args.category, args.status, registry_url)
+            cli.registry_list(args.category, args.status, registry_url, getattr(args, 'summary', False))
         elif args.registry_action == 'search':
             cli.registry_search(args.query, args.page, getattr(args, 'per_page', 20), registry_url)
         elif args.registry_action == 'get':

@@ -64,6 +64,12 @@ ocp test api https://api.github.com --spec https://api.github.com/rest/openapi.j
 # List all APIs in registry
 ocp registry list
 
+# List APIs with summary view (name, display_name, description only)
+ocp registry list --summary
+
+# Filter by category
+ocp registry list --category development --summary
+
 # Search for APIs
 ocp registry search github
 ocp registry search "payment apis"
