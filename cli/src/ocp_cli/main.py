@@ -50,7 +50,7 @@ from pathlib import Path
 from typing import Optional
 
 import requests
-from ocp import AgentContext, OCPAgent, wrap_api
+from ocp_agent import AgentContext, OCPAgent, wrap_api
 
 
 class RegistryClient:

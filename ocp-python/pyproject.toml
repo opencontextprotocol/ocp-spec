@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-packages = [{include = "ocp", from = "src"}]
+packages = [{include = "ocp_agent", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
