@@ -5,7 +5,9 @@
 
 ---
 
-## The AI Agent Integration Challenge
+## Problem & Solution Overview
+
+### The AI Agent Integration Challenge
 
 **Current Limitations**:
 - Agents lose context between API calls
@@ -14,29 +16,27 @@
 - No standard way to share conversation state
 - Fragmented tooling across different APIs
 
-**OCP's Approach**:
+**OCP's Solution**:
+- ✅ **Context Persistence**: HTTP headers carry conversation state across calls
 - ✅ **API Discovery**: Auto-generate tools from OpenAPI specifications
-- ✅ **Tool Invocation**: Call any API operation with parameter validation
-- ✅ **Context Management**: Persistent context across all interactions  
 - ✅ **Zero Infrastructure**: No servers, just standard HTTP headers
 - ✅ **Standards-Based**: Built on HTTP, OpenAPI, and JSON
+- ✅ **Immediate Compatibility**: Works with existing APIs today
 
----
+### Core Capabilities
 
-## Core OCP Capabilities
-
-OCP provides a complete framework for context-aware API integration:
-
-**API Integration**:
-- Automatic tool discovery from OpenAPI specifications
-- Parameter validation and request building
-- Structured request/response handling
-
-**Context Intelligence**:
+**What OCP Provides**:
 - Persistent context across tool calls
-- Conversation state management
+- Automatic API discovery from OpenAPI specs
+- Parameter validation and request building
 - Session tracking and interaction history
-- Automatic context injection via HTTP headers
+- Framework-agnostic integration
+
+**What OCP Doesn't Require**:
+- New servers or infrastructure
+- API modifications (Level 1 compatibility)
+- Custom protocols or message formats
+- Complex authentication systems
 
 ### The Agent Tool Flow:
 ```mermaid
@@ -58,6 +58,108 @@ graph LR
 
 ---
 
+## Protocol Specification
+
+### HTTP Header Format
+
+OCP uses standard HTTP headers to transmit context information:
+
+**Required Headers**:
+- `OCP-Context-ID`: Unique identifier for the agent session (max 64 chars, alphanumeric + hyphens)
+- `OCP-Agent-Type`: Type of agent making the request (max 128 chars)
+
+**Optional Headers**:
+- `OCP-Agent-Goal`: Current agent objective (max 256 chars)
+- `OCP-Session`: Base64-encoded compressed JSON context (max 8KB)
+- `OCP-User`: User identifier (max 64 chars)
+- `OCP-Workspace`: Current workspace/project (max 128 chars)
+
+**Header Example**:
+```http
+OCP-Context-ID: ocp-a1b2c3d4
+OCP-Agent-Type: ide_coding_assistant
+OCP-Agent-Goal: debug_deployment_failure
+OCP-User: alice
+OCP-Workspace: payment-service
+OCP-Session: eyJjb250ZXh0X2lkIjoib2NwLWExYjJjM2Q0IiwiYWdlbnRfdHlwZSI6ImlkZV9jb2RpbmdfYXNzaXN0YW50In0=
+```
+
+### Context Object Schema
+
+The `OCP-Session` header contains a Base64-encoded, optionally compressed JSON object:
+
+**Minimal Context** (Level 1 - Always Present):
+```json
+{
+  "context_id": "ocp-a1b2c3d4",
+  "agent_type": "ide_coding_assistant",
+  "created_at": "2025-10-24T15:30:00Z",
+  "last_updated": "2025-10-24T15:35:00Z"
+}
+```
+
+**Extended Context** (Level 1 - Optional Fields):
+```json
+{
+  "context_id": "ocp-a1b2c3d4",
+  "agent_type": "ide_coding_assistant", 
+  "user": "alice",
+  "workspace": "payment-service",
+  "current_goal": "debug_deployment_failure",
+  "session": {
+    "interaction_count": 5,
+    "last_api_call": "github.listRepositoryIssues"
+  },
+  "history": [
+    {
+      "timestamp": "2025-10-24T15:30:00Z",
+      "action": "api_call",
+      "api": "github",
+      "operation": "listRepositoryIssues",
+      "result": "success"
+    }
+  ],
+  "created_at": "2025-10-24T15:30:00Z",
+  "last_updated": "2025-10-24T15:35:00Z"
+}
+```
+
+### Encoding Rules
+
+1. **JSON Serialization**: Context must be valid UTF-8 JSON
+2. **Compression**: Optional gzip compression before Base64 encoding
+3. **Base64 Encoding**: Standard Base64 encoding (RFC 4648)
+4. **Size Limits**: Maximum 8KB for `OCP-Session` header after encoding
+
+### Error Handling
+
+**Invalid Context**: APIs should ignore invalid OCP headers and process requests normally
+
+**Oversized Context**: Headers exceeding limits should be truncated or ignored
+
+**Missing Context**: APIs work normally without OCP headers (backward compatibility)
+
+### Security Considerations
+
+- **No Sensitive Data**: Never include passwords, tokens, or secrets in context
+- **Size Limits**: Enforce header size limits to prevent abuse
+- **Logging**: Consider context privacy when logging HTTP requests
+- **Validation**: Validate context structure but don't fail requests on invalid context
+
+### API Compatibility Levels
+
+**Level 1 - Context Aware (Available Today)**:
+- API receives OCP headers but doesn't modify behavior
+- Client-side context management only
+- Works with any existing HTTP API
+
+**Level 2 - Context Enhanced (Future)**:
+- API reads OCP context and provides enhanced responses
+- Requires API-side OCP implementation
+- Optional OpenAPI extensions for behavior specification
+
+---
+
 ## Core OCP Components
 
 OCP consists of two fundamental capabilities that work together:
@@ -72,60 +174,123 @@ Automatic API tool discovery and invocation from OpenAPI specifications. Convert
 
 ---
 
-## Context Management: Smart HTTP Headers
+## Implementation Examples
 
-### **Agent Context Object**
+### Simple Context Example
+
+**Basic Context** (Getting Started):
 ```json
 {
-  "context_id": "agent-session-123",
-  "agent_type": "ide_coding_assistant",
-  "agent_goal": "debug_deployment_failure",
-  "user": "alice",
-  "workspace": {
-    "name": "payment-service",
-    "language": "python",
-    "current_file": "deployment.py"
-  },
-  "conversation": {
-    "history": [
-      {"role": "user", "content": "My deployment is failing"},
-      {"role": "assistant", "content": "Let me check your GitHub workflows"}
-    ]
-  },
-  "accumulated_context": {
-    "github_repos": ["payment-service"],
-    "recent_deployments": [{"status": "failed", "error": "permission_denied"}],
-    "investigation_focus": "github_actions_permissions"
-  }
+  "context_id": "ocp-abc123",
+  "agent_type": "coding_assistant",
+  "user": "alice"
 }
 ```
 
-### 2. **Context-Aware API Calls**
+**HTTP Request**:
 ```http
-GET /repos/alice/payment-service/actions/runs HTTP/1.1
+GET /repos/alice/my-project/issues HTTP/1.1
 Host: api.github.com
 Authorization: token ghp_xxxxxxxxxxxx
-OCP-Context-ID: agent-session-123
-OCP-Agent-Type: ide_coding_assistant
-OCP-Agent-Goal: debug_deployment_failure
-OCP-Session: eyJhZ2VudF9nb2FsIjoiZGVidWdfZGVwbG95bWVudF9mYWlsdXJlIn0=
+OCP-Context-ID: ocp-abc123
+OCP-Agent-Type: coding_assistant
+OCP-User: alice
 ```
 
-### 3. **Enhanced API Responses**
+### Progressive Context Enhancement
+
+**Adding Goals** (Step 2):
 ```json
 {
-  "workflow_runs": [
+  "context_id": "ocp-abc123",
+  "agent_type": "coding_assistant", 
+  "user": "alice",
+  "current_goal": "debug_test_failure"
+}
+```
+
+**Adding Workspace Context** (Step 3):
+```json
+{
+  "context_id": "ocp-abc123",
+  "agent_type": "coding_assistant",
+  "user": "alice", 
+  "current_goal": "debug_test_failure",
+  "workspace": "payment-service",
+  "current_file": "test_payment.py"
+}
+```
+
+**Full Context with History** (Advanced):
+```json
+{
+  "context_id": "ocp-abc123",
+  "agent_type": "coding_assistant",
+  "user": "alice",
+  "current_goal": "debug_test_failure", 
+  "workspace": "payment-service",
+  "current_file": "test_payment.py",
+  "session": {
+    "interaction_count": 3
+  },
+  "history": [
     {
-      "id": 123456,
-      "status": "failure",
-      "conclusion": "failure",
-      "permissions_analysis": {     // ← Added because context shows permission debugging
-        "missing": ["secrets:write", "contents:write"],
-        "suggested_fix": "Add permissions to workflow file"
-      },
-      "similar_failures": [         // ← Related failures based on context
-        {"repo": "other-service", "fix": "Updated GITHUB_TOKEN permissions"}
-      ]
+      "timestamp": "2025-10-24T15:30:00Z",
+      "action": "file_opened",
+      "file": "test_payment.py"
+    },
+    {
+      "timestamp": "2025-10-24T15:31:00Z", 
+      "action": "test_run",
+      "result": "failed",
+      "error": "AssertionError: Expected 200, got 500"
+    }
+  ]
+}
+```
+
+### Context-Aware API Interaction
+
+**Request with Context**:
+```http
+GET /search/issues?q=repo:alice/payment-service+test+failure HTTP/1.1
+Host: api.github.com
+Authorization: token ghp_xxxxxxxxxxxx
+OCP-Context-ID: ocp-abc123
+OCP-Agent-Type: coding_assistant
+OCP-Agent-Goal: debug_test_failure
+OCP-Session: eyJjdXJyZW50X2ZpbGUiOiJ0ZXN0X3BheW1lbnQucHkifQ==
+```
+
+**Level 1 Response** (Today - No API Changes):
+```json
+{
+  "items": [
+    {
+      "number": 89,
+      "title": "Payment test intermittently fails", 
+      "body": "Getting 500 errors in test_payment.py"
+    }
+  ]
+}
+```
+
+**Level 2 Response** (Future - Context-Enhanced):
+```json
+{
+  "items": [
+    {
+      "number": 89,
+      "title": "Payment test intermittently fails",
+      "body": "Getting 500 errors in test_payment.py",
+      "ocp_context_match": {
+        "relevance": "high",
+        "matching_factors": ["test failure", "payment", "500 error"],
+        "suggested_actions": [
+          "Check recent changes to payment_processor.py",
+          "Review test database setup"
+        ]
+      }
     }
   ]
 }
@@ -313,8 +478,15 @@ agent.register_api('github', 'https://api.github.com/rest/openapi.json')
 response = agent.call_tool('listUserRepos', {'username': 'octocat'})
 ```
 
-### **Level 2: OCP-Enhanced OpenAPI (Future)**
-APIs can optionally add OCP extensions to their OpenAPI specs to provide smarter responses:
+---
+
+## Future Enhancements (Level 2)
+
+> **Note**: The following features require API provider adoption and are not available today. Level 1 OCP (above) works with any existing API immediately.
+
+### **Level 2: OCP-Enhanced OpenAPI**
+
+APIs can optionally add OCP extensions to their OpenAPI specs to provide context-aware responses:
 
 ```yaml
 # Enhanced GitHub OpenAPI spec (future)
@@ -707,26 +879,129 @@ if response.choices[0].message.tool_calls:
 
 ---
 
+## Implementation Roadmap
+
+### ✅ **Level 1: Available Today**
+
+**What Works Now**:
+- HTTP header-based context transmission
+- Client-side context management
+- OpenAPI-based tool discovery
+- Works with any existing HTTP API
+- No API modifications required
+
+**Reference Implementation**:
+- **Python**: `ocp-python` (✅ Complete, 134 tests, 86% coverage)
+- **Status**: Production-ready Python library available
+
+**Client Capabilities**:
+- `OCPAgent` for automatic API discovery
+- `AgentContext` for context management
+- `wrap_api()` for existing API enhancement
+- Convenience functions (`parse_context`, `add_context_headers`)
+
+### 🔄 **Level 2: Future Enhancements**
+
+**API-Side Context Awareness** (Requires API Provider Adoption):
+- APIs read OCP context and provide enhanced responses
+- OpenAPI extensions (`x-ocp-enabled`, `x-ocp-context`)
+- Context-aware search and filtering
+- Smart response customization
+
+**Timeline**: Depends on API provider adoption
+
+**Benefits**:
+- Richer, more relevant API responses
+- Context-aware error messages
+- Intelligent suggestion systems
+- Enhanced search and discovery
+
+### 📋 **What You Can Build Today**
+
+**Immediate Use Cases**:
+- IDE coding assistants with persistent context
+- Multi-API workflows with conversation state
+- Agent frameworks with automatic tool discovery
+- Context-aware API testing and debugging
+
+**Getting Started**:
+```bash
+pip install ocp-python
+```
+
+---
+
+## Adoption Guide for API Providers
+
+### Level 1 Implementation (Immediate)
+
+**No Changes Required**:
+- Your API works with OCP clients today
+- OCP headers are ignored (standard HTTP behavior)
+- Clients manage context transparently
+
+### Level 2 Implementation (Optional)
+
+**Steps to Add Context Awareness**:
+
+1. **Read OCP Headers**:
+   ```python
+   context_id = request.headers.get('OCP-Context-ID')
+   agent_goal = request.headers.get('OCP-Agent-Goal')
+   session_data = parse_ocp_session(request.headers.get('OCP-Session'))
+   ```
+
+2. **Enhance Responses**:
+   ```python
+   if context_id and agent_goal == 'debug_test_failure':
+       response['suggested_fixes'] = find_relevant_solutions(context)
+   ```
+
+3. **Add OpenAPI Extensions** (Optional):
+   ```yaml
+   info:
+     x-ocp-enabled: true
+   paths:
+     /issues:
+       get:
+         x-ocp-context:
+           enhances_with: ["agent_goal", "workspace_context"]
+   ```
+
+**Benefits for API Providers**:
+- Enhanced developer experience
+- More intelligent API interactions
+- Competitive advantage for AI agent integrations
+- Gradual adoption path
+
+---
+
 ## Specification Status
 
 **Current Version**: 1.0  
 **Status**: Draft  
 **License**: MIT  
-
-### Contributing
-1. Add examples to `examples/` directory
-2. Submit OpenAPI extensions to `schemas/`
-3. Build reference implementations in `tools/`
-4. Create migration guides in `docs/migration/`
+**Stability**: Level 1 features are stable, Level 2 features may evolve
 
 ### Reference Implementations
-- Python: `ocp-python` (planned)
-- JavaScript: `ocp-js` (planned)  
-- Go: `ocp-go` (planned)
-- CLI: `ocp-cli` (planned)
+
+**Production Ready**:
+- **Python**: `ocp-python` (✅ Complete, tested, documented)
+
+**Planned**:
+- **JavaScript/TypeScript**: `ocp-js` 
+- **Go**: `ocp-go`
+- **CLI Tool**: `ocp-cli`
+
+### Contributing
+
+1. **Examples**: Add usage examples to `examples/` directory
+2. **Extensions**: Propose OpenAPI extensions in `schemas/`
+3. **Implementations**: Build reference implementations in `implementations/`
+4. **Documentation**: Improve adoption guides in `docs/`
 
 ---
 
-**The goal**: Make AI context sharing as simple as adding HTTP headers to APIs you already have.
+**The Goal**: Make AI context sharing as simple as adding HTTP headers to APIs you already have.
 
-**No servers. No new protocols. Just standards.**
+**Available Today. No servers. No new protocols. Just standards.**
