@@ -55,6 +55,13 @@ project-root/
 - **Approach**: Minimal dependencies, avoid dev/test dependencies unless specifically requested
 - **Local dependencies**: Use path dependencies between related projects
 
+### Testing
+- **Framework**: pytest 7.0 (matches ocp-agent library)
+- **Approach**: Minimal test coverage for core functionality
+- **Location**: `tests/` directory in each project
+- **Run**: `poetry run pytest tests/ -v`
+- **Philosophy**: Test critical paths, not exhaustive coverage
+
 ## Key Technical Decisions
 
 ### Package Naming Resolution

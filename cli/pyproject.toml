@@ -17,3 +17,7 @@ ocp = "ocp_cli.main:main"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "pytest (>=7.0,<8.0)"
+]

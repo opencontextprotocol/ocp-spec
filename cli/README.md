@@ -100,6 +100,18 @@ ocp registry --url https://registry.example.com list
 ocp validate context my-context.json
 ```
 
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+poetry run pytest tests/ -v
+
+# Run with coverage
+poetry run pytest tests/ --cov=ocp_cli
+```
+
 ## Features
 
 - **Uses OCP Library**: Built on the official OCP Python library (no code duplication)
