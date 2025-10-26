@@ -2,7 +2,7 @@
 name = "ocp-registry"
 version = "0.1.0"
 description = "OCP Community Registry - Searchable database of API configurations"
-authors = ["OCP Community"]
+authors = ["OCP Contributors"]
 license = "MIT"
 packages = [{include = "ocp_registry", from = "src"}]
 
