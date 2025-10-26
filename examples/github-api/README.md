@@ -29,7 +29,7 @@ This example demonstrates using the GitHub API with OCP context headers for pers
 ## Code Structure
 
 ```python
-from ocp import OCPAgent, wrap_api
+from ocp_agent import OCPAgent, wrap_api
 
 # Create agent with context
 agent = OCPAgent(

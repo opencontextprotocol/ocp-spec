@@ -360,7 +360,7 @@ const response = await fetch('https://api.github.com/search/issues', {
 OCP automatically converts OpenAPI specifications into callable tools for AI agents:
 
 ```python
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Create agent with context
 agent = OCPAgent(
@@ -412,7 +412,7 @@ Each OpenAPI operation becomes a callable tool with full parameter validation:
 Schema discovery works seamlessly with context management:
 
 ```python
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Create agent with integrated context and discovery
 agent = OCPAgent(
@@ -470,7 +470,7 @@ For improved performance and developer experience, OCP supports integration with
 ### **Registry-First Discovery**
 
 ```python
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Agent automatically uses registry for fast lookup
 agent = OCPAgent(
@@ -493,7 +493,7 @@ api_spec = agent.register_api('github', base_url='https://enterprise.github.com/
 Direct registry integration for advanced use cases:
 
 ```python
-from ocp import OCPRegistry
+from ocp_agent import OCPRegistry
 
 # Initialize registry client
 registry = OCPRegistry("https://registry.ocp.dev")
@@ -516,7 +516,7 @@ all_apis = registry.list_apis()
 Registry integration provides helpful developer experience with intelligent suggestions:
 
 ```python
-from ocp import OCPAgent, APINotFound
+from ocp_agent import OCPAgent, APINotFound
 
 agent = OCPAgent(agent_type="test")
 
@@ -576,7 +576,7 @@ agent.register_api('internal-api')  # Uses configured registry
 OCP works immediately with any existing OpenAPI specification:
 
 ```python
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Works with GitHub's existing OpenAPI spec
 agent = OCPAgent(
@@ -634,7 +634,7 @@ Agents discover OCP capabilities through standard OpenAPI specs:
 
 ```python
 import requests
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Check if API supports OCP (future enhancement)
 spec = requests.get('https://api.github.com/rest/openapi.json').json()
@@ -803,7 +803,7 @@ This ensures **predictable behavior**, **reliable integrations**, and **consiste
 
 ### 1. Agent with Schema Discovery
 ```python
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Create agent with context
 agent = OCPAgent(
@@ -834,7 +834,7 @@ response = agent.call_tool('createIssue', {
 
 ### 2. Agent with Registry Integration
 ```python
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 # Create agent with registry for fast API discovery
 agent = OCPAgent(
@@ -858,7 +858,7 @@ response = agent.call_tool('createPaymentIntent', {'amount': 2000})
 
 ### 3. Wrap Any OpenAPI Service
 ```python
-from ocp import OCPAgent, wrap_api
+from ocp_agent import OCPAgent, wrap_api
 
 # Create agent
 agent = OCPAgent(
@@ -880,7 +880,7 @@ result = weather_client.get("/weather", params={"location": "NYC"})
 ### 4. Add OCP to Existing API
 ```python
 from flask import Flask, request, make_response
-from ocp import parse_context, add_context_headers
+from ocp_agent import parse_context, add_context_headers
 
 app = Flask(__name__)
 
@@ -900,7 +900,7 @@ def get_weather():
 
 ### 5. AI Agent with OCP
 ```python
-from ocp import AgentContext
+from ocp_agent import AgentContext
 import requests
 
 class WeatherAgent:
@@ -950,7 +950,7 @@ app.get('/weather', (req, res) => {
 
 ### 2. Use Existing APIs with OCP
 ```python
-from ocp import AgentContext, wrap_api
+from ocp_agent import AgentContext, wrap_api
 
 # Create context
 context = AgentContext(
@@ -976,7 +976,7 @@ repos = github_client.get("/user/repos")
 ### 3. Enable AI Agents
 ```python
 from openai import OpenAI
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 client = OpenAI()
 
@@ -1061,7 +1061,7 @@ if response.choices[0].message.tool_calls:
 
 **Getting Started**:
 ```bash
-pip install ocp-python
+pip install open-context-agent
 ```
 
 ---

@@ -8,7 +8,7 @@ packages = [{include = "ocp_cli", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-ocp-agent = {path = "../ocp-python", develop = true}
+open-context-agent = {path = "../ocp-python", develop = true}
 requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]

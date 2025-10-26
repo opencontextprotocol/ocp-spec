@@ -41,12 +41,14 @@ project-root/
 ```
 
 ### Naming Conventions
-- **Package names**: Use hyphens (e.g., `ocp-agent`, `ocp-cli`)
-- **Module names**: Use underscores matching package intent (e.g., `ocp_agent`, `ocp_cli`)
-- **Rationale**: Avoids import conflicts and maintains clarity of purpose
+- **Package names**: Use hyphens (e.g., `open-context-agent`, `ocp-cli`, `ocp-registry`)
+- **Module names**: Use underscores matching package intent (e.g., `ocp_agent`, `ocp_cli`, `ocp_registry`)
+- **PyPI package name**: `open-context-agent` (avoids conflicts with existing `ocp-*` packages on PyPI)
+- **Import convention**: `from ocp_agent import OCPAgent` (short and convenient for developers)
+- **Rationale**: PyPI name is unique and searchable, module name is concise for daily use
 
 ### Current Structure
-- `ocp-python/src/ocp_agent/` - Core agent library
+- `ocp-python/src/ocp_agent/` - Core agent library (PyPI: `open-context-agent`)
 - `cli/src/ocp_cli/` - Command-line interface
 - `registry/src/ocp_registry/` - Community API registry service (FastAPI)
 
@@ -153,11 +155,11 @@ project-root/
 
 - **Python**: 3.12.11
 - **Poetry**: Used for dependency management
+- **ocp-python (PyPI: open-context-agent)**: 0.1.0
 - **CLI Version**: 0.2.0
-- **Agent Library Version**: 0.1.0
 - **Registry Version**: 0.1.0
 
 ---
 
 **Last Updated**: October 26, 2025
-**Context Thread**: Registry alignment with OCP spec and Python project conventions
+**Context Thread**: Package naming for PyPI publication - renamed to `open-context-agent` to avoid conflicts

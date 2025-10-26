@@ -14,7 +14,7 @@ pydantic = "^2.5.0"
 httpx = "^0.24.0"
 sqlalchemy = "^2.0.0"
 alembic = "^1.13.0"
-ocp-agent = {path = "../ocp-python", develop = true}
+open-context-agent = {path = "../ocp-python", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0"

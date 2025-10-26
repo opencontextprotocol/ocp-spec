@@ -14,7 +14,7 @@ poetry run ocp --help
 ### Using pip
 
 ```bash
-pip install ocp-agent requests
+pip install open-context-agent requests
 python -m ocp_cli.main --help
 ```
 

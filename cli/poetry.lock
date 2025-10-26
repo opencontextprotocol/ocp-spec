@@ -375,7 +375,7 @@ importlib-resources = {version = ">=1.4.0", markers = "python_version < \"3.9\""
 referencing = ">=0.31.0"
 
 [[package]]
-name = "ocp-agent"
+name = "open-context-agent"
 version = "0.1.0"
 description = "Context-aware HTTP client framework for AI agents with OpenAPI integration"
 optional = false
@@ -863,4 +863,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.8"
-content-hash = "8eb65ef52b0db18a9f6bfd6ab5c8499354dbab4d36d111480ff8896049028e99"
+content-hash = "773cec1bbc1814f608c77afc1c347341ff4178406a1a85dcbfe860669815653b"

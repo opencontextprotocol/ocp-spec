@@ -274,8 +274,8 @@ def get_weather():
 
 ### Python Library (Planned)
 ```python
-pip install ocp-python
-import ocp
+pip install open-context-agent
+from ocp_agent import OCPAgent, wrap_api
 
 context = ocp.Context(user="alice")
 github = ocp.wrap_api("https://api.github.com", auth="token ghp_xxx")

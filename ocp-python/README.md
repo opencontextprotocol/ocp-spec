@@ -5,13 +5,15 @@ Context-aware HTTP client framework for AI agents.
 ## Installation
 
 ```bash
-poetry install
+pip install open-context-agent
+# or with poetry
+poetry add open-context-agent
 ```
 
 ## Quick Start
 
 ```python
-from ocp import OCPAgent, wrap_api
+from ocp_agent import OCPAgent, wrap_api
 
 # Create an OCP agent
 agent = OCPAgent(
@@ -69,7 +71,7 @@ context.to_dict()
 ### HTTP Client Functions
 
 ```python
-from ocp import enhance_http_client, wrap_api
+from ocp_agent import enhance_http_client, wrap_api
 
 # Enhance existing client
 enhanced = enhance_http_client(requests.Session(), context)

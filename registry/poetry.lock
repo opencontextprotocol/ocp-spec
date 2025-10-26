@@ -635,7 +635,7 @@ files = [
 ]
 
 [[package]]
-name = "ocp-agent"
+name = "open-context-agent"
 version = "0.1.0"
 description = "Context-aware HTTP client framework for AI agents with OpenAPI integration"
 optional = false
@@ -1258,4 +1258,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.8"
-content-hash = "c27ef5e34e089fcee73609a6e700297cea865dfd61309afe35d7180dd1b497af"
+content-hash = "74d6236fe78b34b38c4cf826efea6612af72d2a59937724e85be7d0f91056a1e"

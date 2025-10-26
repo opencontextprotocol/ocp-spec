@@ -57,7 +57,7 @@ timeline
 ### Key Features Delivered
 ```python
 # Simple OCP agent setup
-from ocp import OCPAgent
+from ocp_agent import OCPAgent
 
 agent = OCPAgent(agent_type="ide_assistant", workspace="my-project")
 agent.register_api('github', 'https://api.github.com/rest/openapi.json')
@@ -79,7 +79,7 @@ response = agent.call_tool('listRepositoryIssues', {'owner': 'myorg', 'repo': 'm
 - [ ] **JetBrains Plugin** - IntelliJ, PyCharm integration
 
 ### Developer Adoption
-- [ ] **PyPI Release** - `pip install ocp` 
+- [ ] **PyPI Release** - `pip install open-context-agent` 
 - [ ] **GitHub Pages** - Professional specification website
 - [ ] **Getting Started Guide** - 5-minute setup tutorial
 - [ ] **Demo Videos** - Show OCP advantages
