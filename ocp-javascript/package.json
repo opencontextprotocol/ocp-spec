@@ -1,20 +1,39 @@
 {
   "name": "@opencontext/agent",
   "version": "0.1.0",
-  "description": "JavaScript/TypeScript implementation of the Open Context Protocol",
+  "description": "JavaScript/TypeScript implementation of the Open Context Protocol for AI agents",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opencontextprotocol/specification.git",
+    "directory": "ocp-javascript"
+  },
+  "bugs": {
+    "url": "https://github.com/opencontextprotocol/specification/issues"
+  },
+  "homepage": "https://github.com/opencontextprotocol/specification/tree/main/ocp-javascript",
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "ocp",
     "open-context-protocol",
     "ai",
-    "agent"
+    "agent",
+    "context",
+    "http",
+    "api",
+    "openapi"
   ],
   "author": "Open Context Protocol",
   "license": "MIT",
