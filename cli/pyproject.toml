@@ -11,13 +11,12 @@ python = "^3.8"
 ocp-agent = {path = "../ocp-python", develop = true}
 requests = "^2.31.0"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+
 [tool.poetry.scripts]
 ocp = "ocp_cli.main:main"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-[dependency-groups]
-dev = [
-    "pytest (>=7.0,<8.0)"
-]
