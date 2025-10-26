@@ -8,7 +8,8 @@ timeline
     
     section Foundation
         Phase 1 : Core Implementation
-               : Python Library (134 tests)
+               : Python Library (145 tests)
+               : JavaScript Library (145 tests)
                : CLI Tool
                : Specification v2.0
                : Working Examples
@@ -48,11 +49,13 @@ timeline
 ## Phase 1: Foundation ✅ COMPLETED
 
 ### Core Implementation
-- ✅ **OCP Specification v2.0** - Agent-focused protocol with Level 1/2 distinction
-- ✅ **Python Library** - Complete implementation (134 tests, 86% coverage)
-- ✅ **CLI Tool** - Context management and API testing
-- ✅ **Working Examples** - GitHub and Stripe API integrations
-- ✅ **Developer Tools** - Convenience functions and validation
+- [x] **OCP Specification v2.0** - Agent-focused protocol with Level 1/2 distinction
+- [x] **Python Library** - Complete implementation (145 tests, 100% passing)
+- [x] **JavaScript/TypeScript Library** - Complete 1:1 parity (145 tests, 100% passing)
+- [x] **CLI Tool** - Context management and API testing
+- [x] **Registry** - Community API registry service
+- [x] **Working Examples** - GitHub and Stripe API integrations
+- [x] **Developer Tools** - Convenience functions and validation
 
 ### Key Features Delivered
 ```python
@@ -69,12 +72,12 @@ response = agent.call_tool('listRepositoryIssues', {'owner': 'myorg', 'repo': 'm
 ## Phase 2: Ecosystem Expansion 🚀 IN PROGRESS
 
 ### Language Support (Foundation)
-- [ ] **JavaScript/TypeScript Library** - `npm install @ocp/agent` (using Python lib as reference)
+- [x] **JavaScript/TypeScript Library** - `npm install @opencontext/agent` (complete 1:1 parity with Python)
 - [ ] **Go Library** - Server-side integrations
 - [ ] **CLI Distribution** - Homebrew, package managers
 
 ### IDE Integrations (Requires JS Library)
-- [ ] **VS Code Extension** - Context management using @ocp/agent library
+- [ ] **VS Code Extension** - Context management using @opencontext/agent library (IN PROGRESS)
 - [ ] **Cursor AI Integration** - Native OCP support proposal
 - [ ] **JetBrains Plugin** - IntelliJ, PyCharm integration
 
@@ -152,15 +155,18 @@ response = agent.call_tool('listRepositoryIssues', {'owner': 'myorg', 'repo': 'm
 
 ## Immediate Next Steps
 
-### High Priority (This Month)
-1. **JavaScript/TypeScript Library** - Port Python library to npm package
-2. **PyPI Release** - Package and publish Python library
-3. **Delete Current VS Code Extension** - Remove marketing garbage, start fresh
-4. **GitHub Pages** - Professional specification website
+### High Priority (Current Focus)
+1. **JavaScript/TypeScript Library** - Complete 1:1 parity with Python library
+2. **VS Code Extension v2** - Rebuild using `@opencontext/agent` library (proper functionality)
+   - Delete existing marketing-focused extension
+   - Build functional extension with real OCP integration
+   - Context management, API discovery, tool calling
+3. **NPM Release** - Publish `@opencontext/agent` to npm (after extension validated)
+4. **PyPI Release** - Publish `open-context-agent` to PyPI
+5. **GitHub Pages** - Professional specification website
 
 ### Medium Priority (Next Quarter)
-5. **VS Code Extension v2** - Rebuild using @ocp/agent library (proper functionality)
-6. **Demo Content** - Video showing OCP in action
+6. **Demo Content** - Video showing OCP in action with VS Code extension
 7. **API Outreach** - Contact GitHub, GitLab teams
 8. **Community Setup** - Discord, documentation, guides
 

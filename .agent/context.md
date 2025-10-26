@@ -7,7 +7,9 @@ This document captures critical project decisions, patterns, and expectations fo
 The Open Context Protocol (OCP) specification repository contains:
 - Protocol specification and documentation
 - Python agent library (`ocp-python/`)
+- JavaScript/TypeScript agent library (`ocp-javascript/`)
 - CLI tool (`cli/`)
+- Registry service (`registry/`)
 - Hugo-based documentation site (`site/`)
 
 ## Development Philosophy
@@ -54,8 +56,68 @@ project-root/
 
 ### Current Structure
 - `ocp-python/src/ocp_agent/` - Core agent library (PyPI: `open-context-agent`)
+- `ocp-javascript/src/` - JavaScript/TypeScript library (npm: `@opencontext/agent`)
 - `cli/src/ocp_cli/` - Command-line interface
 - `registry/src/ocp_registry/` - Community API registry service (FastAPI)
+
+### Dependency Management
+- **Tool**: Poetry for all Python projects
+- **Python version**: 3.12.11 (specified in `.python-version`)
+- **Approach**: Minimal dependencies, avoid dev/test dependencies unless specifically requested
+- **Local dependencies**: Use path dependencies between related projects
+
+## JavaScript/TypeScript Project Structure
+
+### Package Organization
+The JavaScript library follows standard npm/TypeScript patterns:
+
+```
+ocp-javascript/
+├── package.json          # npm configuration
+├── tsconfig.json        # TypeScript configuration
+├── jest.config.js       # Jest test configuration
+├── README.md           # Project documentation
+├── LICENSE            # MIT license
+├── .gitignore         # Git ignore patterns
+├── src/               # TypeScript source
+│   ├── index.ts      # Main entry point
+│   ├── agent.ts      # OCPAgent implementation
+│   ├── context.ts    # AgentContext implementation
+│   ├── headers.ts    # Header encoding/decoding
+│   ├── http_client.ts # OCPHTTPClient wrapper
+│   ├── registry.ts   # Registry client
+│   ├── schema_discovery.ts # OpenAPI schema parsing
+│   ├── validation.ts # JSON schema validation
+│   └── errors.ts     # Error hierarchy
+├── tests/            # Jest tests (145 tests)
+│   └── *.test.ts
+└── dist/            # Compiled output (gitignored)
+    ├── *.js        # Compiled JavaScript
+    ├── *.d.ts      # TypeScript definitions
+    └── *.js.map    # Source maps
+```
+
+### JavaScript Library Standards
+- **Package name**: `@opencontext/agent` (scoped npm package)
+- **Type**: ESM module (`"type": "module"`)
+- **Build**: TypeScript → dist/ with declarations and source maps
+- **Testing**: Jest with `@jest/globals` and ts-jest
+- **TypeScript**: Strict mode enabled, proper type definitions
+- **Dependencies**: Minimal (ajv for validation)
+- **Node.js**: >=18.0.0 required
+
+### Build & Test Commands
+- `npm run build` - Compile TypeScript to dist/
+- `npm test` - Run Jest tests
+- `npm run type-check` - TypeScript type checking
+- `npm run prepublishOnly` - Build + test before publishing
+
+### Library Parity
+- **Complete 1:1 feature parity** with Python library
+- All 145 tests ported and passing
+- Same API surface: OCPAgent, AgentContext, OCPHTTPClient, etc.
+- Identical behavior and validation rules
+- No @ts-nocheck - fully type-safe with proper Jest mock typing
 
 ### Dependency Management
 - **Tool**: Poetry for all Python projects
@@ -180,15 +242,58 @@ project-root/
 - Located in `site/` directory
 - Generates specification documentation
 
-## Version Information
+## VS Code Extension Development
+
+### Extension Purpose
+**For agents to use during chat conversations** - NOT for direct user interaction.
+
+The extension provides tools that AI agents (like GitHub Copilot, Cursor, etc.) can invoke during chat sessions to:
+- Access workspace context (files, git state, open editors)
+- Make OCP-enhanced API calls on behalf of the user
+- Leverage VS Code's environment information automatically
+
+### Extension Strategy
+- **Delete old extension**: Remove marketing-focused version, start fresh
+- **Primary interface**: Tools/commands that agents call, not UI elements
+- **Approach**: Build functional extension using `@opencontext/agent` library
+- **Focus**: Agent tooling, not user-facing features
+
+### Technical Requirements
+- TypeScript with VS Code Extension API
+- Import `@opencontext/agent` from npm (local development: use file path)
+- Expose commands/tools for agent consumption
+- Minimal or no UI - agents are the primary consumers
+
+### Core Features to Implement (Agent-Callable Tools)
+1. **Context Creation**
+   - Agent calls tool to create OCP context from VS Code workspace
+   - Auto-populate: workspace path, git info, user from VS Code settings
+   - Return context ID and session data for agent to use
+
+2. **API Calling**
+   - Agent provides: API endpoint, method, parameters
+   - Extension makes OCP-enhanced call with workspace context
+   - Return API response to agent for processing
+
+3. **Environment Access**
+   - Agent can query: open files, git branch, workspace name
+   - Provides richer context than agent could gather externally
+   - All data returned to agent for decision-making
+
+### Version Information
 
 - **Python**: 3.12.11
-- **Poetry**: Used for dependency management
-- **ocp-python (PyPI: open-context-agent)**: 0.1.0
-- **CLI Version**: 0.2.0
-- **Registry Version**: 0.1.0
+- **Node.js**: >=18.0.0
+- **Poetry**: Used for Python dependency management
+- **npm**: Used for JavaScript dependency management
+- **ocp-python (PyPI: open-context-agent)**: 0.1.0 (145 tests, 100% passing)
+- **ocp-javascript (npm: @opencontext/agent)**: 0.1.0 (145 tests, 100% passing)
+- **CLI**: 0.1.0 (11 tests, 100% passing)
+- **Registry**: 0.1.0 (11 tests, 100% passing)
+
+**Version Policy**: All components stay at 0.1.0 until first public release. No version bumps in pre-release.
 
 ---
 
 **Last Updated**: October 26, 2025
-**Context Thread**: Schema sync - updated `schemas/ocp-context.json` from Python library source of truth
+**Context Thread**: Versions aligned at 0.1.0, focus shifted to VS Code extension development using @opencontext/agent library
