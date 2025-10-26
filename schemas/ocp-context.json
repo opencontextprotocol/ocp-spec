@@ -20,47 +20,31 @@
     },
     "workspace": {
       "type": ["string", "null"],
-      "description": "Current workspace or project path"
+      "description": "Current workspace or project"
     },
     "current_file": {
       "type": ["string", "null"],
       "description": "Currently active file"
     },
-    "current_goal": {
-      "type": ["string", "null"],
-      "description": "Current objective or task"
-    },
-    "context_summary": {
-      "type": ["string", "null"],
-      "description": "Summary of current context"
-    },
-    "error_context": {
-      "type": ["string", "null"],
-      "description": "Information about current errors or issues"
-    },
     "session": {
       "type": "object",
-      "description": "Session metadata and tracking",
       "properties": {
         "start_time": {
           "type": "string",
-          "format": "date-time",
-          "description": "When session started"
+          "format": "date-time"
         },
         "interaction_count": {
           "type": "integer",
-          "description": "Number of interactions in session"
+          "minimum": 0
         },
         "agent_type": {
-          "type": "string",
-          "description": "Type of agent for this session"
+          "type": "string"
         }
       },
-      "required": ["start_time", "interaction_count", "agent_type"]
+      "additionalProperties": true
     },
     "history": {
       "type": "array",
-      "description": "Interaction history",
       "items": {
         "type": "object",
         "properties": {
@@ -69,41 +53,50 @@
             "format": "date-time"
           },
           "action": {
-            "type": "string",
-            "description": "Type of action performed"
+            "type": "string"
           },
           "api_endpoint": {
-            "type": "string",
-            "description": "API endpoint called"
+            "type": ["string", "null"]
           },
           "result": {
-            "type": ["string", "null"],
-            "description": "Result of the action"
+            "type": ["string", "null"]
           },
           "metadata": {
-            "type": "object",
-            "additionalProperties": true
+            "type": "object"
           }
         },
         "required": ["timestamp", "action"]
       }
     },
+    "current_goal": {
+      "type": ["string", "null"],
+      "description": "Agent's current objective"
+    },
+    "context_summary": {
+      "type": ["string", "null"],
+      "description": "Brief summary of conversation context"
+    },
+    "error_context": {
+      "type": ["string", "null"],
+      "description": "Error information for debugging"
+    },
     "recent_changes": {
       "type": "array",
-      "description": "Recent changes or modifications",
       "items": {
         "type": "string"
-      }
+      },
+      "maxItems": 20,
+      "description": "Recent changes or modifications"
     },
     "api_specs": {
       "type": "object",
-      "description": "API specifications for enhanced responses",
       "patternProperties": {
         "^[a-zA-Z0-9_-]+$": {
           "type": "string",
           "format": "uri"
         }
-      }
+      },
+      "description": "API specifications for enhanced responses"
     },
     "created_at": {
       "type": "string",
@@ -116,7 +109,7 @@
   },
   "required": [
     "context_id",
-    "agent_type", 
+    "agent_type",
     "session",
     "history",
     "api_specs",

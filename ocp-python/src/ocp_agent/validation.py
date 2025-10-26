@@ -20,7 +20,7 @@ from .context import AgentContext
 
 # OCP Context Schema (embedded for now, could be loaded from files)
 OCP_CONTEXT_SCHEMA = {
-    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://opencontextprotocol.org/schemas/ocp-context.json",
     "title": "OCP Context Object",
     "description": "Agent context for Open Context Protocol",

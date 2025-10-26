@@ -84,6 +84,15 @@ project-root/
 - **Features**: Context management, API testing, registry operations
 - **Integration**: Uses `ocp_agent` library as dependency
 
+### Schema Files
+- **Location**: `schemas/` directory in repository root
+- **Files**: `ocp-context.json`, `ocp-openapi-extensions.json`
+- **Source of Truth**: Python library (`ocp-python/src/ocp_agent/validation.py`)
+- **Sync Policy**: Schema files are synced FROM Python library (not vice versa)
+- **Purpose**: Reference documentation, future URL publishing, third-party validation
+- **Implementation**: Python library embeds schema (no runtime file loading)
+- **Rationale**: Embedded schema = fast, simple, no file dependencies; schema files = documentation artifacts
+
 ### Registry Integration
 - **Implementation**: OCPRegistry client in CLI
 - **Functionality**: List, search, and interact with API registry
@@ -162,4 +171,4 @@ project-root/
 ---
 
 **Last Updated**: October 26, 2025
-**Context Thread**: Package naming for PyPI publication - renamed to `open-context-agent` to avoid conflicts
+**Context Thread**: Schema sync - updated `schemas/ocp-context.json` from Python library source of truth
