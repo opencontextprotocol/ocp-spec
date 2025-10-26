@@ -17,8 +17,13 @@ The Open Context Protocol (OCP) specification repository contains:
 - **Incremental development**: Small, deliberate steps
 - **Avoid feature creep**: Don't add unrequested functionality
 - **User corrections are paramount**: When user says "too much", strip back immediately
+- **NO DEPRECATIONS**: This is pre-release software. Break things. No backwards compatibility until published.
+- **NO TRANSITIONAL CODE**: Remove old code completely. Don't leave breadcrumbs.
 
 ### Decision Making
+- **VERIFY ALL IMPLEMENTATION PLANS**: Before implementing any significant feature or architectural decision, verify the approach with the user first
+- **No assumptions about scope**: If the purpose or scope of a feature is unclear, ASK before implementing
+- **Surgical fixes only**: When fixing issues, make targeted changes without expanding scope
 - Follow established patterns within the project
 - Maintain consistency across similar components
 - Ask for clarification rather than assume requirements
@@ -66,6 +71,21 @@ project-root/
 - **Philosophy**: Test critical paths, not exhaustive coverage
 
 ## Key Technical Decisions
+
+### HTTP Client Design (October 26, 2025)
+**Decision**: OCP libraries use their own chosen HTTP client, not wrap arbitrary clients.
+
+**Rationale**:
+- OCP's scope: Add context headers to HTTP requests
+- Not a universal HTTP client wrapper
+- Python uses `requests.Session()` internally
+- JavaScript uses native `fetch` internally
+- Users who need custom clients can use `create_ocp_headers()` directly
+
+**Implementation**:
+- `OCPHTTPClient(context)` - No http_client parameter
+- `enhance_http_client(client, context)` - Deprecated, ignores client parameter
+- `wrap_api(base_url, context, auth, headers)` - No http_client parameter
 
 ### Package Naming Resolution
 **Problem**: Originally had naming conflict between `ocp-agent` package and `src/ocp/` module.

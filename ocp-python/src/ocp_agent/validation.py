@@ -9,11 +9,7 @@ import os
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
-try:
-    from jsonschema import validate, ValidationError, Draft7Validator
-    JSONSCHEMA_AVAILABLE = True
-except ImportError:
-    JSONSCHEMA_AVAILABLE = False
+from jsonschema import validate, ValidationError, Draft7Validator
 
 from .context import AgentContext
 
@@ -146,10 +142,6 @@ def validate_context(context: AgentContext) -> ValidationResult:
     Returns:
         ValidationResult with validation status and errors
     """
-    if not JSONSCHEMA_AVAILABLE:
-        # Basic validation without jsonschema
-        return _basic_validation(context)
-    
     try:
         context_dict = context.to_dict()
         validate(context_dict, OCP_CONTEXT_SCHEMA)
@@ -171,9 +163,6 @@ def validate_context_dict(context_dict: Dict[str, Any]) -> ValidationResult:
     Returns:
         ValidationResult with validation status and errors
     """
-    if not JSONSCHEMA_AVAILABLE:
-        return _basic_dict_validation(context_dict)
-    
     try:
         validate(context_dict, OCP_CONTEXT_SCHEMA)
         return ValidationResult(True)
@@ -184,74 +173,6 @@ def validate_context_dict(context_dict: Dict[str, Any]) -> ValidationResult:
         return ValidationResult(False, [f"Validation error: {str(e)}"])
 
 
-def _basic_validation(context: AgentContext) -> ValidationResult:
-    """Basic validation without jsonschema library."""
-    errors = []
-    
-    # Check required fields
-    if not context.context_id:
-        errors.append("context_id is required")
-    elif not context.context_id.startswith("ocp-"):
-        errors.append("context_id must start with 'ocp-'")
-    
-    if not context.agent_type:
-        errors.append("agent_type is required")
-    
-    if not isinstance(context.session, dict):
-        errors.append("session must be a dictionary")
-    
-    if not isinstance(context.history, list):
-        errors.append("history must be a list")
-    
-    if not isinstance(context.api_specs, dict):
-        errors.append("api_specs must be a dictionary")
-    
-    # Check history items
-    for i, item in enumerate(context.history):
-        if not isinstance(item, dict):
-            errors.append(f"history[{i}] must be a dictionary")
-            continue
-        
-        if "timestamp" not in item:
-            errors.append(f"history[{i}] missing required 'timestamp' field")
-        
-        if "action" not in item:
-            errors.append(f"history[{i}] missing required 'action' field")
-    
-    return ValidationResult(len(errors) == 0, errors)
-
-
-def _basic_dict_validation(context_dict: Dict[str, Any]) -> ValidationResult:
-    """Basic dictionary validation without jsonschema library."""
-    errors = []
-    
-    # Check required fields
-    required_fields = [
-        "context_id", "agent_type", "session", "history", 
-        "api_specs", "created_at", "last_updated"
-    ]
-    
-    for field in required_fields:
-        if field not in context_dict:
-            errors.append(f"Missing required field: {field}")
-    
-    # Check context_id format
-    if "context_id" in context_dict:
-        context_id = context_dict["context_id"]
-        if not isinstance(context_id, str) or not context_id.startswith("ocp-"):
-            errors.append("context_id must be a string starting with 'ocp-'")
-    
-    # Check types
-    if "session" in context_dict and not isinstance(context_dict["session"], dict):
-        errors.append("session must be an object")
-    
-    if "history" in context_dict and not isinstance(context_dict["history"], list):
-        errors.append("history must be an array")
-    
-    if "api_specs" in context_dict and not isinstance(context_dict["api_specs"], dict):
-        errors.append("api_specs must be an object")
-    
-    return ValidationResult(len(errors) == 0, errors)
 
 
 def get_schema() -> Dict[str, Any]:

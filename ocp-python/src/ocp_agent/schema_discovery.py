@@ -73,18 +73,7 @@ class OCPSchemaDiscovery:
         try:
             response = requests.get(spec_url, timeout=30)
             response.raise_for_status()
-            
-            # Try JSON first, then YAML
-            try:
-                return response.json()
-            except json.JSONDecodeError:
-                # Try YAML if json fails (requires yaml package)
-                try:
-                    import yaml
-                    return yaml.safe_load(response.text)
-                except ImportError:
-                    raise Exception("YAML spec detected but PyYAML not installed. Install with: pip install PyYAML")
-                
+            return response.json()
         except Exception as e:
             raise Exception(f"Failed to fetch OpenAPI spec from {spec_url}: {e}")
     

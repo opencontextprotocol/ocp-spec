@@ -9,10 +9,7 @@ from urllib.parse import urlparse
 
 from ocp_agent.http_client import (
     OCPHTTPClient,
-    enhance_http_client,
-    wrap_api,
-    create_requests_patch,
-    create_httpx_patch
+    wrap_api
 )
 from ocp_agent.context import AgentContext
 from ocp_agent.headers import create_ocp_headers
@@ -30,21 +27,6 @@ class TestOCPHTTPClient:
             current_goal="testing http client"
         )
     
-    @pytest.fixture
-    def mock_http_client(self):
-        """Create mock HTTP client."""
-        client = Mock()
-        client.request = Mock()
-        return client
-    
-    def test_init_with_http_client(self, context, mock_http_client):
-        """Test initialization with provided HTTP client."""
-        ocp_client = OCPHTTPClient(context, mock_http_client)
-        
-        assert ocp_client.context == context
-        assert ocp_client.http_client == mock_http_client
-        assert ocp_client.auto_update_context is True
-    
     def test_init_without_http_client(self, context):
         """Test initialization with default requests client."""
         with patch('requests.Session') as mock_session_class:
@@ -57,15 +39,15 @@ class TestOCPHTTPClient:
             assert ocp_client.http_client == mock_session
             mock_session_class.assert_called_once()
     
-    def test_init_auto_update_context_false(self, context, mock_http_client):
+    def test_init_auto_update_context_false(self, context):
         """Test initialization with auto_update_context disabled."""
-        ocp_client = OCPHTTPClient(context, mock_http_client, auto_update_context=False)
+        ocp_client = OCPHTTPClient(context, auto_update_context=False)
         
         assert ocp_client.auto_update_context is False
     
-    def test_prepare_headers_no_existing(self, context, mock_http_client):
+    def test_prepare_headers_no_existing(self, context):
         """Test header preparation with no existing headers."""
-        ocp_client = OCPHTTPClient(context, mock_http_client)
+        ocp_client = OCPHTTPClient(context)
         
         headers = ocp_client._prepare_headers()
         
@@ -73,9 +55,9 @@ class TestOCPHTTPClient:
         expected_headers = create_ocp_headers(context)
         assert headers == expected_headers
     
-    def test_prepare_headers_with_existing(self, context, mock_http_client):
+    def test_prepare_headers_with_existing(self, context):
         """Test header preparation with existing headers."""
-        ocp_client = OCPHTTPClient(context, mock_http_client)
+        ocp_client = OCPHTTPClient(context)
         existing_headers = {"Custom-Header": "value", "Authorization": "Bearer token"}
         
         headers = ocp_client._prepare_headers(existing_headers)
@@ -85,9 +67,9 @@ class TestOCPHTTPClient:
         expected_headers.update(existing_headers)
         assert headers == expected_headers
     
-    def test_prepare_headers_override_ocp(self, context, mock_http_client):
+    def test_prepare_headers_override_ocp(self, context):
         """Test that existing headers can override OCP headers."""
-        ocp_client = OCPHTTPClient(context, mock_http_client)
+        ocp_client = OCPHTTPClient(context)
         
         # Get OCP headers to know what to override
         ocp_headers = create_ocp_headers(context)
@@ -100,9 +82,9 @@ class TestOCPHTTPClient:
         # The implementation does: merged.update(ocp_headers) which means OCP wins
         assert headers[ocp_header_key] == ocp_headers[ocp_header_key]
     
-    def test_log_interaction_enabled(self, context, mock_http_client):
+    def test_log_interaction_enabled(self, context):
         """Test interaction logging when enabled."""
-        ocp_client = OCPHTTPClient(context, mock_http_client, auto_update_context=True)
+        ocp_client = OCPHTTPClient(context, auto_update_context=True)
         
         # Mock response with status_code
         mock_response = Mock()
@@ -121,9 +103,9 @@ class TestOCPHTTPClient:
             metadata={"url": "https://api.example.com/users", "domain": "api.example.com"}
         )
     
-    def test_log_interaction_disabled(self, context, mock_http_client):
+    def test_log_interaction_disabled(self, context):
         """Test interaction logging when disabled."""
-        ocp_client = OCPHTTPClient(context, mock_http_client, auto_update_context=False)
+        ocp_client = OCPHTTPClient(context, auto_update_context=False)
         context.add_interaction = Mock()
         
         ocp_client._log_interaction("POST", "https://api.example.com/data", None)
@@ -131,9 +113,9 @@ class TestOCPHTTPClient:
         # Should not log interaction
         context.add_interaction.assert_not_called()
     
-    def test_log_interaction_different_status_formats(self, context, mock_http_client):
+    def test_log_interaction_different_status_formats(self, context):
         """Test interaction logging with different response status formats."""
-        ocp_client = OCPHTTPClient(context, mock_http_client)
+        ocp_client = OCPHTTPClient(context)
         context.add_interaction = Mock()
         
         # Test status_code attribute
@@ -161,119 +143,79 @@ class TestOCPHTTPClient:
         ]
         context.add_interaction.assert_has_calls(expected_calls)
     
-    def test_request_method(self, context, mock_http_client):
+    def test_request_method(self, context):
         """Test generic request method."""
-        ocp_client = OCPHTTPClient(context, mock_http_client)
-        
-        # Mock response
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_http_client.request.return_value = mock_response
-        
-        # Mock context interaction
-        context.add_interaction = Mock()
-        
-        # Make request
-        result = ocp_client.request("GET", "https://api.example.com/test", 
-                                  params={"q": "search"}, timeout=30)
-        
-        # Verify request was made with OCP headers
-        mock_http_client.request.assert_called_once()
-        args, kwargs = mock_http_client.request.call_args
-        
-        assert args == ("GET", "https://api.example.com/test")
-        assert "headers" in kwargs
-        assert "params" in kwargs
-        assert "timeout" in kwargs
-        assert kwargs["params"] == {"q": "search"}
-        assert kwargs["timeout"] == 30
-        
-        # Verify OCP headers were added
-        headers = kwargs["headers"]
-        expected_ocp_headers = create_ocp_headers(context)
-        for key, value in expected_ocp_headers.items():
-            assert headers[key] == value
-        
-        # Verify interaction was logged
-        context.add_interaction.assert_called_once()
-        
-        # Verify response was returned
-        assert result == mock_response
-    
-    def test_request_method_function_client(self, context):
-        """Test request method with function-based client."""
-        # Create function-based client (function without 'request' attribute)
-        mock_client_func = Mock()
-        # Remove request attribute to simulate function-based client
-        if hasattr(mock_client_func, 'request'):
-            del mock_client_func.request
-        
-        mock_response = Mock()
-        mock_response.status_code = 201
-        mock_client_func.return_value = mock_response
-        
-        ocp_client = OCPHTTPClient(context, mock_client_func)
-        context.add_interaction = Mock()
-        
-        # Make request
-        result = ocp_client.request("POST", "https://api.example.com/create", json={"data": "test"})
-        
-        # Verify function client was called directly
-        mock_client_func.assert_called_once()
-        args, kwargs = mock_client_func.call_args
-        
-        assert args == ("POST", "https://api.example.com/create")
-        assert "json" in kwargs
-        assert kwargs["json"] == {"data": "test"}
-        
-        # Verify result
-        assert result == mock_response
-    
-    def test_http_methods(self, context, mock_http_client):
-        """Test individual HTTP method helpers."""
-        ocp_client = OCPHTTPClient(context, mock_http_client, auto_update_context=False)
-        
-        mock_response = Mock()
-        mock_http_client.request.return_value = mock_response
-        
-        # Test each HTTP method
-        methods = [
-            ("get", "GET"),
-            ("post", "POST"), 
-            ("put", "PUT"),
-            ("delete", "DELETE"),
-            ("patch", "PATCH")
-        ]
-        
-        for method_name, http_method in methods:
-            mock_http_client.request.reset_mock()
+        with patch('requests.Session') as mock_session_class:
+            mock_session = Mock()
+            mock_response = Mock()
+            mock_response.status_code = 200
+            mock_session.request.return_value = mock_response
+            mock_session_class.return_value = mock_session
             
-            method_func = getattr(ocp_client, method_name)
-            result = method_func("https://api.example.com/endpoint", data={"test": "data"})
+            ocp_client = OCPHTTPClient(context)
             
-            # Verify correct HTTP method was used
-            mock_http_client.request.assert_called_once()
-            args, kwargs = mock_http_client.request.call_args
-            assert args == (http_method, "https://api.example.com/endpoint")
-            assert "data" in kwargs
-            assert kwargs["data"] == {"test": "data"}
+            # Mock context interaction
+            context.add_interaction = Mock()
+            
+            # Make request
+            result = ocp_client.request("GET", "https://api.example.com/test", 
+                                      params={"q": "search"}, timeout=30)
+            
+            # Verify request was made with OCP headers
+            mock_session.request.assert_called_once()
+            args, kwargs = mock_session.request.call_args
+            
+            assert args == ("GET", "https://api.example.com/test")
+            assert "headers" in kwargs
+            assert "params" in kwargs
+            assert "timeout" in kwargs
+            assert kwargs["params"] == {"q": "search"}
+            assert kwargs["timeout"] == 30
+            
+            # Verify OCP headers were added
+            headers = kwargs["headers"]
+            expected_ocp_headers = create_ocp_headers(context)
+            for key, value in expected_ocp_headers.items():
+                assert headers[key] == value
+            
+            # Verify interaction was logged
+            context.add_interaction.assert_called_once()
+            
+            # Verify response was returned
             assert result == mock_response
-
-
-class TestEnhanceHttpClient:
-    """Test enhance_http_client function."""
     
-    def test_enhance_http_client(self):
-        """Test enhancing an existing HTTP client."""
-        mock_client = Mock()
-        context = AgentContext(agent_type="test_agent")
-        
-        enhanced = enhance_http_client(mock_client, context)
-        
-        assert isinstance(enhanced, OCPHTTPClient)
-        assert enhanced.context == context
-        assert enhanced.http_client == mock_client
-        assert enhanced.auto_update_context is True
+    def test_http_methods(self, context):
+        """Test individual HTTP method helpers."""
+        with patch('requests.Session') as mock_session_class:
+            mock_session = Mock()
+            mock_response = Mock()
+            mock_session.request.return_value = mock_response
+            mock_session_class.return_value = mock_session
+            
+            ocp_client = OCPHTTPClient(context, auto_update_context=False)
+            
+            # Test each HTTP method
+            methods = [
+                ("get", "GET"),
+                ("post", "POST"), 
+                ("put", "PUT"),
+                ("delete", "DELETE"),
+                ("patch", "PATCH")
+            ]
+            
+            for method_name, http_method in methods:
+                mock_session.request.reset_mock()
+                
+                method_func = getattr(ocp_client, method_name)
+                result = method_func("https://api.example.com/endpoint", data={"test": "data"})
+                
+                # Verify correct HTTP method was used
+                mock_session.request.assert_called_once()
+                args, kwargs = mock_session.request.call_args
+                assert args == (http_method, "https://api.example.com/endpoint")
+                assert "data" in kwargs
+                assert kwargs["data"] == {"test": "data"}
+                assert result == mock_response
 
 
 class TestWrapAPI:
@@ -379,17 +321,6 @@ class TestWrapAPI:
             assert headers['User-Agent'] == 'MyApp/1.0'
             assert headers['Accept'] == 'application/vnd.api+json'
     
-    def test_wrap_api_with_custom_client(self, context):
-        """Test API wrapping with custom HTTP client."""
-        custom_client = Mock()
-        
-        api_client = wrap_api(
-            "https://api.example.com",
-            context,
-            http_client=custom_client
-        )
-        
-        assert api_client.http_client == custom_client
     
     def test_wrap_api_base_url_normalization(self, context):
         """Test that base URLs are properly normalized."""
@@ -430,160 +361,6 @@ class TestWrapAPI:
             # Verify URL was passed through unchanged
             args = mock_session.request.call_args[0]
             assert args[1] == "https://other-api.com/webhook"
-
-
-class TestRequestsPatch:
-    """Test create_requests_patch function."""
-    
-    @pytest.fixture
-    def context(self):
-        return AgentContext(agent_type="test_agent")
-    
-    def test_create_requests_patch(self, context):
-        """Test creating a requests patch."""
-        patch_decorator = create_requests_patch(context)
-        
-        # Mock original requests function
-        mock_requests_func = Mock()
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_requests_func.return_value = mock_response
-        
-        # Apply patch
-        patched_func = patch_decorator(mock_requests_func)
-        
-        # Mock context interaction
-        context.add_interaction = Mock()
-        
-        # Call patched function
-        result = patched_func("GET", "https://api.example.com/test", timeout=30)
-        
-        # Verify original function was called
-        mock_requests_func.assert_called_once()
-        args, kwargs = mock_requests_func.call_args
-        
-        assert args == ("GET", "https://api.example.com/test")
-        assert "timeout" in kwargs
-        assert "headers" in kwargs
-        
-        # Verify OCP headers were added
-        headers = kwargs["headers"]
-        expected_headers = create_ocp_headers(context)
-        for key, value in expected_headers.items():
-            assert headers[key] == value
-        
-        # Verify interaction was logged
-        context.add_interaction.assert_called_once_with(
-            action="api_call_get",
-            api_endpoint="GET /test",
-            result="HTTP 200"
-        )
-        
-        # Verify response was returned
-        assert result == mock_response
-    
-    def test_requests_patch_preserves_existing_headers(self, context):
-        """Test that patch preserves existing headers."""
-        patch_decorator = create_requests_patch(context)
-        
-        mock_requests_func = Mock()
-        mock_response = Mock()
-        mock_response.status_code = 201
-        mock_requests_func.return_value = mock_response
-        
-        patched_func = patch_decorator(mock_requests_func)
-        context.add_interaction = Mock()
-        
-        # Call with existing headers
-        existing_headers = {"Authorization": "Bearer token", "Custom": "value"}
-        result = patched_func("POST", "https://api.example.com/create", 
-                            headers=existing_headers, json={"data": "test"})
-        
-        # Verify headers were merged
-        kwargs = mock_requests_func.call_args[1]
-        headers = kwargs["headers"]
-        
-        # Should have both existing and OCP headers
-        assert headers["Authorization"] == "Bearer token"
-        assert headers["Custom"] == "value"
-        
-        expected_ocp_headers = create_ocp_headers(context)
-        for key, value in expected_ocp_headers.items():
-            assert headers[key] == value
-
-
-class TestHttpxPatch:
-    """Test create_httpx_patch function."""
-    
-    @pytest.fixture  
-    def context(self):
-        return AgentContext(agent_type="test_agent")
-    
-    def test_create_httpx_patch(self, context):
-        """Test creating an httpx patch."""
-        patch_decorator = create_httpx_patch(context)
-        
-        # Mock original httpx function
-        mock_httpx_func = Mock()
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_httpx_func.return_value = mock_response
-        
-        # Apply patch
-        patched_func = patch_decorator(mock_httpx_func)
-        context.add_interaction = Mock()
-        
-        # Call patched function
-        result = patched_func("GET", "https://api.example.com/data")
-        
-        # Verify original function was called with OCP headers
-        mock_httpx_func.assert_called_once()
-        args, kwargs = mock_httpx_func.call_args
-        
-        assert args == ("GET", "https://api.example.com/data")
-        assert "headers" in kwargs
-        
-        # Verify OCP headers were added
-        headers = kwargs["headers"]
-        expected_headers = create_ocp_headers(context)
-        for key, value in expected_headers.items():
-            assert headers[key] == value
-        
-        # Verify interaction was logged
-        context.add_interaction.assert_called_once_with(
-            action="api_call_get", 
-            api_endpoint="GET /data",
-            result="HTTP 200"
-        )
-        
-        assert result == mock_response
-    
-    def test_httpx_patch_with_existing_headers(self, context):
-        """Test httpx patch with existing headers."""
-        patch_decorator = create_httpx_patch(context)
-        
-        mock_httpx_func = Mock()
-        mock_response = Mock()
-        mock_response.status_code = 204
-        mock_httpx_func.return_value = mock_response
-        
-        patched_func = patch_decorator(mock_httpx_func)
-        context.add_interaction = Mock()
-        
-        # Call with existing headers
-        existing_headers = {"Content-Type": "application/json"}
-        result = patched_func("DELETE", "https://api.example.com/item/123", 
-                            headers=existing_headers)
-        
-        # Verify headers were merged
-        kwargs = mock_httpx_func.call_args[1]
-        headers = kwargs["headers"]
-        
-        assert headers["Content-Type"] == "application/json"
-        
-        expected_ocp_headers = create_ocp_headers(context)
-        for key, value in expected_ocp_headers.items():
-            assert headers[key] == value
 
 
 class TestHTTPClientIntegration:
