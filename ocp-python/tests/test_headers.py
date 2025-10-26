@@ -13,7 +13,7 @@ from ocp_agent.headers import (
     OCP_CONTEXT_ID,
     OCP_SESSION,
     OCP_AGENT_TYPE,
-    OCP_GOAL,
+    OCP_AGENT_GOAL,
     OCP_WORKSPACE,
     OCP_VERSION
 )
@@ -47,8 +47,8 @@ class TestOCPHeadersEncoding:
         
         # Check optional headers
         if sample_context.current_goal:
-            assert OCP_GOAL in headers
-            assert headers[OCP_GOAL] == sample_context.current_goal
+            assert OCP_AGENT_GOAL in headers
+            assert headers[OCP_AGENT_GOAL] == sample_context.current_goal
         
         if sample_context.workspace:
             assert OCP_WORKSPACE in headers

@@ -10,8 +10,9 @@ import { AgentContext } from './context.js';
 // OCP Header names
 export const OCP_CONTEXT_ID = 'OCP-Context-ID';
 export const OCP_SESSION = 'OCP-Session';
-export const OCP_GOAL = 'OCP-Goal';
+export const OCP_AGENT_GOAL = 'OCP-Agent-Goal';
 export const OCP_AGENT_TYPE = 'OCP-Agent-Type';
+export const OCP_USER = 'OCP-User';
 export const OCP_WORKSPACE = 'OCP-Workspace';
 export const OCP_VERSION = 'OCP-Version';
 
@@ -37,7 +38,11 @@ export class OCPHeaders {
 
     // Add optional headers if present
     if (context.current_goal) {
-      headers[OCP_GOAL] = context.current_goal;
+      headers[OCP_AGENT_GOAL] = context.current_goal;
+    }
+
+    if (context.user) {
+      headers[OCP_USER] = context.user;
     }
 
     if (context.workspace) {
@@ -132,8 +137,9 @@ export class OCPHeaders {
 
     const contextId = normalizedHeaders[OCP_CONTEXT_ID.toLowerCase()] || 'unknown';
     const agentType = normalizedHeaders[OCP_AGENT_TYPE.toLowerCase()] || 'unknown';
-    const goal = normalizedHeaders[OCP_GOAL.toLowerCase()] || 'none';
-    const workspace = normalizedHeaders[OCP_WORKSPACE.toLowerCase()] || 'none';
+    const goal = normalizedHeaders[OCP_AGENT_GOAL.toLowerCase()] || 'none';
+    const user = normalizedHeaders[OCP_USER.toLowerCase()] || 'unknown';
+    const workspace = normalizedHeaders[OCP_WORKSPACE.toLowerCase()] || 'unknown';
 
     return `OCP Context: ${contextId} | Agent: ${agentType} | Goal: ${goal} | Workspace: ${workspace}`;
   }
@@ -155,8 +161,9 @@ export class OCPHeaders {
     const ocpHeaderNames = new Set([
       OCP_CONTEXT_ID.toLowerCase(),
       OCP_SESSION.toLowerCase(),
-      OCP_GOAL.toLowerCase(),
+      OCP_AGENT_GOAL.toLowerCase(),
       OCP_AGENT_TYPE.toLowerCase(),
+      OCP_USER.toLowerCase(),
       OCP_WORKSPACE.toLowerCase(),
       OCP_VERSION.toLowerCase(),
     ]);

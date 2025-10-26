@@ -13,7 +13,8 @@ import {
   OCP_CONTEXT_ID,
   OCP_SESSION,
   OCP_AGENT_TYPE,
-  OCP_GOAL,
+  OCP_AGENT_GOAL,
+  OCP_USER,
   OCP_WORKSPACE,
   OCP_VERSION,
 } from '../src/headers.js';
@@ -89,8 +90,8 @@ describe('OCP Headers Encoding', () => {
 
     // Check optional headers
     if (sampleContext.current_goal) {
-      expect(headers[OCP_GOAL]).toBeDefined();
-      expect(headers[OCP_GOAL]).toBe(sampleContext.current_goal);
+      expect(headers[OCP_AGENT_GOAL]).toBeDefined();
+      expect(headers[OCP_AGENT_GOAL]).toBe(sampleContext.current_goal);
     }
 
     if (sampleContext.workspace) {

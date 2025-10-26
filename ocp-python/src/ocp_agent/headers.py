@@ -16,8 +16,9 @@ from .context import AgentContext
 # OCP Header names
 OCP_CONTEXT_ID = "OCP-Context-ID"
 OCP_SESSION = "OCP-Session"
-OCP_GOAL = "OCP-Goal"
+OCP_AGENT_GOAL = "OCP-Agent-Goal"
 OCP_AGENT_TYPE = "OCP-Agent-Type"
+OCP_USER = "OCP-User"
 OCP_WORKSPACE = "OCP-Workspace"
 OCP_VERSION = "OCP-Version"
 
@@ -54,7 +55,7 @@ class OCPHeaders:
         
         # Add optional headers if present
         if context.current_goal:
-            headers[OCP_GOAL] = context.current_goal
+            headers[OCP_AGENT_GOAL] = context.current_goal
         
         if context.workspace:
             headers[OCP_WORKSPACE] = context.workspace
@@ -150,7 +151,7 @@ class OCPHeaders:
         
         context_id = normalized_headers.get(OCP_CONTEXT_ID.lower(), "unknown")
         agent_type = normalized_headers.get(OCP_AGENT_TYPE.lower(), "unknown")
-        goal = normalized_headers.get(OCP_GOAL.lower(), "none")
+        goal = normalized_headers.get(OCP_AGENT_GOAL.lower(), "none")
         workspace = normalized_headers.get(OCP_WORKSPACE.lower(), "none")
         
         return f"OCP Context: {context_id} | Agent: {agent_type} | Goal: {goal} | Workspace: {workspace}"
@@ -188,7 +189,7 @@ class OCPHeaders:
         ocp_header_names = {
             OCP_CONTEXT_ID.lower(),
             OCP_SESSION.lower(), 
-            OCP_GOAL.lower(),
+            OCP_AGENT_GOAL.lower(),
             OCP_AGENT_TYPE.lower(),
             OCP_WORKSPACE.lower(),
             OCP_VERSION.lower(),
