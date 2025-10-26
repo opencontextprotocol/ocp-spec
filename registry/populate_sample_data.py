@@ -9,9 +9,9 @@ from pathlib import Path
 # Add the registry module to the path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from registry.database import db_manager
-from registry.service import RegistryService
-from registry.models import APIRegistration, AuthConfig, APICategory, AuthType
+from ocp_registry.database import db_manager
+from ocp_registry.service import RegistryService
+from ocp_registry.models import APIRegistration, AuthConfig, APICategory, AuthType
 
 
 # Sample API configurations

@@ -7,7 +7,7 @@ from pydantic import BaseModel, HttpUrl, Field
 from pydantic import ConfigDict
 
 # Import OCP types from the installed dependency
-from ocp.schema_discovery import OCPTool, OCPAPISpec
+from ocp_agent.schema_discovery import OCPTool, OCPAPISpec
 
 
 class AuthType(str, Enum):

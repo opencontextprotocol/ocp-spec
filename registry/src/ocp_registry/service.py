@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
 
 # Import OCP schema discovery from the installed dependency
-from ocp.schema_discovery import OCPSchemaDiscovery
+from ocp_agent.schema_discovery import OCPSchemaDiscovery
 
 from .database import APIEntryDB
 from .models import (

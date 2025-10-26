@@ -48,6 +48,7 @@ project-root/
 ### Current Structure
 - `ocp-python/src/ocp_agent/` - Core agent library
 - `cli/src/ocp_cli/` - Command-line interface
+- `registry/src/ocp_registry/` - Community API registry service (FastAPI)
 
 ### Dependency Management
 - **Tool**: Poetry for all Python projects
@@ -128,9 +129,13 @@ project-root/
 ## Project-Specific Knowledge
 
 ### Registry System
-- Central registry of APIs with OpenAPI specifications
-- Used by CLI for API discovery and testing
-- HTTPBin API example with 73 available tools
+- **Purpose**: Community convenience service hosted by OCP team (not end-user infrastructure)
+- **Architecture**: FastAPI service with SQLite database
+- **Location**: `registry/src/ocp_registry/`
+- **Features**: API registration, search/discovery, OpenAPI validation, tool extraction
+- **Zero Infrastructure Principle**: Optional service - OCP works fine without it, enterprises can host their own
+- **Integration**: CLI uses OCPRegistry client for discovery
+- **Database**: SQLite for development, production uses hosted service
 
 ### CLI Commands
 - `ocp context` - Context management
@@ -150,8 +155,9 @@ project-root/
 - **Poetry**: Used for dependency management
 - **CLI Version**: 0.2.0
 - **Agent Library Version**: 0.1.0
+- **Registry Version**: 0.1.0
 
 ---
 
-**Last Updated**: October 25, 2025
-**Context Thread**: Initial project setup and CLI development with registry integration
+**Last Updated**: October 26, 2025
+**Context Thread**: Registry alignment with OCP spec and Python project conventions

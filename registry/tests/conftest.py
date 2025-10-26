@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 
-from registry.database import Base, get_db
-from registry.main import app
+from ocp_registry.database import Base, get_db
+from ocp_registry.main import app
 
 
 # Test database setup
