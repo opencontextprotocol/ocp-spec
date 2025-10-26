@@ -38,9 +38,11 @@ export interface OCPResponse {
  */
 export class OCPHTTPClient {
     private context: AgentContext;
+    private autoUpdateContext: boolean;
 
-    constructor(context: AgentContext) {
+    constructor(context: AgentContext, autoUpdateContext: boolean = true) {
         this.context = context;
+        this.autoUpdateContext = autoUpdateContext;
     }
 
     /**
@@ -59,6 +61,10 @@ export class OCPHTTPClient {
      * Log API interaction to context.
      */
     private _logInteraction(method: string, url: string, statusCode?: number, error?: Error): void {
+        if (!this.autoUpdateContext) {
+            return;
+        }
+
         this.context.addInteraction(
             `http_${method.toLowerCase()}`,
             url,

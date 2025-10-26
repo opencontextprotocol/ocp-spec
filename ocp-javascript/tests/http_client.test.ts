@@ -101,15 +101,14 @@ describe('OCP HTTP Client', () => {
     });
 
     test('log interaction disabled', () => {
-      // Note: JavaScript implementation doesn't have auto_update_context parameter
-      // This test documents that all interactions are currently logged
-      const ocpClient = new OCPHTTPClient(context);
+      // Test with auto_update_context disabled
+      const ocpClient = new OCPHTTPClient(context, false);
       const addInteractionSpy = jest.spyOn(context, 'addInteraction');
 
       ocpClient['_logInteraction']('POST', 'https://api.example.com/data', undefined);
 
-      // Currently logs all interactions
-      expect(addInteractionSpy).toHaveBeenCalled();
+      // Should not log when disabled
+      expect(addInteractionSpy).not.toHaveBeenCalled();
 
       addInteractionSpy.mockRestore();
     });

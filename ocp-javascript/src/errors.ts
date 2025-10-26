@@ -22,10 +22,13 @@ export class RegistryUnavailable extends OCPError {
   public registryUrl: string;
 
   constructor(
-    message: string,
-    registryUrl: string
+    registryUrl: string,
+    message?: string
   ) {
-    super(message);
+    const fullMessage = message 
+      ? `Registry unavailable at ${registryUrl}: ${message}`
+      : `Registry unavailable at ${registryUrl}. Use spec_url for direct discovery.`;
+    super(fullMessage);
     this.name = 'RegistryUnavailable';
     this.registryUrl = registryUrl;
   }

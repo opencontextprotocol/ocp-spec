@@ -73,8 +73,8 @@ export class OCPRegistry {
             
             if (!response.ok) {
                 throw new RegistryUnavailable(
-                    `${response.statusText}`,
-                    this.registryUrl
+                    this.registryUrl,
+                    `${response.statusText}`
                 );
             }
             
@@ -88,14 +88,14 @@ export class OCPRegistry {
             
             if (error instanceof TypeError && error.message.includes('fetch')) {
                 throw new RegistryUnavailable(
-                    `Could not connect to registry`,
-                    this.registryUrl
+                    this.registryUrl,
+                    `Could not connect to registry`
                 );
             }
             
             throw new RegistryUnavailable(
-                String(error),
-                this.registryUrl
+                this.registryUrl,
+                String(error)
             );
         }
     }
