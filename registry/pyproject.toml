@@ -29,7 +29,3 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 ocp-registry = "registry.main:main"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["src"]
