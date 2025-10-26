@@ -6,7 +6,7 @@ import pytest
 import json
 import base64
 import gzip
-from ocp.headers import (
+from ocp_agent.headers import (
     OCPHeaders, 
     create_ocp_headers, 
     extract_context_from_response,
@@ -17,7 +17,7 @@ from ocp.headers import (
     OCP_WORKSPACE,
     OCP_VERSION
 )
-from ocp.context import AgentContext
+from ocp_agent.context import AgentContext
 
 
 class TestOCPHeadersEncoding:
@@ -321,7 +321,7 @@ class TestNewConvenienceFunctions:
     
     def test_parse_context_with_dict(self, sample_context):
         """Test parse_context with dictionary headers."""
-        from ocp.headers import parse_context
+        from ocp_agent.headers import parse_context
         
         headers = sample_context.to_headers()
         parsed = parse_context(headers)
@@ -333,7 +333,7 @@ class TestNewConvenienceFunctions:
     def test_parse_context_with_headers_object(self, sample_context):
         """Test parse_context with headers object that has items()."""
         from unittest.mock import Mock
-        from ocp.headers import parse_context
+        from ocp_agent.headers import parse_context
         
         headers_dict = sample_context.to_headers()
         
@@ -347,7 +347,7 @@ class TestNewConvenienceFunctions:
     
     def test_parse_context_no_ocp_headers(self):
         """Test parse_context with no OCP headers."""
-        from ocp.headers import parse_context
+        from ocp_agent.headers import parse_context
         
         headers = {"content-type": "application/json"}
         parsed = parse_context(headers)
@@ -356,7 +356,7 @@ class TestNewConvenienceFunctions:
     def test_add_context_headers_flask_style(self, sample_context):
         """Test add_context_headers with Flask-style response."""
         from unittest.mock import Mock
-        from ocp.headers import add_context_headers
+        from ocp_agent.headers import add_context_headers
         
         # Mock Flask response with proper headers object
         headers_mock = Mock()
@@ -373,7 +373,7 @@ class TestNewConvenienceFunctions:
     def test_add_context_headers_django_style(self, sample_context):
         """Test add_context_headers with Django-style response."""
         from unittest.mock import Mock
-        from ocp.headers import add_context_headers
+        from ocp_agent.headers import add_context_headers
         
         # Mock Django response
         response = Mock()
@@ -389,7 +389,7 @@ class TestNewConvenienceFunctions:
     def test_add_context_headers_fastapi_style(self, sample_context):
         """Test add_context_headers with FastAPI-style response."""
         from unittest.mock import Mock
-        from ocp.headers import add_context_headers
+        from ocp_agent.headers import add_context_headers
         
         # Mock FastAPI response - first condition fails, second condition fails,
         # third condition (append) succeeds, then falls back to dict assignment
@@ -406,7 +406,7 @@ class TestNewConvenienceFunctions:
     def test_add_context_headers_generic_dict(self, sample_context):
         """Test add_context_headers with generic headers dict."""
         from unittest.mock import Mock
-        from ocp.headers import add_context_headers
+        from ocp_agent.headers import add_context_headers
         
         # Mock response with headers dict
         response = Mock()
@@ -420,7 +420,7 @@ class TestNewConvenienceFunctions:
     def test_add_context_headers_unsupported_type(self, sample_context):
         """Test add_context_headers with unsupported response type."""
         from unittest.mock import Mock, PropertyMock
-        from ocp.headers import add_context_headers
+        from ocp_agent.headers import add_context_headers
         import pytest
         
         # Mock completely unsupported response that fails all attempts
@@ -438,7 +438,7 @@ class TestNewConvenienceFunctions:
     def test_add_context_headers_with_compression(self, sample_context):
         """Test add_context_headers with compression option."""
         from unittest.mock import Mock
-        from ocp.headers import add_context_headers
+        from ocp_agent.headers import add_context_headers
         
         response = Mock()
         response.headers = {}

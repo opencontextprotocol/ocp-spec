@@ -5,7 +5,7 @@ Tests for OCP schema discovery functionality.
 import pytest
 import json
 from unittest.mock import Mock, patch, MagicMock
-from ocp.schema_discovery import OCPSchemaDiscovery, OCPTool, OCPAPISpec
+from ocp_agent.schema_discovery import OCPSchemaDiscovery, OCPTool, OCPAPISpec
 
 
 class TestOCPSchemaDiscovery:

@@ -7,9 +7,9 @@ from unittest.mock import patch, Mock
 import os
 import json
 
-from ocp.registry import OCPRegistry
-from ocp.errors import RegistryUnavailable, APINotFound
-from ocp.schema_discovery import OCPAPISpec, OCPTool
+from ocp_agent.registry import OCPRegistry
+from ocp_agent.errors import RegistryUnavailable, APINotFound
+from ocp_agent.schema_discovery import OCPAPISpec, OCPTool
 
 
 class TestOCPRegistry:

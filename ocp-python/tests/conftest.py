@@ -5,7 +5,7 @@ Shared test fixtures and configuration for OCP tests.
 import pytest
 import json
 from datetime import datetime, timezone
-from ocp import AgentContext
+from ocp_agent import AgentContext
 
 
 @pytest.fixture

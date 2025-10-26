@@ -4,9 +4,9 @@ Tests for OCP Agent functionality.
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from ocp.agent import OCPAgent
-from ocp.context import AgentContext
-from ocp.schema_discovery import OCPTool, OCPAPISpec
+from ocp_agent.agent import OCPAgent
+from ocp_agent.context import AgentContext
+from ocp_agent.schema_discovery import OCPTool, OCPAPISpec
 
 
 class TestOCPAgent:
@@ -95,7 +95,7 @@ class TestOCPAgent:
         assert agent.discovery is not None
         assert agent.http_client is not None
     
-    @patch('ocp.schema_discovery.OCPSchemaDiscovery.discover_api')
+    @patch('ocp_agent.schema_discovery.OCPSchemaDiscovery.discover_api')
     def test_register_api(self, mock_discover, agent, sample_api_spec):
         """Test API registration."""
         mock_discover.return_value = sample_api_spec
@@ -117,7 +117,7 @@ class TestOCPAgent:
             None
         )
     
-    @patch('ocp.schema_discovery.OCPSchemaDiscovery.discover_api')
+    @patch('ocp_agent.schema_discovery.OCPSchemaDiscovery.discover_api')
     def test_register_api_with_base_url(self, mock_discover, agent, sample_api_spec):
         """Test API registration with custom base URL."""
         mock_discover.return_value = sample_api_spec
@@ -177,7 +177,7 @@ class TestOCPAgent:
         tool = agent.get_tool("nonexistent")
         assert tool is None
     
-    @patch('ocp.schema_discovery.OCPSchemaDiscovery.search_tools')
+    @patch('ocp_agent.schema_discovery.OCPSchemaDiscovery.search_tools')
     def test_search_tools(self, mock_search, agent, sample_api_spec):
         """Test searching tools."""
         agent.known_apis["test_api"] = sample_api_spec
@@ -253,7 +253,7 @@ class TestOCPAgent:
         assert params["json"]["name"] == "test item"
         assert params["json"]["description"] == "test desc"
     
-    @patch('ocp.http_client.OCPHTTPClient.request')
+    @patch('ocp_agent.http_client.OCPHTTPClient.request')
     def test_call_tool_success(self, mock_request, agent, sample_api_spec):
         """Test successful tool calling."""
         agent.known_apis["test_api"] = sample_api_spec
@@ -292,7 +292,7 @@ class TestOCPAgent:
         with pytest.raises(ValueError, match="Parameter validation failed"):
             agent.call_tool("post_items", {})  # Missing required 'name' parameter
     
-    @patch('ocp.schema_discovery.OCPSchemaDiscovery.generate_tool_documentation')
+    @patch('ocp_agent.schema_discovery.OCPSchemaDiscovery.generate_tool_documentation')
     def test_get_tool_documentation(self, mock_generate_doc, agent, sample_api_spec):
         """Test getting tool documentation."""
         agent.known_apis["test_api"] = sample_api_spec
@@ -315,7 +315,7 @@ class TestOCPAgent:
         assert agent.context.current_goal == "new goal"
         assert agent.context.context_summary == "goal summary"
     
-    @patch('ocp.agent.OCPRegistry')
+    @patch('ocp_agent.agent.OCPRegistry')
     def test_register_api_from_registry(self, mock_registry_class, agent, sample_api_spec):
         """Test API registration from registry."""
         # Setup mock registry
@@ -351,7 +351,7 @@ class TestOCPAgent:
         assert interaction["api_endpoint"] == "registry:test_api"
         assert interaction["metadata"]["source"] == "registry"
     
-    @patch('ocp.agent.OCPSchemaDiscovery')
+    @patch('ocp_agent.agent.OCPSchemaDiscovery')
     def test_register_api_from_openapi_url(self, mock_discovery_class, agent, sample_api_spec):
         """Test API registration from OpenAPI URL (existing behavior)."""
         # Setup mock discovery
@@ -379,7 +379,7 @@ class TestOCPAgent:
         interaction = agent.context.history[0]
         assert interaction["metadata"]["source"] == "openapi"
     
-    @patch('ocp.agent.OCPRegistry')
+    @patch('ocp_agent.agent.OCPRegistry')
     def test_register_api_with_base_url_override(self, mock_registry_class, agent, sample_api_spec):
         """Test API registration with base URL override."""
         mock_registry = Mock()

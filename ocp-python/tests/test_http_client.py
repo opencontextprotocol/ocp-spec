@@ -7,15 +7,15 @@ from unittest.mock import Mock, patch, MagicMock, call
 import json
 from urllib.parse import urlparse
 
-from ocp.http_client import (
+from ocp_agent.http_client import (
     OCPHTTPClient,
     enhance_http_client,
     wrap_api,
     create_requests_patch,
     create_httpx_patch
 )
-from ocp.context import AgentContext
-from ocp.headers import create_ocp_headers
+from ocp_agent.context import AgentContext
+from ocp_agent.headers import create_ocp_headers
 
 
 class TestOCPHTTPClient:

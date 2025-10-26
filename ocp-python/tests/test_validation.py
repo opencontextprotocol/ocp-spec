@@ -4,7 +4,7 @@ Tests for OCP validation functionality.
 
 import pytest
 from datetime import datetime, timezone
-from ocp.validation import (
+from ocp_agent.validation import (
     validate_context,
     validate_context_dict,
     ValidationResult,
@@ -12,7 +12,7 @@ from ocp.validation import (
     validate_and_fix_context,
     OCP_CONTEXT_SCHEMA
 )
-from ocp.context import AgentContext
+from ocp_agent.context import AgentContext
 
 
 class TestValidationResult:

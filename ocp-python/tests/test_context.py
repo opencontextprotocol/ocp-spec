@@ -5,7 +5,7 @@ Tests for AgentContext class functionality.
 import pytest
 import json
 from datetime import datetime, timezone
-from ocp.context import AgentContext
+from ocp_agent.context import AgentContext
 
 
 class TestAgentContextCreation:
@@ -241,7 +241,7 @@ class TestAgentContextConvenienceMethods:
         assert any(key.startswith('OCP-') for key in headers)
         
         # Should be able to parse back using the headers module
-        from ocp.headers import OCPHeaders
+        from ocp_agent.headers import OCPHeaders
         parsed = OCPHeaders.decode_context(headers)
         assert parsed.agent_type == "test"
         assert parsed.user == "alice"
@@ -257,7 +257,7 @@ class TestAgentContextConvenienceMethods:
         assert isinstance(headers_uncompressed, dict)
         
         # Both should work
-        from ocp.headers import OCPHeaders
+        from ocp_agent.headers import OCPHeaders
         assert OCPHeaders.decode_context(headers_compressed) is not None
         assert OCPHeaders.decode_context(headers_uncompressed) is not None
     
