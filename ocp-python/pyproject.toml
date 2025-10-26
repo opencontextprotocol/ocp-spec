@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "open-context-agent"
 version = "0.1.0"
-description = "Context-aware HTTP client framework for AI agents with OpenAPI integration"
+description = "Python implementation of the Open Context Protocol for AI agents"
 authors = ["OCP Contributors"]
 license = "MIT"
 readme = "README.md"
