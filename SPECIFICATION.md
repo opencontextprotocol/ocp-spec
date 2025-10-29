@@ -799,6 +799,218 @@ This ensures **predictable behavior**, **reliable integrations**, and **consiste
 
 ---
 
+## Local Storage & Caching
+
+**Purpose**: OCP client libraries should provide optional local storage for API specifications and session contexts to improve performance, reduce network calls, and enable session persistence across application restarts.
+
+**Storage Scope**: Libraries provide data persistence capabilities; consumers (extensions, CLI tools, applications) decide when and how to use them.
+
+### Storage Directory Structure
+
+**Standard Location**: `~/.ocp/`
+
+```
+~/.ocp/
+├── cache/
+│   └── apis/
+│       ├── github.json          # Cached OpenAPI specification
+│       ├── stripe.json          # Each API in separate file
+│       └── slack.json
+└── sessions/
+    ├── vscode-chat-abc123.json  # Session-specific context
+    ├── cli-session-xyz789.json  # Each session in separate file
+    └── jupyter-kernel-def456.json
+```
+
+**Design Principles**:
+- **Per-file storage**: Each API and session in separate files for surgical reads/writes
+- **Consumer-agnostic**: Libraries don't distinguish between "global" vs "session" storage
+- **Optional usage**: Storage operations are opt-in; libraries work without persistence
+- **Fail-safe**: Storage errors should not break library functionality
+
+### API Specification Caching
+
+**Cache Operations**:
+```python
+# Cache API specification locally
+storage.cache_api(
+    name="github",
+    spec=api_spec,
+    metadata={"cached_at": "2025-10-29T10:00:00Z"}
+)
+
+# Retrieve cached API (with optional expiration)
+cached_spec = storage.get_cached_api(
+    name="github",
+    max_age_days=7  # Refetch if older than 7 days
+)
+
+# Search local cache
+results = storage.search_cache(query="repository")
+
+# Clear cache (specific API or all)
+storage.clear_cache(name="github")  # Clear one API
+storage.clear_cache()               # Clear all
+```
+
+**Lookup Chain** (Memory → Cache → Network):
+```
+1. Check in-memory cache (fastest)
+   ↓ (if not found)
+2. Check ~/.ocp/cache/apis/<name>.json (fast)
+   ↓ (if not found or expired)
+3. Fetch from OCP registry (network, ~50ms)
+   ↓ (if registry lookup fails)
+4. Fetch OpenAPI spec directly (network, ~2-5s)
+   ↓
+5. Cache to disk for future use
+```
+
+**Cache File Format** (`~/.ocp/cache/apis/github.json`):
+```json
+{
+  "api_name": "github",
+  "title": "GitHub REST API",
+  "version": "1.1.4",
+  "base_url": "https://api.github.com",
+  "cached_at": "2025-10-29T10:00:00Z",
+  "source": "registry",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {...},
+    "paths": {...}
+  },
+  "tools": [
+    {
+      "name": "listRepositories",
+      "method": "GET",
+      "path": "/user/repos",
+      "description": "List repositories for the authenticated user"
+    }
+  ]
+}
+```
+
+### Session Context Persistence
+
+**Session Operations**:
+```python
+# Save session context
+storage.save_session(
+    session_id="vscode-chat-abc123",
+    context=agent_context
+)
+
+# Load session context
+context = storage.load_session(
+    session_id="vscode-chat-abc123"
+)
+
+# List all sessions with metadata
+sessions = storage.list_sessions(limit=50)
+# Returns: [{"id": "...", "created_at": "...", "last_updated": "..."}, ...]
+
+# Cleanup old sessions
+storage.cleanup_sessions(keep_recent=50)  # Keep only 50 most recent
+```
+
+**Session File Format** (`~/.ocp/sessions/vscode-chat-abc123.json`):
+```json
+{
+  "context_id": "ocp-a1b2c3d4",
+  "session_id": "vscode-chat-abc123",
+  "agent_type": "ide_coding_assistant",
+  "user": "alice",
+  "workspace": "payment-service",
+  "current_goal": "debug_deployment_failure",
+  "session": {
+    "start_time": "2025-10-29T10:00:00Z",
+    "interaction_count": 12,
+    "last_api_call": "github.createIssue"
+  },
+  "history": [
+    {
+      "timestamp": "2025-10-29T10:05:00Z",
+      "action": "api_call",
+      "api": "github",
+      "tool": "listRepositories",
+      "result": "success"
+    }
+  ],
+  "api_specs": {
+    "github": "registry:github",
+    "stripe": "https://api.stripe.com/openapi.json"
+  },
+  "created_at": "2025-10-29T10:00:00Z",
+  "last_updated": "2025-10-29T10:15:00Z"
+}
+```
+
+### Consumer Responsibilities
+
+**Configuration Management**: Auth tokens, user preferences, and consumer-specific settings are the consumer's responsibility, not the library's. Examples:
+
+- **VS Code Extension**: Uses VS Code's `settings.json` and SecretStorage API
+- **CLI Tool**: Uses environment variables or `~/.config/ocp-cli/config.json`
+- **Python Scripts**: Uses `.env` files or hardcoded configuration
+
+**Session Lifecycle Management**: Consumers decide when to persist:
+
+```python
+# VS Code Extension Example
+@vscode.chat.onDidStartChatSession
+def on_chat_start(session):
+    # Try to resume previous session
+    context = storage.load_session(session.id)
+    if context:
+        agent.context = context
+    
+@vscode.chat.onDidEndChatSession  
+def on_chat_end(session):
+    # Persist session for later resume
+    storage.save_session(session.id, agent.context)
+```
+
+**Storage Opt-In**: Libraries should support disabling storage:
+```python
+# Enable storage (default)
+agent = OCPAgent(..., enable_cache=True)
+
+# Disable storage (pure in-memory)
+agent = OCPAgent(..., enable_cache=False)
+```
+
+### Implementation Guidelines
+
+**Libraries Must Provide**:
+- Storage API for caching and session persistence
+- Automatic cache lookup in API registration flow
+- Error handling that doesn't break on storage failures
+- Directory creation (`~/.ocp/cache/apis/`, `~/.ocp/sessions/`)
+
+**Libraries Should NOT**:
+- Manage consumer configuration (auth tokens, preferences)
+- Decide session lifecycle (when to save/load)
+- Implement consumer-specific storage locations
+- Auto-persist without consumer control
+
+**Error Handling**:
+```python
+# Storage errors should be non-fatal
+try:
+    storage.cache_api(name, spec)
+except IOError:
+    # Log warning but continue
+    logger.warning("Failed to cache API spec, continuing in-memory")
+```
+
+**Cross-Platform Considerations**:
+- Windows: `%USERPROFILE%\.ocp\`
+- Unix/Linux/macOS: `~/.ocp/`
+- Respect `XDG_CACHE_HOME` on Linux if set
+
+---
+
 ## Implementation Examples
 
 ### 1. Agent with Schema Discovery
