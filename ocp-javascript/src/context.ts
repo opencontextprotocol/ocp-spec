@@ -9,6 +9,26 @@ import { randomBytes } from 'crypto';
 import { createOCPHeaders, parseContext } from './headers.js';
 
 /**
+ * OCP Context Object - matches the official OCP specification schema
+ */
+export interface OCPContextDict {
+  context_id: string;
+  agent_type: string;
+  user: string | null;
+  workspace: string | null;
+  current_file: string | null;
+  session: Record<string, any>;
+  history: Array<Record<string, any>>;
+  current_goal: string | null;
+  context_summary: string | null;
+  error_context: string | null;
+  recent_changes: string[];
+  api_specs: Record<string, string>;
+  created_at: string;
+  last_updated: string;
+}
+
+/**
  * Core agent context that flows through OCP-enabled API calls.
  * 
  * This represents the agent's understanding of the current conversation,
@@ -147,7 +167,7 @@ export class AgentContext {
   /**
    * Convert context to dictionary for serialization
    */
-  toDict(): Record<string, any> {
+  toDict(): OCPContextDict {
     return {
       context_id: this.context_id,
       agent_type: this.agent_type,

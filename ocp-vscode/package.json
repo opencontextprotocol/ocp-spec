@@ -1,0 +1,155 @@
+{
+  "name": "ocp-vscode-extension",
+  "displayName": "Open Context Protocol",
+  "description": "Provides OCP context and API calling tools for AI agents in VS Code",
+  "version": "0.1.0",
+  "publisher": "opencontextprotocol",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Open Context Protocol",
+      "properties": {
+        "ocp.user": {
+          "type": "string",
+          "default": "",
+          "description": "User identifier for OCP context (defaults to git username)"
+        },
+        "ocp.registryUrl": {
+          "type": "string",
+          "default": "https://registry.opencontextprotocol.org",
+          "description": "OCP registry URL for API discovery"
+        },
+        "ocp.apiAuth": {
+          "type": "object",
+          "default": {},
+          "description": "API authentication headers by API name (e.g., {\"github\": {\"Authorization\": \"token ghp_xxx\"}})",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "languageModelTools": [
+      {
+        "name": "ocp_getContext",
+        "displayName": "OCP Get Context",
+        "modelDescription": "Get the current OCP context for this workspace, including context ID, agent type, user, workspace, and session information",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "ocp_registerApi",
+        "displayName": "OCP Register API",
+        "modelDescription": "Register an API from its OpenAPI specification URL or from the OCP registry by name. Discovers all available tools from the API.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Human-readable name for the API (required)"
+            },
+            "specUrl": {
+              "type": "string",
+              "description": "URL to OpenAPI specification (optional if using registry lookup)"
+            },
+            "baseUrl": {
+              "type": "string",
+              "description": "Optional override for API base URL"
+            }
+          },
+          "required": ["name"]
+        }
+      },
+      {
+        "name": "ocp_listTools",
+        "displayName": "OCP List Tools",
+        "modelDescription": "List all available tools from registered APIs, or tools from a specific API",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "apiName": {
+              "type": "string",
+              "description": "Optional API name to filter tools"
+            }
+          }
+        }
+      },
+      {
+        "name": "ocp_callTool",
+        "displayName": "OCP Call Tool",
+        "modelDescription": "Call a discovered tool with parameters. Tool must be registered first. Parameters are validated against the tool's schema.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "toolName": {
+              "type": "string",
+              "description": "Name of the tool to call (required)"
+            },
+            "parameters": {
+              "type": "object",
+              "description": "Parameters for the tool (required, can be empty object)"
+            },
+            "apiName": {
+              "type": "string",
+              "description": "Optional API name if tool name is ambiguous"
+            }
+          },
+          "required": ["toolName", "parameters"]
+        }
+      },
+      {
+        "name": "ocp_searchTools",
+        "displayName": "OCP Search Tools",
+        "modelDescription": "Search for tools by name or description across all registered APIs or within a specific API",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query for tool name or description (required)"
+            },
+            "apiName": {
+              "type": "string",
+              "description": "Optional API name to search within"
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "chat.ocp",
+        "name": "ocp",
+        "description": "Open Context Protocol - automatically provides OCP tools to chat agents",
+        "isSticky": true
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@opencontext/agent": "file:../ocp-javascript"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "@vscode/vsce": "^2.22.0"
+  }
+}

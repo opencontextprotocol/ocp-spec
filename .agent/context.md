@@ -244,41 +244,162 @@ ocp-javascript/
 
 ## VS Code Extension Development
 
+## Current Status
+
+**Extension Rebuilt Successfully** ✅
+- Extension now properly wraps OCPAgent instead of reimplementing functionality
+- Single OCPAgent instance created per workspace (persists across tool calls)
+- All 5 OCP tools implemented: getContext, registerApi, listTools, callTool, searchTools
+- VS Code configuration schema added for user, registryUrl, and apiAuth
+- TypeScript compilation successful with OCPContextDict type enforcement
+- Ready for testing in Extension Development Host
+
+**Next Steps:**
+1. Test extension in Extension Development Host
+2. Verify autonomous tool calling works with new OCPAgent-based implementation
+3. Test full workflow: register API → list tools → call tool
+4. Validate OCP headers are included in API calls
+5. Test authentication with apiAuth configuration
+### Extension Architecture (Correct Approach)
+
+The extension should be a **thin wrapper around OCPAgent**:
+
+1. **Create ONE OCPAgent instance** for the workspace (persists across tools)
+2. **Expose OCPAgent methods** as Language Model Tools:
+   - `ocp_getContext` - Returns agent.context.toDict()
+   - `ocp_registerApi` - Wraps agent.registerApi(name, specUrl, baseUrl)
+   - `ocp_listTools` - Wraps agent.listTools(apiName?)
+   - `ocp_callTool` - Wraps agent.callTool(toolName, parameters, apiName?)
+   - `ocp_searchTools` - Wraps agent.searchTools(query, apiName?)
+
+3. **Chat Participant** automatically passes tools to language model
+4. **Agent decides** when to discover APIs, register them, and call tools
+
+### OCP Core Understanding
+
+**Layer 1: Context Management** (HTTP Headers)
+- Context flows across API calls via OCP headers
+- Works with ANY existing HTTP API today
+- AgentContext manages conversation state
+- OCPHTTPClient adds headers automatically
+
+**Layer 2: Schema Discovery** (OpenAPI)
+- OCPAgent loads OpenAPI specs → discovers tools
+- Validates parameters, builds requests
+- Optional OCPRegistry for fast API lookup
+- Zero infrastructure required
+
+**Extension's Role**:
+- Provide workspace context (user, workspace, VS Code state)
+- Expose OCPAgent to chat agents
+- Enable autonomous API discovery and usage
+
+### Configuration Requirements
+
+Based on JS library review, configuration needs:
+
+**Required**:
+- Workspace information (from VS Code)
+- User identifier (from git config or VS Code settings)
+
+**Optional**:
+- API authentication tokens (for wrapApi)
+- Custom registry URL
+- Agent goal/objective
+
+**VS Code Settings Schema** (to implement):
+```json
+{
+  "ocp.user": "User identifier for OCP context",
+  "ocp.registryUrl": "Custom OCP registry URL",
+  "ocp.apiTokens": "Object mapping API names to auth tokens"
+}
+```
+
 ### Extension Purpose
 **For agents to use during chat conversations** - NOT for direct user interaction.
 
-The extension provides tools that AI agents (like GitHub Copilot, Cursor, etc.) can invoke during chat sessions to:
-- Access workspace context (files, git state, open editors)
-- Make OCP-enhanced API calls on behalf of the user
-- Leverage VS Code's environment information automatically
+The extension provides tools that AI agents (like GitHub Copilot) can invoke during chat sessions to:
+- Create and maintain OCP context across conversation
+- Discover APIs from OpenAPI specs or registry
+- Call discovered tools with automatic validation
+- Make context-aware API requests
 
-### Extension Strategy
-- **Delete old extension**: Remove marketing-focused version, start fresh
-- **Primary interface**: Tools/commands that agents call, not UI elements
-- **Approach**: Build functional extension using `@opencontext/agent` library
-- **Focus**: Agent tooling, not user-facing features
+### Technical Implementation
 
-### Technical Requirements
-- TypeScript with VS Code Extension API
-- Import `@opencontext/agent` from npm (local development: use file path)
-- Expose commands/tools for agent consumption
-- Minimal or no UI - agents are the primary consumers
+**Current Structure**:
+```
+ocp-vscode/
+├── package.json          # Extension manifest with languageModelTools
+├── tsconfig.json        # TypeScript config
+├── src/
+│   └── extension.ts     # Main extension (needs rebuild)
+└── dist/                # Compiled output
+```
+
+**Dependencies**:
+- `@opencontext/agent` (local: file:../ocp-javascript)
+- `vscode` (types: ^1.85.0)
+
+**Activation**:
+- Event: `onStartupFinished`
+- Registers Language Model Tools
+- Creates Chat Participant that passes tools to LLM
+
+**Integration Pattern**:
+```typescript
+import { OCPAgent } from '@opencontext/agent';
+
+// ONE agent instance for workspace
+const agent = new OCPAgent('vscode_copilot', user, workspace, goal);
+
+// Wrap methods as tools
+vscode.lm.registerTool('ocp_registerApi', {
+  invoke: async (options) => {
+    const result = await agent.registerApi(...);
+    return new vscode.LanguageModelToolResult([...]);
+  }
+});
+```
 
 ### Core Features to Implement (Agent-Callable Tools)
-1. **Context Creation**
-   - Agent calls tool to create OCP context from VS Code workspace
-   - Auto-populate: workspace path, git info, user from VS Code settings
-   - Return context ID and session data for agent to use
 
-2. **API Calling**
-   - Agent provides: API endpoint, method, parameters
-   - Extension makes OCP-enhanced call with workspace context
-   - Return API response to agent for processing
+1. **Context Access**
+   - `ocp_getContext` - Returns current OCP context
+   - Auto-populated from VS Code: workspace, user, files
 
-3. **Environment Access**
-   - Agent can query: open files, git branch, workspace name
-   - Provides richer context than agent could gather externally
-   - All data returned to agent for decision-making
+2. **API Discovery**
+   - `ocp_registerApi` - Load OpenAPI spec, discover tools
+   - `ocp_listTools` - Show available tools from registered APIs
+   - `ocp_searchTools` - Find tools by name/description
+
+3. **Tool Execution**
+   - `ocp_callTool` - Call discovered tool with validation
+   - Context automatically included in all requests
+
+### TypeScript Type Safety
+
+**OCPContextDict interface** enforces OCP spec:
+```typescript
+export interface OCPContextDict {
+  context_id: string;
+  agent_type: string;
+  user: string | null;
+  workspace: string | null;
+  current_file: string | null;
+  session: Record<string, any>;
+  history: Array<Record<string, any>>;
+  current_goal: string | null;
+  context_summary: string | null;
+  error_context: string | null;
+  recent_changes: string[];
+  api_specs: Record<string, string>;
+  created_at: string;
+  last_updated: string;
+}
+```
+
+**Result**: TypeScript catches schema violations at compile time
 
 ### Version Information
 
@@ -288,6 +409,7 @@ The extension provides tools that AI agents (like GitHub Copilot, Cursor, etc.) 
 - **npm**: Used for JavaScript dependency management
 - **ocp-python (PyPI: open-context-agent)**: 0.1.0 (145 tests, 100% passing)
 - **ocp-javascript (npm: @opencontext/agent)**: 0.1.0 (145 tests, 100% passing)
+- **ocp-vscode**: 0.1.0 (in development, needs rebuild)
 - **CLI**: 0.1.0 (11 tests, 100% passing)
 - **Registry**: 0.1.0 (11 tests, 100% passing)
 
@@ -295,5 +417,5 @@ The extension provides tools that AI agents (like GitHub Copilot, Cursor, etc.) 
 
 ---
 
-**Last Updated**: October 26, 2025
-**Context Thread**: Versions aligned at 0.1.0, focus shifted to VS Code extension development using @opencontext/agent library
+**Last Updated**: October 28, 2025
+**Context Thread**: Extension development - identified need to rebuild around OCPAgent instead of AgentContext. Confirmed TypeScript schema validation working. Need to add VS Code settings for API tokens and configuration.

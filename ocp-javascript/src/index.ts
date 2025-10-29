@@ -15,7 +15,7 @@
  */
 
 // Core exports
-export { AgentContext } from './context.js';
+export { AgentContext, OCPContextDict } from './context.js';
 
 // Headers
 export {
