@@ -13,6 +13,7 @@ from .context import AgentContext
 from .schema_discovery import OCPSchemaDiscovery, OCPAPISpec, OCPTool
 from .http_client import OCPHTTPClient
 from .registry import OCPRegistry
+from .storage import OCPStorage
 
 
 class OCPAgent:
@@ -23,7 +24,8 @@ class OCPAgent:
     1. API Discovery (from OpenAPI specs or community registry) 
     2. Tool Invocation (with parameter validation)
     3. Context Management (persistent across calls)
-    4. Zero Infrastructure (no servers required)
+    4. Local Storage (optional caching and session persistence)
+    5. Zero Infrastructure (no servers required)
     """
     
     def __init__(self, 
@@ -31,7 +33,8 @@ class OCPAgent:
                  user: Optional[str] = None,
                  workspace: Optional[str] = None,
                  agent_goal: Optional[str] = None,
-                 registry_url: Optional[str] = None):
+                 registry_url: Optional[str] = None,
+                 enable_cache: bool = True):
         """
         Initialize OCP Agent with context and schema discovery.
         
@@ -41,6 +44,7 @@ class OCPAgent:
             workspace: Current workspace/project
             agent_goal: Current objective or goal
             registry_url: Custom registry URL (uses OCP_REGISTRY_URL env var or default if None)
+            enable_cache: Enable local caching of API specs (default: True)
         """
         self.context = AgentContext(
             agent_type=agent_type,
@@ -50,12 +54,15 @@ class OCPAgent:
         )
         self.discovery = OCPSchemaDiscovery()
         self.registry = OCPRegistry(registry_url)
+        self.storage = OCPStorage() if enable_cache else None
         self.known_apis: Dict[str, OCPAPISpec] = {}
         self.http_client = OCPHTTPClient(self.context)
     
     def register_api(self, name: str, spec_url: Optional[str] = None, base_url: Optional[str] = None) -> OCPAPISpec:
         """
         Register an API for discovery and usage.
+        
+        Lookup chain: Memory → Cache → Registry → Network
         
         Args:
             name: Human-readable name for the API or registry API name
@@ -72,17 +79,34 @@ class OCPAgent:
             # Direct OpenAPI discovery
             agent.register_api('my-api', 'https://api.example.com/openapi.json')
         """
+        # 1. Check if already loaded in memory
+        if name in self.known_apis:
+            return self.known_apis[name]
+        
+        # 2. Check local cache (if enabled)
+        if self.storage:
+            cached_spec = self.storage.get_cached_api(name, max_age_days=7)
+            if cached_spec:
+                self.known_apis[name] = cached_spec
+                self.context.add_api_spec(name, "cache")
+                return cached_spec
+        
+        # 3. Fetch from registry or OpenAPI spec
         if spec_url:
-            # Direct OpenAPI discovery (existing behavior)
+            # Direct OpenAPI discovery
             api_spec = self.discovery.discover_api(spec_url, base_url)
             source = spec_url
         else:
-            # Registry lookup (new behavior)
+            # Registry lookup
             api_spec = self.registry.get_api_spec(name, base_url)
             source = f"registry:{name}"
         
-        # Store API spec
+        # Store API spec in memory
         self.known_apis[name] = api_spec
+        
+        # Cache to disk (if enabled)
+        if self.storage:
+            self.storage.cache_api(name, api_spec, metadata={"source": source})
         
         # Add to context's API specs
         self.context.add_api_spec(name, source)

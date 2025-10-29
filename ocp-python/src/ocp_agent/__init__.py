@@ -15,6 +15,7 @@ from .validation import validate_context
 from .schema_discovery import OCPSchemaDiscovery, OCPTool, OCPAPISpec
 from .registry import OCPRegistry
 from .agent import OCPAgent
+from .storage import OCPStorage
 from .errors import OCPError, RegistryUnavailable, APINotFound, SchemaDiscoveryError, ValidationError
 
 __version__ = "0.1.0"
@@ -41,6 +42,9 @@ __all__ = [
     
     # Registry integration
     "OCPRegistry",
+    
+    # Local storage
+    "OCPStorage",
     
     # Error handling
     "OCPError",

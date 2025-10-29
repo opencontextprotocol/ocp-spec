@@ -19,7 +19,8 @@ class TestOCPAgent:
             agent_type="test_agent",
             user="test_user",
             workspace="test_workspace",
-            agent_goal="test goal"
+            agent_goal="test goal",
+            enable_cache=False  # Disable cache for testing
         )
     
     @pytest.fixture
@@ -326,7 +327,8 @@ class TestOCPAgent:
         # Create new agent to trigger registry initialization
         agent = OCPAgent(
             agent_type="test_agent",
-            registry_url="https://test-registry.com"
+            registry_url="https://test-registry.com",
+            enable_cache=False
         )
         
         # Register API from registry
@@ -360,7 +362,7 @@ class TestOCPAgent:
         mock_discovery_class.return_value = mock_discovery
         
         # Create new agent
-        agent = OCPAgent(agent_type="test_agent")
+        agent = OCPAgent(agent_type="test_agent", enable_cache=False)
         
         # Register API with URL
         result = agent.register_api("test_api", "https://api.test.com/openapi.json")
@@ -386,7 +388,7 @@ class TestOCPAgent:
         mock_registry.get_api_spec.return_value = sample_api_spec
         mock_registry_class.return_value = mock_registry
         
-        agent = OCPAgent(agent_type="test_agent")
+        agent = OCPAgent(agent_type="test_agent", enable_cache=False)
         
         # Register with base URL override
         agent.register_api("test_api", base_url="https://custom.test.com")
