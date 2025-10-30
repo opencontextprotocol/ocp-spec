@@ -114,10 +114,18 @@ ocp-javascript/
 
 ### Library Parity
 - **Complete 1:1 feature parity** with Python library
-- All 145 tests ported and passing
-- Same API surface: OCPAgent, AgentContext, OCPHTTPClient, etc.
+- All 174 tests ported and passing (added storage tests)
+- Same API surface: OCPAgent, AgentContext, OCPHTTPClient, OCPStorage, etc.
 - Identical behavior and validation rules
 - No @ts-nocheck - fully type-safe with proper Jest mock typing
+
+### Storage & Cross-Language Compatibility
+- **OCPStorage class**: Local API caching and session persistence
+- **Cross-language storage schema**: snake_case JSON format for compatibility
+- **Shared cache directory**: `~/.ocp/cache/apis/` and `~/.ocp/sessions/`
+- **File interoperability**: Python CLI and JavaScript VS Code extension can share cached APIs and sessions
+- **Storage architecture**: Per-file JSON storage, fail-safe error handling
+- **Usage**: Optional caching (7-day API cache expiration), session persistence across restarts
 
 ### Dependency Management
 - **Tool**: Poetry for all Python projects
@@ -408,7 +416,7 @@ export interface OCPContextDict {
 - **Poetry**: Used for Python dependency management
 - **npm**: Used for JavaScript dependency management
 - **ocp-python (PyPI: open-context-agent)**: 0.1.0 (145 tests, 100% passing)
-- **ocp-javascript (npm: @opencontext/agent)**: 0.1.0 (145 tests, 100% passing)
+- **ocp-javascript (npm: @opencontext/agent)**: 0.1.0 (174 tests, 100% passing - includes storage)
 - **ocp-vscode**: 0.1.0 (in development, needs rebuild)
 - **CLI**: 0.1.0 (11 tests, 100% passing)
 - **Registry**: 0.1.0 (11 tests, 100% passing)
@@ -417,5 +425,5 @@ export interface OCPContextDict {
 
 ---
 
-**Last Updated**: October 28, 2025
-**Context Thread**: Extension development - identified need to rebuild around OCPAgent instead of AgentContext. Confirmed TypeScript schema validation working. Need to add VS Code settings for API tokens and configuration.
+**Last Updated**: October 30, 2025
+**Context Thread**: JavaScript library storage implementation complete - OCPStorage class added with full Python parity (174 tests passing). Cross-language storage compatibility achieved using snake_case JSON schema. Ready for VS Code extension integration.
