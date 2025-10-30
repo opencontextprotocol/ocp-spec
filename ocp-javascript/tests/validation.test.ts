@@ -85,7 +85,7 @@ describe('Context Validation', () => {
       agent_type: 'ide_copilot',
       user: 'developer',
       workspace: '/home/user/project',
-      current_file: 'main.py',
+      current_file: 'main.js',
       current_goal: 'debug error',
       context_summary: 'Working on bug fix',
       error_context: 'NullPointerException at line 42',
@@ -93,7 +93,7 @@ describe('Context Validation', () => {
 
     // Add some history and changes
     context.addInteraction('tool_call', 'https://api.test.com', 'success');
-    context.addRecentChange('Modified main.py');
+    context.addRecentChange('Modified main.js');
     context.addApiSpec('test_api', 'https://api.test.com/openapi.json');
 
     const result = validateContext(context);
@@ -162,7 +162,7 @@ describe('Dict Validation', () => {
 
     const result = validateContextDict(contextDict);
     // The validation should fail due to missing required fields more than pattern mismatch
-    // Python test shows this should fail
+    // This should fail validation
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
   });

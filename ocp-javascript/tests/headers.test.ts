@@ -40,7 +40,7 @@ beforeEach(() => {
     agent_type: 'test_agent',
     user: 'test_user',
     workspace: 'test_workspace',
-    current_file: 'test_file.py',
+    current_file: 'test_file.js',
   });
   sampleContext.updateGoal('test_goal', 'Testing OCP functionality');
   sampleContext.addInteraction('test_action', 'test_endpoint', 'test_result');
@@ -51,7 +51,7 @@ beforeEach(() => {
     agent_type: 'complex_agent',
     user: 'complex_user',
     workspace: 'complex_workspace',
-    current_file: 'complex_file.py',
+    current_file: 'complex_file.js',
   });
   complexContext.updateGoal('complex_goal', 'Complex goal summary');
   for (let i = 0; i < 5; i++) {
@@ -62,7 +62,7 @@ beforeEach(() => {
   }
   complexContext.addApiSpec('github', 'https://api.github.com');
   complexContext.addApiSpec('stripe', 'https://api.stripe.com');
-  complexContext.setErrorContext('Test error message', 'error_file.py');
+  complexContext.setErrorContext('Test error message', 'error_file.js');
 });
 
 describe('OCP Headers Encoding', () => {

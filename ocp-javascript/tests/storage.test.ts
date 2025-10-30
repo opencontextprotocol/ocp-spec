@@ -113,15 +113,20 @@ describe('OCP Storage', () => {
         });
 
         test('should cache API with metadata', async () => {
-            const metadata = { source: 'test-source' };
-            await storage.cacheApi('test_api', sampleApiSpec, metadata);
-
+            const metadata = { source: 'registry', custom_field: 'value' };
+            const result = await storage.cacheApi('test_api', sampleApiSpec, metadata);
+            
+            expect(result).toBe(true);
+            
+            // Verify file content includes metadata
             const cacheFile = path.join(storage.cacheDir, 'test_api.json');
             const content = await fs.readFile(cacheFile, 'utf-8');
             const data = JSON.parse(content);
-
-            expect(data.source).toBe('test-source');
+            
+            expect(data.source).toBe('registry');
+            expect(data.custom_field).toBe('value');
             expect(data.api_name).toBe('test_api');
+            expect(data.cached_at).toBeDefined();
         });
 
         test('should retrieve cached API', async () => {
@@ -192,16 +197,79 @@ describe('OCP Storage', () => {
         });
 
         test('should search cache by name and description', async () => {
-            await storage.cacheApi('github', sampleApiSpec);
-            await storage.cacheApi('stripe', {
-                ...sampleApiSpec,
-                title: 'Stripe Payment API',
-                description: 'Payment processing'
-            });
-
-            const results = await storage.searchCache('payment');
-            expect(results.length).toBe(1);
+            // Create different API specs
+            const githubSpec: OCPAPISpec = {
+                title: 'GitHub API',
+                version: '1.0.0',
+                base_url: 'https://api.github.com',
+                description: 'GitHub REST API',
+                raw_spec: {},
+                tools: [
+                    {
+                        name: 'list_repos',
+                        description: 'List repositories',
+                        method: 'GET',
+                        path: '/repos',
+                        parameters: {},
+                        response_schema: {},
+                        operation_id: 'listRepos',
+                        tags: ['repos']
+                    }
+                ]
+            };
+            
+            const stripeSpec: OCPAPISpec = {
+                title: 'Stripe API',
+                version: '1.0.0',
+                base_url: 'https://api.stripe.com',
+                description: 'Stripe payment API',
+                raw_spec: {},
+                tools: [
+                    {
+                        name: 'create_payment',
+                        description: 'Create payment intent',
+                        method: 'POST',
+                        path: '/payments',
+                        parameters: {},
+                        response_schema: {},
+                        operation_id: 'createPayment',
+                        tags: ['payments']
+                    }
+                ]
+            };
+            
+            await storage.cacheApi('github', githubSpec);
+            await storage.cacheApi('stripe', stripeSpec);
+            
+            // Search by name
+            let results = await storage.searchCache('github');
+            expect(results).toHaveLength(1);
+            expect(results[0].name).toBe('github');
+            
+            // Search by description
+            results = await storage.searchCache('payment');
+            expect(results).toHaveLength(1);
             expect(results[0].name).toBe('stripe');
+            
+            // Search by tool description
+            results = await storage.searchCache('repositories');
+            expect(results).toHaveLength(1);
+            expect(results[0].name).toBe('github');
+            
+            // Case-insensitive search
+            results = await storage.searchCache('GITHUB');
+            expect(results).toHaveLength(1);
+            expect(results[0].name).toBe('github');
+            
+            // Verify result format
+            expect(results[0]).toEqual(expect.objectContaining({
+                name: expect.any(String),
+                title: expect.any(String),
+                version: expect.any(String),
+                base_url: expect.any(String),
+                cached_at: expect.any(String),
+                tool_count: expect.any(Number)
+            }));
         });
 
         test('should clear specific cached API', async () => {
@@ -242,6 +310,28 @@ describe('OCP Storage', () => {
             const sessionFile = path.join(storage.sessionsDir, 'test-session-123.json');
             const exists = await fs.access(sessionFile).then(() => true).catch(() => false);
             expect(exists).toBe(true);
+            
+            // Verify file content structure
+            const content = await fs.readFile(sessionFile, 'utf-8');
+            const data = JSON.parse(content);
+            
+            expect(data).toEqual(expect.objectContaining({
+                session_id: 'test-session-123',
+                context_id: expect.any(String),
+                agent_type: 'test_agent',
+                user: 'test_user',
+                workspace: 'test_workspace',
+                current_file: null,
+                session: expect.any(Object),
+                history: expect.any(Array),
+                current_goal: 'Testing storage',
+                context_summary: null,
+                error_context: null,
+                recent_changes: expect.any(Array),
+                api_specs: expect.any(Object),
+                created_at: expect.any(String),
+                last_updated: expect.any(String)
+            }));
         });
 
         test('should load session successfully', async () => {
@@ -281,6 +371,18 @@ describe('OCP Storage', () => {
 
             const sessions = await storage.listSessions();
             expect(sessions.length).toBe(2);
+            
+            // Verify session metadata structure
+            expect(sessions[0]).toEqual(expect.objectContaining({
+                id: expect.any(String),
+                context_id: expect.any(String),
+                agent_type: 'test_agent',
+                user: 'test_user',
+                workspace: 'test_workspace',
+                created_at: expect.any(String),
+                last_updated: expect.any(String),
+                interaction_count: expect.any(Number)
+            }));
         });
 
         test('should list sessions with limit', async () => {
@@ -325,6 +427,28 @@ describe('OCP Storage', () => {
 
             const sessions = await storage.listSessions();
             expect(sessions.length).toBe(2);
+        });
+
+        test('should cleanup old sessions', async () => {
+            const context = createSampleContext();
+
+            // Create multiple sessions
+            for (let i = 1; i <= 5; i++) {
+                await storage.saveSession(`session-${i}`, context);
+                // Small delay to ensure different modification times
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+
+            // Cleanup keeping only 3 most recent
+            const deletedCount = await storage.cleanupSessions(3);
+            expect(deletedCount).toBe(2);
+
+            const sessions = await storage.listSessions();
+            expect(sessions.length).toBe(3);
+            
+            // Verify we kept the most recent sessions
+            const sessionIds = sessions.map(s => s.id).sort();
+            expect(sessionIds).toEqual(['session-3', 'session-4', 'session-5']);
         });
 
         test('should not cleanup if under limit', async () => {

@@ -17,7 +17,7 @@ beforeEach(() => {
     agent_type: 'test_agent',
     user: 'test_user',
     workspace: 'test_workspace',
-    current_file: 'test_file.py',
+    current_file: 'test_file.js',
   });
   sampleContext.updateGoal('test_goal', 'Testing OCP functionality');
   sampleContext.addInteraction('test_action', 'test_endpoint', 'test_result');
@@ -30,7 +30,7 @@ beforeEach(() => {
     agent_type: 'complex_agent',
     user: 'complex_user',
     workspace: 'complex_workspace',
-    current_file: 'complex_file.py',
+    current_file: 'complex_file.js',
   });
 
   // Set a goal first
@@ -56,7 +56,7 @@ beforeEach(() => {
   complexContext.addApiSpec('stripe', 'https://api.stripe.com');
 
   // Set error context
-  complexContext.setErrorContext('Test error message', 'error_file.py');
+  complexContext.setErrorContext('Test error message', 'error_file.js');
 });
 
 describe('Agent Context Creation', () => {
@@ -78,14 +78,14 @@ describe('Agent Context Creation', () => {
       agent_type: 'ide_copilot',
       user: 'alice',
       workspace: 'my-project',
-      current_file: 'main.py',
+      current_file: 'main.js',
       current_goal: 'debug_issue',
     });
 
     expect(context.agent_type).toBe('ide_copilot');
     expect(context.user).toBe('alice');
     expect(context.workspace).toBe('my-project');
-    expect(context.current_file).toBe('main.py');
+    expect(context.current_file).toBe('main.js');
     expect(context.current_goal).toBe('debug_issue');
   });
 
@@ -130,10 +130,10 @@ describe('Agent Context Updates', () => {
   });
 
   test('set error context', () => {
-    minimalContext.setErrorContext('Test error', 'error_file.py');
+    minimalContext.setErrorContext('Test error', 'error_file.js');
 
     expect(minimalContext.error_context).toBe('Test error');
-    expect(minimalContext.current_file).toBe('error_file.py');
+    expect(minimalContext.current_file).toBe('error_file.js');
   });
 
   test('add recent change', () => {
@@ -258,7 +258,7 @@ describe('Agent Context Edge Cases', () => {
       agent_type: 'test',
       user: '用户', // Chinese characters
       workspace: 'проект', // Cyrillic characters
-      current_file: 'файл.py',
+      current_file: 'файл.js',
     });
 
     // Should serialize/deserialize properly
@@ -267,7 +267,7 @@ describe('Agent Context Edge Cases', () => {
 
     expect(restored.user).toBe('用户');
     expect(restored.workspace).toBe('проект');
-    expect(restored.current_file).toBe('файл.py');
+    expect(restored.current_file).toBe('файл.js');
   });
 });
 
