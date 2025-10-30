@@ -82,7 +82,7 @@ export class OCPStorage {
         try {
             const cacheFile = path.join(this.cacheDir, `${name}.json`);
 
-            const cacheData = {
+            const cacheData: Record<string, any> = {
                 api_name: name,
                 title: spec.title,
                 version: spec.version,
@@ -102,8 +102,14 @@ export class OCPStorage {
                 }))
             };
 
+            // Add description if present
             if (spec.description) {
-                (cacheData as any).description = spec.description;
+                cacheData.description = spec.description;
+            }
+
+            // Merge all metadata into cache data
+            if (metadata) {
+                Object.assign(cacheData, metadata);
             }
 
             await fs.writeFile(
@@ -123,20 +129,20 @@ export class OCPStorage {
      * Retrieve cached API specification.
      *
      * @param name - API name to retrieve
-     * @param maxAgeDays - Maximum age in days (0 = no expiration check)
+     * @param maxAgeDays - Maximum age in days (null/undefined = no expiration check)
      * @returns Cached API spec or null if not found/expired
      */
     async getCachedApi(
         name: string,
-        maxAgeDays: number = 7
+        maxAgeDays?: number | null
     ): Promise<OCPAPISpec | null> {
         try {
             const cacheFile = path.join(this.cacheDir, `${name}.json`);
             const content = await fs.readFile(cacheFile, 'utf-8');
             const data = JSON.parse(content);
 
-            // Check expiration if maxAgeDays > 0
-            if (maxAgeDays > 0 && data.cached_at) {
+            // Check expiration if maxAgeDays is set
+            if (maxAgeDays !== null && maxAgeDays !== undefined && data.cached_at) {
                 const cachedAt = new Date(data.cached_at);
                 const now = new Date();
                 const ageMs = now.getTime() - cachedAt.getTime();
@@ -203,12 +209,11 @@ export class OCPStorage {
 
                     if (searchText.includes(lowerQuery)) {
                         results.push({
-                            api_name: data.api_name,
+                            name: data.api_name,
                             title: data.title,
                             version: data.version,
-                            description: data.description,
+                            base_url: data.base_url,
                             cached_at: data.cached_at,
-                            source: data.source,
                             tool_count: data.tools?.length || 0
                         });
                     }
@@ -283,11 +288,9 @@ export class OCPStorage {
         try {
             const sessionFile = path.join(this.sessionsDir, `${sessionId}.json`);
 
-            const sessionData = {
-                session_id: sessionId,
-                saved_at: new Date().toISOString(),
-                context: context.toDict()
-            };
+            // Add session_id to the context data for storage
+            const sessionData = context.toDict();
+            (sessionData as any).session_id = sessionId;
 
             await fs.writeFile(
                 sessionFile,
@@ -314,7 +317,10 @@ export class OCPStorage {
             const content = await fs.readFile(sessionFile, 'utf-8');
             const data = JSON.parse(content);
 
-            return AgentContext.fromDict(data.context);
+            // Remove session_id before reconstructing context
+            delete data.session_id;
+
+            return AgentContext.fromDict(data);
         } catch (err) {
             // File not found or parse error
             return null;
@@ -324,47 +330,63 @@ export class OCPStorage {
     /**
      * List all session metadata.
      *
-     * @param limit - Maximum number of sessions to return (0 = all)
+     * @param limit - Maximum number of sessions to return (null/undefined = all)
      * @returns List of session metadata, sorted by most recent first
      */
-    async listSessions(limit: number = 0): Promise<Array<Record<string, any>>> {
+    async listSessions(limit?: number | null): Promise<Array<Record<string, any>>> {
         try {
             const files = await fs.readdir(this.sessionsDir);
-            const sessions: Array<Record<string, any>> = [];
-
+            
+            // Get file stats for sorting by modification time
+            const fileStats: Array<{ file: string; mtime: number }> = [];
+            
             for (const file of files) {
                 if (!file.endsWith('.json')) continue;
-
+                
+                try {
+                    const filePath = path.join(this.sessionsDir, file);
+                    const stats = await fs.stat(filePath);
+                    fileStats.push({
+                        file,
+                        mtime: stats.mtimeMs
+                    });
+                } catch {
+                    continue;
+                }
+            }
+            
+            // Sort by modification time (most recent first)
+            fileStats.sort((a, b) => b.mtime - a.mtime);
+            
+            // Apply limit if specified
+            const limitedFiles = (limit && limit > 0) 
+                ? fileStats.slice(0, limit) 
+                : fileStats;
+            
+            const sessions: Array<Record<string, any>> = [];
+            
+            for (const { file } of limitedFiles) {
                 try {
                     const filePath = path.join(this.sessionsDir, file);
                     const content = await fs.readFile(filePath, 'utf-8');
                     const data = JSON.parse(content);
-
+                    
                     sessions.push({
-                        session_id: data.session_id,
-                        saved_at: data.saved_at,
-                        agent_type: data.context?.agent_type,
-                        user: data.context?.user,
-                        workspace: data.context?.workspace
+                        id: data.session_id || file.replace('.json', ''),
+                        context_id: data.context_id,
+                        agent_type: data.agent_type,
+                        user: data.user,
+                        workspace: data.workspace,
+                        created_at: data.created_at,
+                        last_updated: data.last_updated,
+                        interaction_count: data.session?.interaction_count || 0
                     });
                 } catch {
                     // Skip files that can't be parsed
                     continue;
                 }
             }
-
-            // Sort by saved_at descending (most recent first)
-            sessions.sort((a, b) => {
-                const dateA = new Date(a.saved_at).getTime();
-                const dateB = new Date(b.saved_at).getTime();
-                return dateB - dateA;
-            });
-
-            // Apply limit if specified
-            if (limit > 0) {
-                return sessions.slice(0, limit);
-            }
-
+            
             return sessions;
         } catch (err) {
             console.warn(`Warning: Failed to list sessions: ${err}`);
@@ -375,26 +397,41 @@ export class OCPStorage {
     /**
      * Clean up old sessions, keeping only the most recent N.
      *
-     * @param keepRecent - Number of recent sessions to keep
+     * @param keepRecent - Number of recent sessions to keep (default: 50)
      * @returns Number of sessions deleted
      */
-    async cleanupSessions(keepRecent: number = 10): Promise<number> {
+    async cleanupSessions(keepRecent: number = 50): Promise<number> {
         try {
-            const sessions = await this.listSessions();
-
-            if (sessions.length <= keepRecent) {
-                return 0; // Nothing to clean up
-            }
-
-            const toDelete = sessions.slice(keepRecent);
-            let deletedCount = 0;
-
-            for (const session of toDelete) {
+            const files = await fs.readdir(this.sessionsDir);
+            
+            // Get all session files with modification times
+            const fileStats: Array<{ file: string; mtime: number }> = [];
+            
+            for (const file of files) {
+                if (!file.endsWith('.json')) continue;
+                
                 try {
-                    const sessionFile = path.join(
-                        this.sessionsDir,
-                        `${session.session_id}.json`
-                    );
+                    const filePath = path.join(this.sessionsDir, file);
+                    const stats = await fs.stat(filePath);
+                    fileStats.push({
+                        file,
+                        mtime: stats.mtimeMs
+                    });
+                } catch {
+                    continue;
+                }
+            }
+            
+            // Sort by modification time (most recent first)
+            fileStats.sort((a, b) => b.mtime - a.mtime);
+            
+            // Remove sessions beyond keepRecent
+            let deletedCount = 0;
+            const toDelete = fileStats.slice(keepRecent);
+            
+            for (const { file } of toDelete) {
+                try {
+                    const sessionFile = path.join(this.sessionsDir, file);
                     await fs.unlink(sessionFile);
                     deletedCount++;
                 } catch {

@@ -152,12 +152,12 @@ describe('OCP Storage', () => {
 
             await fs.writeFile(cacheFile, JSON.stringify(data, null, 2), 'utf-8');
 
-            // Should be expired (default 7 days)
-            const retrieved = await storage.getCachedApi('test_api');
+            // Should be expired with 7 day limit
+            const retrieved = await storage.getCachedApi('test_api', 7);
             expect(retrieved).toBeNull();
         });
 
-        test('should ignore expiration when maxAgeDays is 0', async () => {
+        test('should ignore expiration when maxAgeDays is null', async () => {
             await storage.cacheApi('test_api', sampleApiSpec);
 
             // Manually modify cached_at to be 8 days old
@@ -171,8 +171,8 @@ describe('OCP Storage', () => {
 
             await fs.writeFile(cacheFile, JSON.stringify(data, null, 2), 'utf-8');
 
-            // Should still be retrieved (no expiration check)
-            const retrieved = await storage.getCachedApi('test_api', 0);
+            // Should still be retrieved when no expiration limit is set
+            const retrieved = await storage.getCachedApi('test_api', null);
             expect(retrieved).not.toBeNull();
         });
 
@@ -201,7 +201,7 @@ describe('OCP Storage', () => {
 
             const results = await storage.searchCache('payment');
             expect(results.length).toBe(1);
-            expect(results[0].api_name).toBe('stripe');
+            expect(results[0].name).toBe('stripe');
         });
 
         test('should clear specific cached API', async () => {
@@ -304,8 +304,8 @@ describe('OCP Storage', () => {
             await storage.saveSession('session-3', context);
 
             const sessions = await storage.listSessions();
-            expect(sessions[0].session_id).toBe('session-3');
-            expect(sessions[2].session_id).toBe('session-1');
+            expect(sessions[0].id).toBe('session-3');
+            expect(sessions[2].id).toBe('session-1');
         });
 
         test('should return empty list when no sessions exist', async () => {
