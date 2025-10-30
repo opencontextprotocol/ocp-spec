@@ -9,6 +9,7 @@ import { AgentContext } from './context.js';
 import { OCPSchemaDiscovery, OCPAPISpec, OCPTool } from './schema_discovery.js';
 import { OCPHTTPClient, OCPResponse } from './http_client.js';
 import { OCPRegistry } from './registry.js';
+import { OCPStorage } from './storage.js';
 
 /**
  * OCP Agent for Context-Aware API Interactions
@@ -25,6 +26,7 @@ export class OCPAgent {
     registry: OCPRegistry;
     knownApis: Map<string, OCPAPISpec>;
     httpClient: OCPHTTPClient;
+    storage: OCPStorage | null;
 
     /**
      * Initialize OCP Agent with context and schema discovery.
@@ -34,13 +36,15 @@ export class OCPAgent {
      * @param workspace - Current workspace/project
      * @param agentGoal - Current objective or goal
      * @param registryUrl - Custom registry URL (uses OCP_REGISTRY_URL env var or default if not provided)
+     * @param enableCache - Enable local API caching and session persistence (default: true)
      */
     constructor(
         agentType: string = 'ai_agent',
         user?: string,
         workspace?: string,
         agentGoal?: string,
-        registryUrl?: string
+        registryUrl?: string,
+        enableCache: boolean = true
     ) {
         this.context = new AgentContext({
             agent_type: agentType,
@@ -52,6 +56,7 @@ export class OCPAgent {
         this.registry = new OCPRegistry(registryUrl);
         this.knownApis = new Map();
         this.httpClient = new OCPHTTPClient(this.context);
+        this.storage = enableCache ? new OCPStorage() : null;
     }
 
     /**
@@ -71,6 +76,23 @@ export class OCPAgent {
      * await agent.registerApi('my-api', 'https://api.example.com/openapi.json');
      */
     async registerApi(name: string, specUrl?: string, baseUrl?: string): Promise<OCPAPISpec> {
+        // Check memory first
+        const existingSpec = this.knownApis.get(name);
+        if (existingSpec) {
+            return existingSpec;
+        }
+
+        // Check cache if storage enabled (7-day expiration)
+        if (this.storage) {
+            const cachedSpec = await this.storage.getCachedApi(name, 7);
+            if (cachedSpec) {
+                this.knownApis.set(name, cachedSpec);
+                this.context.addApiSpec(name, 'cache');
+                return cachedSpec;
+            }
+        }
+
+        // Lookup chain: Registry or Direct OpenAPI discovery
         let apiSpec: OCPAPISpec;
         let source: string;
 
@@ -84,8 +106,13 @@ export class OCPAgent {
             source = `registry:${name}`;
         }
 
-        // Store API spec
+        // Store API spec in memory
         this.knownApis.set(name, apiSpec);
+
+        // Cache to disk if storage enabled
+        if (this.storage) {
+            await this.storage.cacheApi(name, apiSpec, { source });
+        }
 
         // Add to context's API specs
         this.context.addApiSpec(name, source);

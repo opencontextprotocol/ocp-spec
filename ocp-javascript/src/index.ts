@@ -72,5 +72,8 @@ export {
 // Agent
 export { OCPAgent } from './agent.js';
 
+// Storage
+export { OCPStorage } from './storage.js';
+
 // Version
 export const VERSION = '0.1.0';

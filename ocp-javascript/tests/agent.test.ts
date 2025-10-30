@@ -77,7 +77,7 @@ describe('OCP Agent', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    agent = new OCPAgent('test_agent', 'test_user', 'test_workspace', 'test goal');
+    agent = new OCPAgent('test_agent', 'test_user', 'test_workspace', 'test goal', undefined, false);
   });
 
   describe('Agent Creation', () => {
@@ -330,7 +330,7 @@ describe('OCP Agent', () => {
       };
 
       // Create agent with custom registry
-      const agentWithRegistry = new OCPAgent('test_agent', undefined, undefined, undefined, 'https://test-registry.com');
+      const agentWithRegistry = new OCPAgent('test_agent', undefined, undefined, undefined, 'https://test-registry.com', false);
 
       agentWithRegistry['registry'] = mockRegistry as any;
 
@@ -384,7 +384,7 @@ describe('OCP Agent', () => {
         registryUrl: 'https://registry.ocp.dev',
       };
 
-      const agentWithRegistry = new OCPAgent('test_agent');
+      const agentWithRegistry = new OCPAgent('test_agent', undefined, undefined, undefined, undefined, false);
       agentWithRegistry['registry'] = mockRegistry as any;
 
       // Register with base URL override
@@ -395,7 +395,7 @@ describe('OCP Agent', () => {
     });
 
     test('agent initialization with registry url', () => {
-      const agentWithRegistry = new OCPAgent('test_agent', undefined, undefined, undefined, 'https://custom-registry.com');
+      const agentWithRegistry = new OCPAgent('test_agent', undefined, undefined, undefined, 'https://custom-registry.com', false);
 
       expect((agentWithRegistry['registry'] as any).registryUrl).toBe('https://custom-registry.com');
     });
