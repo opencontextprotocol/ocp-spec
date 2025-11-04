@@ -215,13 +215,8 @@ export function activate(context: vscode.ExtensionContext) {
             // Get all OCP tools
             const ocpTools = vscode.lm.tools.filter(tool => tool.name.startsWith('ocp_'));
             
-            // Select a chat model
-            const models = await vscode.lm.selectChatModels({ vendor: 'copilot', family: 'gpt-4o' });
-            if (models.length === 0) {
-                stream.markdown('❌ No chat model available');
-                return;
-            }
-            const model = models[0];
+            // Use the model selected by the user in the chat interface
+            const model = request.model;
             
             // Build messages for the chat request
             const messages = [
@@ -276,4 +271,3 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
-
