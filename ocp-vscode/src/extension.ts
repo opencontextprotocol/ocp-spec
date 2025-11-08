@@ -4,6 +4,248 @@ import { OCPAgent, OCPContextDict } from '@opencontext/agent';
 // Singleton OCPAgent instance for the workspace
 let ocpAgent: OCPAgent | null = null;
 
+// Tool parameter interfaces
+interface IOCPGetContextParams {}
+
+interface IOCPRegisterApiParams {
+    name: string;
+    specUrl?: string;
+    baseUrl?: string;
+}
+
+interface IOCPListToolsParams {
+    apiName?: string;
+}
+
+interface IOCPCallToolParams {
+    toolName: string;
+    parameters: Record<string, any>;
+    apiName?: string;
+}
+
+interface IOCPSearchToolsParams {
+    query: string;
+    apiName?: string;
+}
+
+// Tool implementation classes
+class GetContextTool implements vscode.LanguageModelTool<IOCPGetContextParams> {
+    async prepareInvocation(
+        options: vscode.LanguageModelToolInvocationPrepareOptions<IOCPGetContextParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.PreparedToolInvocation> {
+        return {
+            invocationMessage: 'Getting OCP workspace context...',
+            confirmationMessages: {
+                title: 'Get OCP Context',
+                message: new vscode.MarkdownString('Retrieve current workspace context information?')
+            }
+        };
+    }
+
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<IOCPGetContextParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        try {
+            if (!ocpAgent) {
+                throw new Error("OCP Agent not initialized. Please check extension activation.");
+            }
+
+            const contextDict: OCPContextDict = ocpAgent.context.toDict();
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(JSON.stringify(contextDict, null, 2))
+            ]);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to get OCP context: ${errorMessage}`);
+        }
+    }
+}
+
+class RegisterApiTool implements vscode.LanguageModelTool<IOCPRegisterApiParams> {
+    async prepareInvocation(
+        options: vscode.LanguageModelToolInvocationPrepareOptions<IOCPRegisterApiParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.PreparedToolInvocation> {
+        const params = options.input;
+        return {
+            invocationMessage: `Registering API: ${params.name}...`,
+            confirmationMessages: {
+                title: 'Register API',
+                message: new vscode.MarkdownString(
+                    `Register API **${params.name}**?` +
+                    (params.specUrl ? `\n\nSpec URL: \`${params.specUrl}\`` : '') +
+                    (params.baseUrl ? `\n\nBase URL: \`${params.baseUrl}\`` : '')
+                )
+            }
+        };
+    }
+
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<IOCPRegisterApiParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        try {
+            if (!ocpAgent) {
+                throw new Error("OCP Agent not initialized. Please check extension activation.");
+            }
+
+            const params = options.input;
+
+            // Get auth headers for this API if configured
+            const config = vscode.workspace.getConfiguration('ocp');
+            const apiAuth = config.get<Record<string, Record<string, string>>>('apiAuth') || {};
+            const authHeaders = apiAuth[params.name];
+
+            await ocpAgent.registerApi(params.name, params.specUrl, params.baseUrl);
+            
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(JSON.stringify({
+                    success: true,
+                    message: `Successfully registered API: ${params.name}`,
+                    hasAuth: !!authHeaders
+                }, null, 2))
+            ]);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to register API ${options.input.name}: ${errorMessage}. Please check the API name and specification URL.`);
+        }
+    }
+}
+
+class ListToolsTool implements vscode.LanguageModelTool<IOCPListToolsParams> {
+    async prepareInvocation(
+        options: vscode.LanguageModelToolInvocationPrepareOptions<IOCPListToolsParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.PreparedToolInvocation> {
+        const params = options.input;
+        return {
+            invocationMessage: 'Listing available tools...',
+            confirmationMessages: {
+                title: 'List Tools',
+                message: new vscode.MarkdownString(
+                    `List available tools${params.apiName ? ` from **${params.apiName}**` : ' from all registered APIs'}?`
+                )
+            }
+        };
+    }
+
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<IOCPListToolsParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        try {
+            if (!ocpAgent) {
+                throw new Error("OCP Agent not initialized. Please check extension activation.");
+            }
+
+            const params = options.input;
+            const tools = ocpAgent.listTools(params.apiName);
+            
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(JSON.stringify({
+                    tools,
+                    count: tools.length,
+                    apiName: params.apiName || "all"
+                }, null, 2))
+            ]);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to list tools: ${errorMessage}. Make sure APIs are registered first using ocp_registerApi.`);
+        }
+    }
+}
+
+class CallToolTool implements vscode.LanguageModelTool<IOCPCallToolParams> {
+    async prepareInvocation(
+        options: vscode.LanguageModelToolInvocationPrepareOptions<IOCPCallToolParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.PreparedToolInvocation> {
+        const params = options.input;
+        return {
+            invocationMessage: `Calling tool: ${params.toolName}...`,
+            confirmationMessages: {
+                title: 'Call Tool',
+                message: new vscode.MarkdownString(
+                    `Call tool **${params.toolName}**?` +
+                    (params.apiName ? `\n\nFrom API: **${params.apiName}**` : '') +
+                    `\n\nParameters:\n\`\`\`json\n${JSON.stringify(params.parameters, null, 2)}\n\`\`\``
+                )
+            }
+        };
+    }
+
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<IOCPCallToolParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        try {
+            if (!ocpAgent) {
+                throw new Error("OCP Agent not initialized. Please check extension activation.");
+            }
+
+            const params = options.input;
+            const result = await ocpAgent.callTool(
+                params.toolName,
+                params.parameters,
+                params.apiName
+            );
+            
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(JSON.stringify(result, null, 2))
+            ]);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to call tool ${options.input.toolName}: ${errorMessage}. Make sure the tool exists and parameters are correct. Use ocp_listTools to see available tools.`);
+        }
+    }
+}
+
+class SearchToolsTool implements vscode.LanguageModelTool<IOCPSearchToolsParams> {
+    async prepareInvocation(
+        options: vscode.LanguageModelToolInvocationPrepareOptions<IOCPSearchToolsParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.PreparedToolInvocation> {
+        const params = options.input;
+        return {
+            invocationMessage: `Searching tools for: ${params.query}...`,
+            confirmationMessages: {
+                title: 'Search Tools',
+                message: new vscode.MarkdownString(
+                    `Search for tools matching **"${params.query}"**${params.apiName ? ` in **${params.apiName}**` : ' across all APIs'}?`
+                )
+            }
+        };
+    }
+
+    async invoke(
+        options: vscode.LanguageModelToolInvocationOptions<IOCPSearchToolsParams>,
+        token: vscode.CancellationToken
+    ): Promise<vscode.LanguageModelToolResult> {
+        try {
+            if (!ocpAgent) {
+                throw new Error("OCP Agent not initialized. Please check extension activation.");
+            }
+
+            const params = options.input;
+            const tools = ocpAgent.searchTools(params.query, params.apiName);
+            
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(JSON.stringify({
+                    tools,
+                    count: tools.length,
+                    query: params.query,
+                    apiName: params.apiName || "all"
+                }, null, 2))
+            ]);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to search tools: ${errorMessage}. Make sure APIs are registered first using ocp_registerApi.`);
+        }
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
     console.log('OCP extension is now active');
 
@@ -25,249 +267,18 @@ export function activate(context: vscode.ExtensionContext) {
 
     console.log(`OCP Agent initialized for user "${user}" in workspace "${workspace}"`);
 
-    // Register Language Model Tool: getContext
-    const getContextTool = vscode.lm.registerTool('ocp_getContext', {
-        invoke: async (options: vscode.LanguageModelToolInvocationOptions<{}>, token: vscode.CancellationToken) => {
-            try {
-                if (!ocpAgent) {
-                    return new vscode.LanguageModelToolResult([
-                        new vscode.LanguageModelTextPart(JSON.stringify({
-                            error: "OCP Agent not initialized"
-                        }))
-                    ]);
-                }
+    // Register all OCP tools
+    context.subscriptions.push(
+        vscode.lm.registerTool('ocp_getContext', new GetContextTool()),
+        vscode.lm.registerTool('ocp_registerApi', new RegisterApiTool()),
+        vscode.lm.registerTool('ocp_listTools', new ListToolsTool()),
+        vscode.lm.registerTool('ocp_callTool', new CallToolTool()),
+        vscode.lm.registerTool('ocp_searchTools', new SearchToolsTool())
+    );
 
-                const contextDict: OCPContextDict = ocpAgent.context.toDict();
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify(contextDict, null, 2))
-                ]);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({ error: errorMessage }))
-                ]);
-            }
-        }
-    });
-
-    context.subscriptions.push(getContextTool);
-
-    // Register Language Model Tool: registerApi
-    const registerApiTool = vscode.lm.registerTool('ocp_registerApi', {
-        invoke: async (options: vscode.LanguageModelToolInvocationOptions<{
-            name: string;
-            specUrl?: string;
-            baseUrl?: string;
-        }>, token: vscode.CancellationToken) => {
-            try {
-                if (!ocpAgent) {
-                    return new vscode.LanguageModelToolResult([
-                        new vscode.LanguageModelTextPart(JSON.stringify({
-                            error: "OCP Agent not initialized"
-                        }))
-                    ]);
-                }
-
-                const params = options.input;
-
-                // Get auth headers for this API if configured
-                const config = vscode.workspace.getConfiguration('ocp');
-                const apiAuth = config.get<Record<string, Record<string, string>>>('apiAuth') || {};
-                const authHeaders = apiAuth[params.name];
-
-                await ocpAgent.registerApi(params.name, params.specUrl, params.baseUrl);
-                
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({
-                        success: true,
-                        message: `Registered API: ${params.name}`,
-                        hasAuth: !!authHeaders
-                    }, null, 2))
-                ]);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({ error: errorMessage }))
-                ]);
-            }
-        }
-    });
-
-    context.subscriptions.push(registerApiTool);
-
-    // Register Language Model Tool: listTools
-    const listToolsTool = vscode.lm.registerTool('ocp_listTools', {
-        invoke: async (options: vscode.LanguageModelToolInvocationOptions<{
-            apiName?: string;
-        }>, token: vscode.CancellationToken) => {
-            try {
-                if (!ocpAgent) {
-                    return new vscode.LanguageModelToolResult([
-                        new vscode.LanguageModelTextPart(JSON.stringify({
-                            error: "OCP Agent not initialized"
-                        }))
-                    ]);
-                }
-
-                const params = options.input;
-                const tools = ocpAgent.listTools(params.apiName);
-                
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({
-                        tools,
-                        count: tools.length,
-                        apiName: params.apiName || "all"
-                    }, null, 2))
-                ]);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({ error: errorMessage }))
-                ]);
-            }
-        }
-    });
-
-    context.subscriptions.push(listToolsTool);
-
-    // Register Language Model Tool: callTool
-    const callToolTool = vscode.lm.registerTool('ocp_callTool', {
-        invoke: async (options: vscode.LanguageModelToolInvocationOptions<{
-            toolName: string;
-            parameters: Record<string, any>;
-            apiName?: string;
-        }>, token: vscode.CancellationToken) => {
-            try {
-                if (!ocpAgent) {
-                    return new vscode.LanguageModelToolResult([
-                        new vscode.LanguageModelTextPart(JSON.stringify({
-                            error: "OCP Agent not initialized"
-                        }))
-                    ]);
-                }
-
-                const params = options.input;
-                const result = await ocpAgent.callTool(
-                    params.toolName,
-                    params.parameters,
-                    params.apiName
-                );
-                
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify(result, null, 2))
-                ]);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({ error: errorMessage }))
-                ]);
-            }
-        }
-    });
-
-    context.subscriptions.push(callToolTool);
-
-    // Register Language Model Tool: searchTools
-    const searchToolsTool = vscode.lm.registerTool('ocp_searchTools', {
-        invoke: async (options: vscode.LanguageModelToolInvocationOptions<{
-            query: string;
-            apiName?: string;
-        }>, token: vscode.CancellationToken) => {
-            try {
-                if (!ocpAgent) {
-                    return new vscode.LanguageModelToolResult([
-                        new vscode.LanguageModelTextPart(JSON.stringify({
-                            error: "OCP Agent not initialized"
-                        }))
-                    ]);
-                }
-
-                const params = options.input;
-                const tools = ocpAgent.searchTools(params.query, params.apiName);
-                
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({
-                        tools,
-                        count: tools.length,
-                        query: params.query,
-                        apiName: params.apiName || "all"
-                    }, null, 2))
-                ]);
-            } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                return new vscode.LanguageModelToolResult([
-                    new vscode.LanguageModelTextPart(JSON.stringify({ error: errorMessage }))
-                ]);
-            }
-        }
-    });
-
-    context.subscriptions.push(searchToolsTool);
-
-    // Register Chat Participant that automatically provides OCP tools to language models
-    const participant = vscode.chat.createChatParticipant('chat.ocp', async (
-        request: vscode.ChatRequest,
-        chatContext: vscode.ChatContext,
-        stream: vscode.ChatResponseStream,
-        token: vscode.CancellationToken
-    ) => {
-        try {
-            // Get all OCP tools
-            const ocpTools = vscode.lm.tools.filter(tool => tool.name.startsWith('ocp_'));
-            
-            // Use the model selected by the user in the chat interface
-            const model = request.model;
-            
-            // Build messages for the chat request
-            const messages = [
-                vscode.LanguageModelChatMessage.User(request.prompt)
-            ];
-            
-            // Make chat request with OCP tools automatically available
-            const chatResponse = await model.sendRequest(messages, { tools: ocpTools }, token);
-            
-            // Process the response stream
-            for await (const fragment of chatResponse.stream) {
-                if (fragment instanceof vscode.LanguageModelTextPart) {
-                    stream.markdown(fragment.value);
-                } else if (fragment instanceof vscode.LanguageModelToolCallPart) {
-                    // The LLM wants to call a tool - invoke it
-                    stream.markdown(`\n\n🔧 **Calling tool:** \`${fragment.name}\`\n\n`);
-                    
-                    const toolResult = await vscode.lm.invokeTool(
-                        fragment.name,
-                        {
-                            input: fragment.input,
-                            toolInvocationToken: undefined
-                        },
-                        token
-                    );
-                    
-                    // Add tool call and result to message history and continue the conversation
-                    messages.push(vscode.LanguageModelChatMessage.Assistant([fragment]));
-                    messages.push(vscode.LanguageModelChatMessage.User([
-                        new vscode.LanguageModelToolResultPart(fragment.callId, toolResult.content)
-                    ]));
-                    
-                    // Continue the chat with tool result
-                    const followupResponse = await model.sendRequest(messages, { tools: ocpTools }, token);
-                    for await (const followupFragment of followupResponse.stream) {
-                        if (followupFragment instanceof vscode.LanguageModelTextPart) {
-                            stream.markdown(followupFragment.value);
-                        }
-                    }
-                }
-            }
-            
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            stream.markdown(`❌ **Error:** ${errorMessage}`);
-        }
-    });
-
-    participant.iconPath = vscode.Uri.joinPath(context.extensionUri, 'icon.png');
-
-    context.subscriptions.push(participant);
+    console.log('OCP tools registered successfully');
 }
 
-export function deactivate() {}
+export function deactivate() {
+    ocpAgent = null;
+}

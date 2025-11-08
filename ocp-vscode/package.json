@@ -42,16 +42,18 @@
       {
         "name": "ocp_getContext",
         "displayName": "OCP Get Context",
-        "modelDescription": "Get the current OCP context for this workspace, including context ID, agent type, user, workspace, and session information",
-        "inputSchema": {
-          "type": "object",
-          "properties": {}
-        }
+        "modelDescription": "Show current workspace development context in the OCP environment, including user, project details, session state, and registered APIs. Use when user asks to 'show me the context', 'what's my current setup', 'tell me about this workspace', or before starting any OCP operations.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "ocp-context",
+        "userDescription": "Get current workspace context information"
       },
       {
         "name": "ocp_registerApi",
         "displayName": "OCP Register API",
-        "modelDescription": "Register an API from its OpenAPI specification URL or from the OCP registry by name. Discovers all available tools from the API.",
+        "modelDescription": "Add an API to the OCP registry to make its tools available for development tasks. Discovers all available tools from the API specification. Use when user wants to 'add an API', 'register GitHub', 'connect to a service', or integrate with external APIs. This should be done before calling any tools from an API.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "ocp-register",
+        "userDescription": "Register an API to make its tools available",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -74,7 +76,10 @@
       {
         "name": "ocp_listTools",
         "displayName": "OCP List Tools",
-        "modelDescription": "List all available tools from registered APIs, or tools from a specific API",
+        "modelDescription": "List all development tools available from APIs registered in this OCP session. Use when user asks 'what can I do', 'what tools are available', 'show me my options', 'what's possible here', or to discover capabilities after registering APIs.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "ocp-list",
+        "userDescription": "List available tools from registered APIs",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -88,7 +93,10 @@
       {
         "name": "ocp_callTool",
         "displayName": "OCP Call Tool",
-        "modelDescription": "Call a discovered tool with parameters. Tool must be registered first. Parameters are validated against the tool's schema.",
+        "modelDescription": "Execute a development tool from OCP-registered APIs with specified parameters. Tool must be registered first via ocp_registerApi. Use when user requests specific actions like 'create a file', 'search code', 'deploy app', or any task that requires calling external API endpoints.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "ocp-call",
+        "userDescription": "Call a tool from a registered API",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -111,7 +119,10 @@
       {
         "name": "ocp_searchTools",
         "displayName": "OCP Search Tools",
-        "modelDescription": "Search for tools by name or description across all registered APIs or within a specific API",
+        "modelDescription": "Find development tools by searching names and descriptions across OCP-registered APIs. Use when user describes what they want to accomplish like 'I need to...', 'help me find...', 'find tools for...', or when looking for specific functionality without knowing exact tool names.",
+        "canBeReferencedInPrompt": true,
+        "toolReferenceName": "ocp-search",
+        "userDescription": "Search for tools by name or description",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -126,14 +137,6 @@
           },
           "required": ["query"]
         }
-      }
-    ],
-    "chatParticipants": [
-      {
-        "id": "chat.ocp",
-        "name": "ocp",
-        "description": "Open Context Protocol - automatically provides OCP tools to chat agents",
-        "isSticky": true
       }
     ]
   },
