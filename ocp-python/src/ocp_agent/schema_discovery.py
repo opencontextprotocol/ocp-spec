@@ -11,6 +11,8 @@ from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
+from .errors import SchemaDiscoveryError
+
 @dataclass
 class OCPTool:
     """Represents a discovered API tool/endpoint"""
@@ -75,7 +77,7 @@ class OCPSchemaDiscovery:
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            raise Exception(f"Failed to fetch OpenAPI spec from {spec_url}: {e}")
+            raise SchemaDiscoveryError(f"Failed to fetch OpenAPI spec from {spec_url}: {e}")
     
     def _parse_openapi_spec(self, spec_data: Dict[str, Any], base_url_override: Optional[str] = None) -> OCPAPISpec:
         """Parse OpenAPI specification into OCP tools"""

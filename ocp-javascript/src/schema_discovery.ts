@@ -53,9 +53,8 @@ export class OCPSchemaDiscovery {
      */
     async discoverApi(specUrl: string, baseUrl?: string): Promise<OCPAPISpec> {
         // Check cache
-        const cacheKey = `${specUrl}:${baseUrl || ''}`;
-        if (this.cache.has(cacheKey)) {
-            return this.cache.get(cacheKey)!;
+        if (this.cache.has(specUrl)) {
+            return this.cache.get(specUrl)!;
         }
 
         try {
@@ -63,7 +62,7 @@ export class OCPSchemaDiscovery {
             const apiSpec = this._parseOpenApiSpec(spec, baseUrl);
             
             // Cache the result
-            this.cache.set(cacheKey, apiSpec);
+            this.cache.set(specUrl, apiSpec);
             
             return apiSpec;
         } catch (error) {
@@ -281,25 +280,30 @@ export class OCPSchemaDiscovery {
      * Generate human-readable tool documentation.
      */
     generateToolDocumentation(tool: OCPTool): string {
-        let doc = `Tool: ${tool.name}\n`;
-        doc += `Description: ${tool.description}\n`;
-        doc += `Method: ${tool.method}\n`;
-        doc += `Path: ${tool.path}\n`;
+        const docLines = [
+            `## ${tool.name}`,
+            `**Method:** ${tool.method}`,
+            `**Path:** ${tool.path}`,
+            `**Description:** ${tool.description}`,
+            ''
+        ];
 
         if (Object.keys(tool.parameters).length > 0) {
-            doc += '\nParameters:\n';
-            for (const [name, param] of Object.entries(tool.parameters)) {
-                const required = param.required ? ' (required)' : '';
-                const location = param.location ? ` [${param.location}]` : '';
-                doc += `  - ${name}${required}${location}: ${param.description || param.type}\n`;
+            docLines.push('### Parameters:');
+            for (const [paramName, paramInfo] of Object.entries(tool.parameters)) {
+                const required = paramInfo.required ? ' (required)' : ' (optional)';
+                const location = ` [${paramInfo.location || 'query'}]`;
+                docLines.push(`- **${paramName}**${required}${location}: ${paramInfo.description || ''}`);
             }
+            docLines.push('');
         }
 
         if (tool.tags && tool.tags.length > 0) {
-            doc += `\nTags: ${tool.tags.join(', ')}\n`;
+            docLines.push(`**Tags:** ${tool.tags.join(', ')}`);
+            docLines.push('');
         }
 
-        return doc;
+        return docLines.join('\n');
     }
 
     /**
