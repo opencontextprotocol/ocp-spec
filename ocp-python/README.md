@@ -18,8 +18,9 @@ from ocp_agent import OCPAgent, wrap_api
 # Create an OCP agent
 agent = OCPAgent(
     agent_type="api_explorer",
+    user=None,
     workspace="my-project",
-    current_goal="Analyze API endpoints"
+    agent_goal="Analyze API endpoints"
 )
 
 # Register an API from OpenAPI specification
@@ -53,10 +54,10 @@ response = github_client.get("/user")
 ### OCPAgent
 
 ```python
-agent = OCPAgent(agent_type, workspace=None, current_goal=None)
-agent.register_api(name, spec_url)
+agent = OCPAgent(agent_type, user=None, workspace=None, agent_goal=None, registry_url=None, enable_cache=True)
+agent.register_api(name, spec_url=None, base_url=None)
 agent.list_tools(api_name=None)
-agent.call_tool(tool_name, **kwargs)
+agent.call_tool(tool_name, parameters=None, api_name=None)
 ```
 
 ### AgentContext
@@ -71,13 +72,13 @@ context.to_dict()
 ### HTTP Client Functions
 
 ```python
-from ocp_agent import enhance_http_client, wrap_api
-
-# Enhance existing client
-enhanced = enhance_http_client(requests.Session(), context)
+from ocp_agent import wrap_api, OCPHTTPClient
 
 # Create API-specific client
-api_client = wrap_api(base_url, context, auth=None)
+api_client = wrap_api(base_url, context, auth=None, headers=None)
+
+# Create OCP-aware HTTP client directly
+client = OCPHTTPClient(context)
 ```
 
 ## Development
@@ -103,14 +104,17 @@ poetry run pytest tests/test_context.py -v
 ## Project Structure
 
 ```
-src/ocp/
+src/ocp_agent/
 ├── __init__.py          # Public API exports
 ├── agent.py             # OCPAgent class
 ├── context.py           # AgentContext class  
 ├── http_client.py       # HTTP client wrappers
 ├── headers.py           # Header encoding/decoding
 ├── schema_discovery.py  # OpenAPI parsing
-└── validation.py        # JSON schema validation
+├── registry.py          # Registry client
+├── storage.py           # Local storage and caching
+├── validation.py        # JSON schema validation
+└── errors.py            # Error classes
 
 tests/
 ├── test_agent.py        # OCPAgent tests
@@ -118,6 +122,8 @@ tests/
 ├── test_http_client.py  # HTTP client tests
 ├── test_headers.py      # Header tests
 ├── test_schema_discovery.py # Schema parsing tests
+├── test_registry.py     # Registry tests
+├── test_storage.py      # Storage tests
 ├── test_validation.py   # Validation tests
 └── conftest.py          # Test fixtures
 ```

@@ -6,11 +6,41 @@ This document captures critical project decisions, patterns, and expectations fo
 
 The Open Context Protocol (OCP) specification repository contains:
 - Protocol specification and documentation
-- Python agent library (`ocp-python/`)
-- JavaScript/TypeScript agent library (`ocp-javascript/`)
+- Python agent library (`ocp-python/`) - Published to PyPI as `open-context-agent`
+- JavaScript/TypeScript agent library (`ocp-javascript/`) - Ready for npm as `@opencontextprotocol/agent`
+- VS Code Extension (`ocp-vscode/`) - Production-ready with Language Model Tools API
 - CLI tool (`cli/`)
 - Registry service (`registry/`)
 - Hugo-based documentation site (`site/`)
+
+## Current State (November 2025)
+
+### Recent Major Achievements
+1. **VS Code Extension Complete Rebuild** - Successfully refactored from chat participants to VS Code's Language Model Tools API
+   - Fixed 400 "Model is not supported" errors from GitHub API changes
+   - Resolved Claude vs GPT tool calling compatibility issues
+   - Implemented proper authentication parameter merging
+   - All 5 OCP tools working: getContext, registerApi, listTools, callTool, searchTools
+   - Tested with HTTPBin API including authentication flow
+
+2. **JavaScript Library Production Ready** - Package name updated to `@opencontextprotocol/agent`
+   - 174 tests passing (includes storage implementation)
+   - TypeScript compilation clean
+   - README corrected with accurate API examples
+   - Authentication flow verified through VS Code extension testing
+   - Ready for npm publishing under opencontextprotocol organization
+
+3. **Authentication Architecture Validated** - Proven end-to-end auth flow:
+   - VS Code settings → extension parameter merging → JS library header routing → HTTP API
+   - Settings auth parameters override agent parameters (security best practice)
+   - JavaScript library properly routes header parameters based on tool schema location
+
+### Technical Status
+- **Python Library**: Published to PyPI, production stable
+- **JavaScript Library**: Ready for npm publish (org verified, tests passing)
+- **VS Code Extension**: Production-ready, authentication working, model compatibility improved
+- **Authentication**: End-to-end flow validated with real API testing
+- **Registry Integration**: Working with community registry and HTTPBin test APIs
 
 ## Development Philosophy
 
@@ -415,9 +445,9 @@ export interface OCPContextDict {
 - **Node.js**: >=18.0.0
 - **Poetry**: Used for Python dependency management
 - **npm**: Used for JavaScript dependency management
-- **ocp-python (PyPI: open-context-agent)**: 0.1.0 (145 tests, 100% passing)
-- **ocp-javascript (npm: @opencontext/agent)**: 0.1.0 (174 tests, 100% passing - includes storage)
-- **ocp-vscode**: 0.1.0 (in development, needs rebuild)
+- **ocp-python (PyPI: open-context-agent)**: 0.1.0 (Published, 145 tests, 100% passing)
+- **ocp-javascript (npm: @opencontextprotocol/agent)**: 0.1.0 (Ready for publish, 174 tests, 100% passing)
+- **ocp-vscode**: 0.1.0 (Production-ready, Language Model Tools API, authentication working)
 - **CLI**: 0.1.0 (11 tests, 100% passing)
 - **Registry**: 0.1.0 (11 tests, 100% passing)
 
@@ -425,5 +455,5 @@ export interface OCPContextDict {
 
 ---
 
-**Last Updated**: October 30, 2025
-**Context Thread**: JavaScript library storage implementation complete - OCPStorage class added with full Python parity (174 tests passing). Cross-language storage compatibility achieved using snake_case JSON schema. Ready for VS Code extension integration.
+**Last Updated**: November 9, 2025
+**Context Thread**: VS Code extension architecture complete - Successfully rebuilt with Language Model Tools API, fixed model compatibility issues, implemented proper authentication parameter merging, and validated end-to-end auth flow with HTTPBin testing. JavaScript library package name updated to @opencontextprotocol/agent and ready for npm publishing. All authentication flows working correctly through the complete stack.
