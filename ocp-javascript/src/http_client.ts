@@ -66,7 +66,7 @@ export class OCPHTTPClient {
         }
 
         this.context.addInteraction(
-            `http_${method.toLowerCase()}`,
+            `api_call_${method.toLowerCase()}`,
             url,
             error ? `Error: ${error.message}` : (statusCode !== undefined ? `${statusCode}` : undefined),
             {
@@ -209,26 +209,15 @@ export function wrapApi(context: AgentContext, baseUrl: string, headers?: Record
         return `${normalizedBase}${path}`;
     };
     
-    // Create a wrapper that prepends baseUrl
-    const wrappedClient = {
-        get: (path: string, options?: RequestOptions) => 
-            client.get(buildUrl(path), options),
-        post: (path: string, options?: RequestOptions) => 
-            client.post(buildUrl(path), options),
-        put: (path: string, options?: RequestOptions) => 
-            client.put(buildUrl(path), options),
-        delete: (path: string, options?: RequestOptions) => 
-            client.delete(buildUrl(path), options),
-        patch: (path: string, options?: RequestOptions) => 
-            client.patch(buildUrl(path), options),
-        request: (method: string, path: string, options?: RequestOptions) => {
-            const opts = { ...options };
-            if (headers) {
-                opts.headers = { ...headers, ...opts.headers };
-            }
-            return client.request(method, buildUrl(path), opts);
+    // Override request method to handle base URL and additional headers (like Python)
+    const originalRequest = client.request.bind(client);
+    client.request = (method: string, path: string, options: RequestOptions = {}) => {
+        const opts = { ...options };
+        if (headers) {
+            opts.headers = { ...headers, ...opts.headers };
         }
+        return originalRequest(method, buildUrl(path), opts);
     };
 
-    return wrappedClient as any;
+    return client;
 }

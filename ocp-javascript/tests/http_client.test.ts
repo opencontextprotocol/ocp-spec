@@ -86,7 +86,7 @@ describe('OCP HTTP Client', () => {
 
       // Should log interaction
       expect(addInteractionSpy).toHaveBeenCalledWith(
-        'http_get',
+        'api_call_get',
         'https://api.example.com/users',
         '200',
         {
@@ -129,7 +129,7 @@ describe('OCP HTTP Client', () => {
       // Verify calls
       expect(addInteractionSpy).toHaveBeenNthCalledWith(
         1,
-        'http_get',
+        'api_call_get',
         'https://api.example.com/missing',
         '404',
         {
@@ -142,7 +142,7 @@ describe('OCP HTTP Client', () => {
 
       expect(addInteractionSpy).toHaveBeenNthCalledWith(
         2,
-        'http_post',
+        'api_call_post',
         'https://api.example.com/create',
         '201',
         {
@@ -155,7 +155,7 @@ describe('OCP HTTP Client', () => {
 
       expect(addInteractionSpy).toHaveBeenNthCalledWith(
         3,
-        'http_put',
+        'api_call_put',
         'https://api.example.com/update',
         undefined,
         {
@@ -415,7 +415,7 @@ describe('HTTP Client Integration', () => {
     // Verify interaction was logged
     expect(addInteractionMock).toHaveBeenCalledTimes(1);
     const interactionCall = addInteractionMock.mock.calls[0];
-    expect(interactionCall[0]).toBe('http_get');
+    expect(interactionCall[0]).toBe('api_call_get');
     expect(interactionCall[1]).toBe('https://api.example.com/users?page=1&limit=10');
     expect(interactionCall[2]).toBe('200');
 
@@ -473,13 +473,13 @@ describe('HTTP Client Integration', () => {
     // Check interaction details
     const calls = addInteractionSpy.mock.calls;
 
-    expect(calls[0][0]).toBe('http_get');
+    expect(calls[0][0]).toBe('api_call_get');
     expect(calls[0][2]).toBe('200');
 
-    expect(calls[1][0]).toBe('http_post');
+    expect(calls[1][0]).toBe('api_call_post');
     expect(calls[1][2]).toBe('201');
 
-    expect(calls[2][0]).toBe('http_delete');
+    expect(calls[2][0]).toBe('api_call_delete');
     expect(calls[2][2]).toBe('404');
 
     addInteractionSpy.mockRestore();
