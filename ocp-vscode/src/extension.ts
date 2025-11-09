@@ -93,10 +93,10 @@ class RegisterApiTool implements vscode.LanguageModelTool<IOCPRegisterApiParams>
 
             const params = options.input;
 
-            // Get auth headers for this API if configured
+            // Check if auth is configured for this API
             const config = vscode.workspace.getConfiguration('ocp');
             const apiAuth = config.get<Record<string, Record<string, string>>>('apiAuth') || {};
-            const authHeaders = apiAuth[params.name];
+            const hasAuth = !!(apiAuth[params.name] && Object.keys(apiAuth[params.name]).length > 0);
 
             await ocpAgent.registerApi(params.name, params.specUrl, params.baseUrl);
             
@@ -104,7 +104,7 @@ class RegisterApiTool implements vscode.LanguageModelTool<IOCPRegisterApiParams>
                 new vscode.LanguageModelTextPart(JSON.stringify({
                     success: true,
                     message: `Successfully registered API: ${params.name}`,
-                    hasAuth: !!authHeaders
+                    hasAuth: hasAuth
                 }, null, 2))
             ]);
         } catch (error) {
@@ -186,9 +186,18 @@ class CallToolTool implements vscode.LanguageModelTool<IOCPCallToolParams> {
             }
 
             const params = options.input;
+            
+            // Get auth parameters for this API if configured
+            const config = vscode.workspace.getConfiguration('ocp');
+            const apiAuth = config.get<Record<string, Record<string, string>>>('apiAuth') || {};
+            const authParams = params.apiName ? apiAuth[params.apiName] || {} : {};
+
+            // Merge agent-provided parameters with auth parameters
+            const finalParams = { ...params.parameters, ...authParams };
+            
             const result = await ocpAgent.callTool(
                 params.toolName,
-                params.parameters,
+                finalParams,
                 params.apiName
             );
             
