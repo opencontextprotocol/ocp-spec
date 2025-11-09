@@ -5,15 +5,15 @@ Context-aware HTTP client framework for AI agents.
 ## Installation
 
 ```bash
-npm install @opencontext/agent
+npm install @opencontextprotocol/agent
 # or with yarn
-yarn add @opencontext/agent
+yarn add @opencontextprotocol/agent
 ```
 
 ## Quick Start
 
 ```typescript
-import { OCPAgent, wrapApi } from '@opencontext/agent';
+import { OCPAgent, wrapApi } from '@opencontextprotocol/agent';
 
 // Create an OCP agent
 const agent = new OCPAgent(
@@ -31,9 +31,9 @@ const apiSpec = await agent.registerApi(
 
 // Create context-aware HTTP client
 const githubClient = wrapApi(
-    'https://api.github.com',
     agent.context,
-    'token your_token_here'
+    'https://api.github.com',
+    { 'Authorization': 'token your_token_here' }
 );
 
 // All requests include OCP context headers
@@ -72,14 +72,14 @@ context.toDict();
 ### HTTP Client Functions
 
 ```typescript
-import { OCPHTTPClient, wrapApi } from '@opencontext/agent';
+import { OCPHTTPClient, wrapApi } from '@opencontextprotocol/agent';
 
 // Create OCP-aware HTTP client
 const client = new OCPHTTPClient(context);
 await client.request('GET', url, options);
 
 // Create API-specific client
-const apiClient = wrapApi(baseUrl, context, auth?, headers?);
+const apiClient = wrapApi(context, baseUrl, authHeaders?);
 ```
 
 ## Development

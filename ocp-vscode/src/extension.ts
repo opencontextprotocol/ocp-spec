@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { OCPAgent, OCPContextDict } from '@opencontext/agent';
+import { OCPAgent, OCPContextDict } from '@opencontextprotocol/agent';
 
 // Singleton OCPAgent instance for the workspace
 let ocpAgent: OCPAgent | null = null;

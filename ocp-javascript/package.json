@@ -1,5 +1,5 @@
 {
-  "name": "@opencontext/agent",
+  "name": "@opencontextprotocol/agent",
   "version": "0.1.0",
   "description": "JavaScript/TypeScript implementation of the Open Context Protocol for AI agents",
   "main": "dist/index.js",

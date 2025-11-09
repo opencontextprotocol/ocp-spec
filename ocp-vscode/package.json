@@ -147,7 +147,7 @@
     "package": "vsce package"
   },
   "dependencies": {
-    "@opencontext/agent": "file:../ocp-javascript"
+    "@opencontextprotocol/agent": "file:../ocp-javascript"
   },
   "devDependencies": {
     "@types/vscode": "^1.85.0",
