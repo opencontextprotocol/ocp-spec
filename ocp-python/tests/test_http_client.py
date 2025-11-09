@@ -247,7 +247,7 @@ class TestWrapAPI:
             api_client = wrap_api(
                 "https://api.github.com", 
                 context,
-                auth="token ghp_123456"
+                headers={"Authorization": "token ghp_123456"}
             )
             
             # Verify session headers were updated
@@ -264,7 +264,7 @@ class TestWrapAPI:
             api_client = wrap_api(
                 "https://api.example.com",
                 context, 
-                auth="Bearer jwt_token_here"
+                headers={"Authorization": "Bearer jwt_token_here"}
             )
             
             headers = mock_session.headers.update.call_args[0][0]
@@ -279,14 +279,14 @@ class TestWrapAPI:
             api_client = wrap_api(
                 "https://api.example.com",
                 context,
-                auth="Basic dXNlcjpwYXNz"
+                headers={"Authorization": "Basic dXNlcjpwYXNz"}
             )
             
             headers = mock_session.headers.update.call_args[0][0]
             assert headers['Authorization'] == 'Basic dXNlcjpwYXNz'
     
     def test_wrap_api_with_plain_token(self, context):
-        """Test API wrapping with plain token (auto-prefixed)."""
+        """Test API wrapping with plain token (now explicit header)."""
         with patch("requests.Session") as mock_session_class:
             mock_session = Mock()
             mock_session_class.return_value = mock_session
@@ -294,7 +294,7 @@ class TestWrapAPI:
             api_client = wrap_api(
                 "https://api.example.com",
                 context,
-                auth="abc123def456"
+                headers={"Authorization": "token abc123def456"}
             )
             
             headers = mock_session.headers.update.call_args[0][0]

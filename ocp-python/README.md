@@ -33,7 +33,7 @@ api_spec = agent.register_api(
 github_client = wrap_api(
     "https://api.github.com",
     agent.context,
-    auth="token your_token_here"
+    headers={"Authorization": "token your_token_here"}
 )
 
 # All requests include OCP context headers
@@ -75,7 +75,7 @@ context.to_dict()
 from ocp_agent import wrap_api, OCPHTTPClient
 
 # Create API-specific client
-api_client = wrap_api(base_url, context, auth=None, headers=None)
+api_client = wrap_api(base_url, context, headers=None)
 
 # Create OCP-aware HTTP client directly
 client = OCPHTTPClient(context)

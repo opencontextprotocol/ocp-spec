@@ -69,7 +69,7 @@ def main():
     stripe_http = wrap_api(
         "https://api.stripe.com", 
         stripe_agent.context,
-        auth=f"Bearer {os.getenv('STRIPE_SECRET_KEY', 'sk_test_your_key_here')}"
+        headers={"Authorization": f"Bearer {os.getenv('STRIPE_SECRET_KEY', 'sk_test_your_key_here')}"}
     )
     print("   • Context-aware HTTP client created")
     print("   • Automatic OCP headers added to requests")

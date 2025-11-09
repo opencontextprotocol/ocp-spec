@@ -78,7 +78,7 @@ def main():
     github_http = wrap_api(
         "https://api.github.com",
         github_agent.context,
-        auth=os.getenv("GITHUB_TOKEN", "your_token_here")
+        headers={"Authorization": f"token {os.getenv('GITHUB_TOKEN', 'your_token_here')}"}
     )
     
     print("🌐 OCP HTTP client created with context awareness")

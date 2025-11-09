@@ -79,7 +79,7 @@ const client = new OCPHTTPClient(context);
 await client.request('GET', url, options);
 
 // Create API-specific client
-const apiClient = wrapApi(context, baseUrl, authHeaders?);
+const apiClient = wrapApi(context, baseUrl, headers?);
 ```
 
 ## Development

@@ -190,10 +190,10 @@ export class OCPHTTPClient {
  * 
  * @param context - Agent context
  * @param baseUrl - API base URL
- * @param authHeaders - Optional authentication headers
+ * @param headers - Optional headers to include in all requests
  * @returns Configured HTTP client
  */
-export function wrapApi(context: AgentContext, baseUrl: string, authHeaders?: Record<string, string>): OCPHTTPClient {
+export function wrapApi(context: AgentContext, baseUrl: string, headers?: Record<string, string>): OCPHTTPClient {
     const client = new OCPHTTPClient(context);
     
     // Normalize base URL (remove trailing slash)
@@ -223,8 +223,8 @@ export function wrapApi(context: AgentContext, baseUrl: string, authHeaders?: Re
             client.patch(buildUrl(path), options),
         request: (method: string, path: string, options?: RequestOptions) => {
             const opts = { ...options };
-            if (authHeaders) {
-                opts.headers = { ...authHeaders, ...opts.headers };
+            if (headers) {
+                opts.headers = { ...headers, ...opts.headers };
             }
             return client.request(method, buildUrl(path), opts);
         }

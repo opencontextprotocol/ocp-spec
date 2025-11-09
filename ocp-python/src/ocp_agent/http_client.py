@@ -114,7 +114,6 @@ class OCPHTTPClient:
 def wrap_api(
     base_url: str, 
     context: AgentContext,
-    auth: Optional[str] = None,
     headers: Optional[Dict[str, str]] = None
 ) -> OCPHTTPClient:
     """
@@ -123,32 +122,24 @@ def wrap_api(
     Args:
         base_url: Base URL for the API (e.g., "https://api.github.com")
         context: Agent context to include in requests
-        auth: Authorization header value (e.g., "token ghp_xxx", "Bearer jwt_token")
         headers: Additional headers to include in all requests
         
     Returns:
         OCP-enabled API client
         
     Example:
-        >>> from ocp import AgentContext, wrap_api
+        >>> from ocp_agent import AgentContext, wrap_api
         >>> 
         >>> context = AgentContext(agent_type="debug_assistant")
         >>> github = wrap_api(
         ...     "https://api.github.com",
         ...     context,
-        ...     auth="token ghp_your_token"
+        ...     headers={"Authorization": "token ghp_your_token"}
         ... )
         >>> issues = github.get("/search/issues", params={"q": "bug"})
     """
     # Set up base headers
     base_headers = headers.copy() if headers else {}
-    
-    if auth:
-        if auth.startswith(('token ', 'Bearer ', 'Basic ')):
-            base_headers['Authorization'] = auth
-        else:
-            # Assume it's a token
-            base_headers['Authorization'] = f'token {auth}'
     
     # Create HTTP client with base URL
     import requests
