@@ -4,6 +4,11 @@
   "description": "Provides OCP context and API calling tools for AI agents in VS Code",
   "version": "0.1.0",
   "publisher": "opencontextprotocol",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opencontextprotocol/specification.git",
+    "directory": "ocp-vscode"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -70,7 +75,9 @@
               "description": "Optional override for API base URL"
             }
           },
-          "required": ["name"]
+          "required": [
+            "name"
+          ]
         }
       },
       {
@@ -113,7 +120,10 @@
               "description": "Optional API name if tool name is ambiguous"
             }
           },
-          "required": ["toolName", "parameters"]
+          "required": [
+            "toolName",
+            "parameters"
+          ]
         }
       },
       {
@@ -135,24 +145,27 @@
               "description": "Optional API name to search within"
             }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       }
     ]
   },
   "scripts": {
+    "compile": "npm run check-types && node esbuild.js",
+    "check-types": "tsc --noEmit",
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
     "package": "vsce package"
   },
   "dependencies": {
     "@opencontextprotocol/agent": "file:../ocp-javascript"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
     "@types/node": "^20.10.6",
-    "typescript": "^5.3.3",
-    "@vscode/vsce": "^2.22.0"
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.27.0",
+    "typescript": "^5.3.3"
   }
 }
