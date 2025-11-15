@@ -15,10 +15,23 @@ Turn any API into an<br/>intelligent agent tool
 The Open Context Protocol enables AI agents to maintain persistent context across API calls using open standards.
 {{< /hextra/hero-subtitle >}}
 
-{{< hextra/hero-button text="Get Started" link="specification/" style="margin-bottom: 1.5rem;" >}}
+{{< hextra/hero-button text="Get Started" link="context/" style="margin-bottom: 1.5rem;" >}}
+
+## The 4 Superpowers of OCP
+
+OCP transforms how AI agents interact with APIs through four revolutionary capabilities:
 
 {{< hextra/feature-grid >}}
-{{< hextra/feature-card title="No Middleman Servers" subtitle="Agents call APIs directly with context in HTTP headers. Zero additional infrastructure required." icon="server" >}}
-{{< hextra/feature-card title="Automatic Tool Discovery" subtitle="Generate agent tools automatically from any OpenAPI specification." icon="cog" >}}
-{{< hextra/feature-card title="Persistent Context" subtitle="Maintain conversation state and workspace context across all API interactions." icon="database" >}}
+{{< hextra/feature-card title="🧠 Context" subtitle="Enabling APIs to become conversational participants in the agent workflow with persistent context across all interactions." link="context/" >}}
+{{< hextra/feature-card title="🔧 Tool Discovery" subtitle="Automatic tool generation via OpenAPI specifications - zero manual integration required." link="tools/" >}}
+{{< hextra/feature-card title="🌐 Community Registry" subtitle="Pre-indexed APIs searchable by users and agents for instant tool discovery." link="registry/" >}}
+{{< hextra/feature-card title="💻 IDE Integration" subtitle="Drop-in VS Code extension that empowers chat agents with all OCP capabilities." link="ide/" >}}
+{{< /hextra/feature-grid >}}
+
+## How It Works
+
+{{< hextra/feature-grid >}}
+{{< hextra/feature-card title="Zero Infrastructure" subtitle="Agents call APIs directly with context in HTTP headers. No servers or additional infrastructure required." icon="server" >}}
+{{< hextra/feature-card title="Open Standards" subtitle="Built on HTTP, OpenAPI, and JSON. Works with existing APIs without modification." icon="globe" >}}
+{{< hextra/feature-card title="Immediate Compatibility" subtitle="Level 1 compatibility works today. Level 2 enables context-aware API responses." icon="check" >}}
 {{< /hextra/feature-grid >}}
