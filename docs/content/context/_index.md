@@ -78,3 +78,15 @@ APIs read context and provide enhanced, context-aware responses.
 **🏢 Workspace Context**: File paths, git branches, project structure flow automatically  
 **📊 Interaction History**: Track conversation flow and API usage patterns  
 **🔧 Zero Setup**: Works with existing APIs - no server changes required
+
+## Next Steps
+
+Now that you understand how context works, explore the other OCP superpowers:
+
+{{< cards >}}
+{{< card link="/tools/" title="🔧 Tool Discovery" subtitle="Learn how OCP automatically generates tools from any API" >}}
+{{< card link="/registry/" title="🌐 Community Registry" subtitle="Discover pre-indexed APIs for instant integration" >}}
+{{< card link="/ide/" title="💻 IDE Integration" subtitle="Install the VS Code extension for workspace-aware agents" >}}
+{{< /cards >}}
+
+**Ready to start?** [Get Started with Context →](headers/)

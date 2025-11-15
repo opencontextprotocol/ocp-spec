@@ -273,3 +273,15 @@ ocp.set_registry_mode("offline")
 **📚 Rich Metadata**: Authentication, examples, and usage guides included  
 **🌍 Community Driven**: Collaborative API catalog maintained by developers  
 **🏢 Enterprise Ready**: Support for private registries and offline usage
+
+## Next Steps
+
+Now that you understand the registry, see how it integrates with other OCP superpowers:
+
+{{< cards >}}
+{{< card link="/tools/" title="🔧 Tool Discovery" subtitle="See how registry accelerates tool generation" >}}
+{{< card link="/context/" title="🧠 Context" subtitle="Learn how context enhances API interactions" >}}
+{{< card link="/ide/" title="💻 IDE Integration" subtitle="Use registry APIs directly in your development workflow" >}}
+{{< /cards >}}
+
+**Ready to explore APIs?** [Browse the API Catalog →](api-catalog/)

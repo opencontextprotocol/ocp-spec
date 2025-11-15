@@ -11,6 +11,9 @@ outputs:
   section: [HTML, RSS]
 
 module:
+  hugoVersion:
+    extended: true
+    min: "0.146.0"
   imports:
     - path: github.com/imfing/hextra
 
@@ -55,21 +58,47 @@ enableInlineShortcodes: true
 
 menu:
   main:
-    - name: Specification
-      pageRef: /specification
+    - identifier: get-started
+      name: Get Started
+      pageRef: /context
       weight: 1
-    - name: Libraries
-      pageRef: /libraries
+    - identifier: superpowers
+      name: Superpowers
       weight: 2
-    - name: Community
-      pageRef: /community
+    - identifier: context
+      name: 🧠 Context
+      pageRef: /context
+      parent: superpowers
+    - identifier: tools
+      name: 🔧 Tools
+      pageRef: /tools
+      parent: superpowers
+    - identifier: registry
+      name: 🌐 Registry
+      pageRef: /registry
+      parent: superpowers
+    - identifier: ide
+      name: 💻 IDE
+      pageRef: /ide
+      parent: superpowers
+    - identifier: examples
+      name: Examples
+      pageRef: /examples
       weight: 3
-    - name: Search
+    - identifier: specification
+      name: Specification
+      pageRef: /specification
       weight: 4
+    - identifier: libraries
+      name: Libraries
+      pageRef: /libraries
+      weight: 5
+    - name: Search
+      weight: 6
       params:
         type: search
     - name: GitHub
-      weight: 5
+      weight: 7
       url: "https://github.com/opencontextprotocol/specification"
       params:
         icon: github

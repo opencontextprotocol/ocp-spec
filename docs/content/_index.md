@@ -22,10 +22,10 @@ The Open Context Protocol enables AI agents to maintain persistent context acros
 OCP transforms how AI agents interact with APIs through four revolutionary capabilities:
 
 {{< hextra/feature-grid >}}
-{{< hextra/feature-card title="🧠 Context" subtitle="Enabling APIs to become conversational participants in the agent workflow with persistent context across all interactions." link="context/" >}}
-{{< hextra/feature-card title="🔧 Tool Discovery" subtitle="Automatic tool generation via OpenAPI specifications - zero manual integration required." link="tools/" >}}
-{{< hextra/feature-card title="🌐 Community Registry" subtitle="Pre-indexed APIs searchable by users and agents for instant tool discovery." link="registry/" >}}
-{{< hextra/feature-card title="💻 IDE Integration" subtitle="Drop-in VS Code extension that empowers chat agents with all OCP capabilities." link="ide/" >}}
+{{< hextra/feature-card title="🧠 Context" subtitle="Enabling APIs to become conversational participants in the agent workflow with persistent context across all interactions." link="context/" action="Learn Context" >}}
+{{< hextra/feature-card title="🔧 Tool Discovery" subtitle="Automatic tool generation via OpenAPI specifications - zero manual integration required." link="tools/" action="Discover Tools" >}}
+{{< hextra/feature-card title="🌐 Community Registry" subtitle="Pre-indexed APIs searchable by users and agents for instant tool discovery." link="registry/" action="Browse APIs" >}}
+{{< hextra/feature-card title="💻 IDE Integration" subtitle="Drop-in VS Code extension that empowers chat agents with all OCP capabilities." link="ide/" action="Install Extension" >}}
 {{< /hextra/feature-grid >}}
 
 ## How It Works
