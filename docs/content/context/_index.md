@@ -5,8 +5,6 @@ cascade:
   type: docs
 ---
 
-# 🧠 Context: Conversational APIs
-
 The first OCP superpower transforms APIs from stateless endpoints into **conversational participants** in your agent workflow. Instead of losing context between calls, APIs become aware of the ongoing conversation, workspace, and goals.
 
 ## The Problem OCP Solves

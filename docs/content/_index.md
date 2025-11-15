@@ -15,7 +15,7 @@ Turn any API into an<br/>intelligent agent tool
 The Open Context Protocol enables AI agents to maintain persistent context across API calls using open standards.
 {{< /hextra/hero-subtitle >}}
 
-{{< hextra/hero-button text="Get Started" link="context/" style="margin-bottom: 1.5rem;" >}}
+{{< hextra/hero-button text="Get Started" link="getting-started/" style="margin-bottom: 1.5rem;" >}}
 
 ## The 4 Superpowers of OCP
 

@@ -5,8 +5,6 @@ cascade:
   type: docs
 ---
 
-# 💻 IDE Integration: Drop-in Agent Superpowers
-
 The fourth OCP superpower brings all OCP capabilities directly into your development environment through a **drop-in VS Code extension** that empowers chat agents with context awareness, tool discovery, and API integration.
 
 ## The Problem OCP Solves

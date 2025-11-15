@@ -58,13 +58,9 @@ enableInlineShortcodes: true
 
 menu:
   main:
-    - identifier: get-started
-      name: Get Started
-      pageRef: /context
-      weight: 1
     - identifier: superpowers
-      name: Superpowers
-      weight: 2
+      name: Getting Started
+      weight: 1
     - identifier: context
       name: 🧠 Context
       pageRef: /context
@@ -104,24 +100,53 @@ menu:
         icon: github
 
   sidebar:
-    - identifier: schemas
-      name: "JSON Schemas ↗"
-      url: "https://github.com/opencontextprotocol/specification/tree/main/schemas"
-      weight: 1
-    - identifier: more
-      name: More
+    # Quick navigation to superpowers
+    - identifier: superpowers-quick
+      name: "Introduction"
       params:
         type: separator
+      weight: 1
+    - name: "🧠 Context"
+      pageRef: "/context"
       weight: 2
-    - identifier: python
-      name: "Python Library ↗"
-      url: "https://github.com/opencontextprotocol/ocp-python"
+    - name: "🔧 Tools"
+      pageRef: "/tools" 
       weight: 3
-    - identifier: javascript
-      name: "JavaScript Library ↗"
-      url: "https://github.com/opencontextprotocol/ocp-javascript"
+    - name: "🌐 Registry"
+      pageRef: "/registry"
       weight: 4
-    - identifier: vscode
-      name: "VS Code Extension ↗"
-      url: "https://github.com/opencontextprotocol/ocp-vscode"
+    - name: "💻 IDE"
+      pageRef: "/ide"
       weight: 5
+    
+    # Resources section
+    - identifier: resources
+      name: "Resources"
+      params:
+        type: separator
+      weight: 6
+    - name: "Examples"
+      pageRef: "/examples"
+      weight: 7
+    - name: "Libraries"
+      pageRef: "/libraries"
+      weight: 8
+    - name: "JSON Schemas ↗"
+      url: "https://github.com/opencontextprotocol/specification/tree/main/schemas"
+      weight: 9
+      
+    # External links
+    - identifier: github-links  
+      name: "GitHub"
+      params:
+        type: separator
+      weight: 10
+    - name: "Python Library ↗"
+      url: "https://github.com/opencontextprotocol/ocp-python"
+      weight: 11
+    - name: "JavaScript Library ↗"
+      url: "https://github.com/opencontextprotocol/ocp-javascript"
+      weight: 12
+    - name: "VS Code Extension ↗"
+      url: "https://github.com/opencontextprotocol/ocp-vscode"
+      weight: 13

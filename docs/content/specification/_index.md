@@ -1,11 +1,9 @@
 ---
-title: Protocol Specification
+title: Specification
 weight: 5
 cascade:
   type: docs
 ---
-
-# Protocol Specification
 
 The technical specification for the Open Context Protocol, defining the standards, formats, and compatibility requirements for OCP implementations.
 

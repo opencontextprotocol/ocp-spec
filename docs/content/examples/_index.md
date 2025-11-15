@@ -5,8 +5,6 @@ cascade:
   type: docs
 ---
 
-# Examples: OCP Superpowers in Action
-
 Real-world examples demonstrating how OCP's four superpowers work together to create powerful agent workflows.
 
 ## The 4 Superpowers Working Together

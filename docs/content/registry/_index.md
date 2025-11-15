@@ -5,8 +5,6 @@ cascade:
   type: docs
 ---
 
-# 🌐 Community Registry: Instant API Discovery
-
 The third OCP superpower eliminates the need to find and configure OpenAPI specifications. The community registry provides **pre-indexed APIs** that are searchable by both users and agents for instant tool discovery.
 
 ## The Problem OCP Solves
