@@ -1,10 +1,10 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://opencontextprotocol.org/schemas/ocp-tool.json",
   "title": "OCP Tool Definition",
   "description": "Tool generated from OpenAPI specification for OCP agent use",
   "type": "object",
-  "required": ["name", "description", "method", "path", "parameters"],
+  "required": ["name", "description", "method", "path", "parameters", "response_schema"],
   "properties": {
     "name": {
       "type": "string",
@@ -26,7 +26,7 @@
       "pattern": "^/"
     },
     "operation_id": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "Original OpenAPI operationId if present"
     },
     "parameters": {
@@ -57,7 +57,8 @@
             },
             "description": {
               "type": "string",
-              "description": "Human-readable parameter description"
+              "description": "Human-readable parameter description",
+              "default": ""
             },
             "default": {
               "description": "Default value for optional parameters"
@@ -121,7 +122,7 @@
       "additionalProperties": true
     },
     "tags": {
-      "type": "array",
+      "type": ["array", "null"],
       "items": {
         "type": "string"
       },

@@ -1,24 +1,105 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://opencontextprotocol.org/schemas/ocp-openapi-extensions.json",
   "title": "OCP Extensions for OpenAPI",
-  "description": "Optional OCP extensions for OpenAPI specifications to declare context support",
+  "description": "Optional OCP extensions for OpenAPI specifications to declare context support and behavior",
   "type": "object",
-  "properties": {
-    "x-ocp-enabled": {
-      "type": "boolean",
-      "description": "Indicates this API acknowledges OCP context headers",
-      "default": false
+  "definitions": {
+    "ocpInfoExtensions": {
+      "type": "object",
+      "description": "OCP extensions for OpenAPI info section",
+      "properties": {
+        "x-ocp-enabled": {
+          "type": "boolean",
+          "description": "Indicates this API acknowledges OCP context headers",
+          "default": false
+        },
+        "x-ocp-context-aware": {
+          "type": "boolean", 
+          "description": "Indicates this API can read and utilize context data in responses",
+          "default": false
+        },
+        "x-ocp-agent-types": {
+          "type": "array",
+          "description": "Agent types this API is optimized for",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x-ocp-version": {
+          "type": "string",
+          "description": "OCP specification version this API supports",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        }
+      }
     },
-    "x-ocp-context-aware": {
-      "type": "boolean", 
-      "description": "Indicates this API can read and utilize context data in responses",
-      "default": false
+    "ocpOperationExtensions": {
+      "type": "object",
+      "description": "OCP extensions for OpenAPI operation objects",
+      "properties": {
+        "x-ocp-context": {
+          "type": "object",
+          "description": "OCP context behavior for this operation",
+          "properties": {
+            "enhances_with": {
+              "type": "array",
+              "description": "Context fields this operation uses to enhance responses",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "agent_goal",
+                  "workspace_context", 
+                  "conversation_history",
+                  "current_file",
+                  "recent_changes",
+                  "error_context",
+                  "session"
+                ]
+              }
+            },
+            "updates_context": {
+              "type": "array", 
+              "description": "Context fields this operation may update",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "current_goal",
+                  "context_summary",
+                  "error_context",
+                  "recent_changes",
+                  "history"
+                ]
+              }
+            },
+            "requires_context": {
+              "type": "boolean",
+              "description": "Whether this operation requires OCP context to function properly",
+              "default": false
+            }
+          }
+        },
+        "x-ocp-enhanced-response": {
+          "type": "object",
+          "description": "Additional response properties when OCP context is present",
+          "patternProperties": {
+            "^[a-zA-Z][a-zA-Z0-9_]*$": {
+              "type": "object",
+              "description": "OpenAPI schema for additional response property"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
     },
-    "x-ocp-agent-types": {
-      "type": "array",
-      "description": "Agent types this API is optimized for",
-      "items": {
-        "type": "string"
+    "ocpResponseExtensions": {
+      "type": "object",
+      "description": "OCP extensions for OpenAPI response objects",
+      "properties": {
+        "x-ocp-context-updated": {
+          "type": "boolean",
+          "description": "Indicates this response may include updated context in headers",
+          "default": false
+        }
       }
     }
   }

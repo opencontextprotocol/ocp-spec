@@ -89,20 +89,18 @@ The `OCP-Session` header contains a JSON object that MUST conform to the [OCP Co
 - `agent_type`: Type of agent (matches `OCP-Agent-Type` header)
 - `created_at`: ISO 8601 timestamp of context creation
 - `last_updated`: ISO 8601 timestamp of last update
-- `session`: Session metadata object
-- `history`: Array of interaction history
-- `api_specs`: Object mapping API names to their OpenAPI specification URLs
 
 #### Optional Fields
 - `user`: User identifier
 - `workspace`: Current workspace or project
 - `current_goal`: Current agent objective
 - `current_file`: Currently active file
-- `git_branch`: Current git branch
-- `workspace_context`: Workspace metadata (project type, framework, etc.)
 - `context_summary`: Brief summary of conversation context
 - `error_context`: Error information for debugging
-- `recent_changes`: Array of recent modifications
+- `recent_changes`: Array of recent modifications (max 10)
+- `session`: Session metadata object with start_time, interaction_count, agent_type
+- `history`: Array of interaction history with timestamp, action, api_endpoint, result, metadata
+- `api_specs`: Object mapping API names to their OpenAPI specification URLs
 
 #### Minimal Valid Context
 ```json
@@ -110,14 +108,7 @@ The `OCP-Session` header contains a JSON object that MUST conform to the [OCP Co
   "context_id": "ocp-a1b2c3d4",
   "agent_type": "cli_tool",
   "created_at": "2025-11-16T10:30:00Z",
-  "last_updated": "2025-11-16T10:30:00Z",
-  "session": {
-    "start_time": "2025-11-16T10:30:00Z",
-    "interaction_count": 0,
-    "agent_type": "cli_tool"
-  },
-  "history": [],
-  "api_specs": {}
+  "last_updated": "2025-11-16T10:30:00Z"
 }
 ```
 
@@ -158,7 +149,14 @@ APIs read OCP context and provide enhanced, context-aware responses.
 - Parse and validate OCP context
 - Modify responses based on context (when appropriate)
 - Include context-aware information in responses
-- Support OpenAPI extensions for OCP behavior
+- Support OCP OpenAPI extensions for behavior specification
+
+**OpenAPI Extensions**: APIs can declare OCP support using extensions defined in the [OCP OpenAPI Extensions Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-openapi-extensions.json):
+
+- `x-ocp-enabled`: API acknowledges OCP headers
+- `x-ocp-context-aware`: API uses context data in responses
+- `x-ocp-context`: Operation-level context behavior
+- `x-ocp-enhanced-response`: Additional response properties with context
 
 **Implementation:** Requires API-side OCP support
 
@@ -284,14 +282,7 @@ Implementations MUST validate:
   "context_id": "ocp-a1b2c3d4",
   "agent_type": "cli_tool",
   "created_at": "2025-11-16T10:30:00Z",
-  "last_updated": "2025-11-16T10:30:00Z",
-  "session": {
-    "start_time": "2025-11-16T10:30:00Z",
-    "interaction_count": 0,
-    "agent_type": "cli_tool"
-  },
-  "history": [],
-  "api_specs": {}
+  "last_updated": "2025-11-16T10:30:00Z"
 }
 ```
 
@@ -304,16 +295,10 @@ Implementations MUST validate:
   "workspace": "payment-service", 
   "current_goal": "debug_payment_validation",
   "current_file": "payment_validator.py",
-  "git_branch": "fix-validation-bug",
   "session": {
     "start_time": "2025-11-16T10:20:00Z",
     "interaction_count": 5,
     "agent_type": "ide_coding_assistant"
-  },
-  "workspace": {
-    "project_type": "python_web_app",
-    "framework": "django",
-    "language": "python"
   },
   "history": [
     {

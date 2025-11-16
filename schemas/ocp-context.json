@@ -4,6 +4,12 @@
   "title": "OCP Context Object",
   "description": "Agent context for Open Context Protocol",
   "type": "object",
+  "required": [
+    "context_id",
+    "agent_type",
+    "created_at",
+    "last_updated"
+  ],
   "properties": {
     "context_id": {
       "type": "string",
@@ -26,22 +32,48 @@
       "type": ["string", "null"],
       "description": "Currently active file"
     },
+    "current_goal": {
+      "type": ["string", "null"],
+      "description": "Agent's current objective"
+    },
+    "context_summary": {
+      "type": ["string", "null"],
+      "description": "Brief summary of conversation context"
+    },
+    "error_context": {
+      "type": ["string", "null"],
+      "description": "Error information for debugging"
+    },
+    "recent_changes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 10,
+      "description": "Recent changes or modifications (max 10)",
+      "default": []
+    },
     "session": {
       "type": "object",
       "properties": {
         "start_time": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "description": "Session start timestamp"
         },
         "interaction_count": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "default": 0
         },
         "agent_type": {
-          "type": "string"
+          "type": "string",
+          "description": "Agent type (duplicated for session metadata)"
         }
       },
-      "additionalProperties": true
+      "required": ["start_time", "interaction_count", "agent_type"],
+      "additionalProperties": true,
+      "default": {}
     },
     "history": {
       "type": "array",
@@ -62,31 +94,14 @@
             "type": ["string", "null"]
           },
           "metadata": {
-            "type": "object"
+            "type": "object",
+            "default": {}
           }
         },
-        "required": ["timestamp", "action"]
-      }
-    },
-    "current_goal": {
-      "type": ["string", "null"],
-      "description": "Agent's current objective"
-    },
-    "context_summary": {
-      "type": ["string", "null"],
-      "description": "Brief summary of conversation context"
-    },
-    "error_context": {
-      "type": ["string", "null"],
-      "description": "Error information for debugging"
-    },
-    "recent_changes": {
-      "type": "array",
-      "items": {
-        "type": "string"
+        "required": ["timestamp", "action"],
+        "additionalProperties": false
       },
-      "maxItems": 20,
-      "description": "Recent changes or modifications"
+      "default": []
     },
     "api_specs": {
       "type": "object",
@@ -96,7 +111,9 @@
           "format": "uri"
         }
       },
-      "description": "API specifications for enhanced responses"
+      "description": "API specifications for enhanced responses",
+      "default": {},
+      "additionalProperties": false
     },
     "created_at": {
       "type": "string",
@@ -107,14 +124,5 @@
       "format": "date-time"
     }
   },
-  "required": [
-    "context_id",
-    "agent_type",
-    "session",
-    "history",
-    "api_specs",
-    "created_at",
-    "last_updated"
-  ],
   "additionalProperties": false
 }
