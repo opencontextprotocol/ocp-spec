@@ -25,7 +25,7 @@ params:
       path: images/light.svg
       dark: images/dark.svg
       link: /
-      width: 204
+      width: 197
       height: 30
   editURL:
     enable: true
