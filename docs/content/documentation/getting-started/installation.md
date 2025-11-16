@@ -257,6 +257,6 @@ Now that OCP is installed, try the quick start guide:
 Or dive deeper into the superpowers:
 
 {{< cards >}}
-{{< card link="/context/" title="🧠 Context" subtitle="Understand persistent context across API calls" >}}
-{{< card link="/tools/" title="🔧 Tool Discovery" subtitle="Learn automatic API integration" >}}
+{{< card link="../context/" title="🧠 Context" subtitle="Understand persistent context across API calls" >}}
+{{< card link="../tools/" title="🔧 Tool Discovery" subtitle="Learn automatic API integration" >}}
 {{< /cards >}}

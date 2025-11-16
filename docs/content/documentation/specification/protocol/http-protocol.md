@@ -3,8 +3,6 @@ title: "HTTP Protocol"
 weight: 1
 ---
 
-# HTTP Protocol
-
 The core OCP protocol uses standard HTTP headers to transmit context information without requiring server modifications or additional infrastructure.
 
 ## Header Specification

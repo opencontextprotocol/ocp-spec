@@ -3,8 +3,6 @@ title: "Naming Conventions"
 weight: 3
 ---
 
-# Naming Conventions
-
 OCP uses deterministic naming algorithms to ensure consistent, predictable function names across all generated tools. This makes agent code portable and prevents naming conflicts.
 
 ## Naming Algorithm

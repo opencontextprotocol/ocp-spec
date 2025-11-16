@@ -1,11 +1,9 @@
 ---
 title: "Tool Discovery"
-weight: 2
+weight: 3
 cascade:
   type: docs
 ---
-
-# 🔧 Tool Discovery: Automatic API Integration
 
 The second OCP superpower eliminates manual API integration forever. Point to any OpenAPI specification and instantly get **callable agent tools** with parameter validation, request building, and response parsing.
 
@@ -170,9 +168,9 @@ payment = stripe.create_payment_intent(
 Now that you understand tool discovery, explore how it works with other OCP superpowers:
 
 {{< cards >}}
-{{< card link="/context/" title="🧠 Context" subtitle="See how context flows through your generated tools" >}}
-{{< card link="/registry/" title="🌐 Community Registry" subtitle="Discover thousands of pre-indexed APIs instantly" >}}
-{{< card link="/ide/" title="💻 IDE Integration" subtitle="Use tools directly in your VS Code workflow" >}}
+{{< card link="../context/" title="🧠 Context" subtitle="See how context flows through your generated tools" >}}
+{{< card link="../registry/" title="🌐 Community Registry" subtitle="Discover thousands of pre-indexed APIs instantly" >}}
+{{< card link="../ide/" title="💻 IDE Integration" subtitle="Use tools directly in your VS Code workflow" >}}
 {{< /cards >}}
 
 **Ready to generate tools?** [Start with OpenAPI Parsing →](openapi-parsing/)

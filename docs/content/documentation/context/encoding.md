@@ -3,8 +3,6 @@ title: "Encoding & Compression"
 weight: 3
 ---
 
-# Encoding & Compression
-
 The `OCP-Session` header uses a standardized encoding process to efficiently transmit context data while staying within HTTP header size limits.
 
 ## Encoding Process

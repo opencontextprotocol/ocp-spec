@@ -341,16 +341,16 @@ You just experienced all 4 OCP superpowers:
 Now that you've seen OCP in action, explore each superpower in detail:
 
 {{< cards >}}
-{{< card link="/context/" title="🧠 Master Context" subtitle="Learn advanced context patterns and persistence" >}}
-{{< card link="/tools/" title="🔧 Advanced Tool Discovery" subtitle="Custom naming, validation, and OpenAPI extensions" >}}
-{{< card link="/registry/" title="🌐 Registry Deep Dive" subtitle="Publishing APIs and private registries" >}}
-{{< card link="/ide/" title="💻 IDE Workflows" subtitle="Multi-agent coordination and workspace patterns" >}}
+{{< card link="../context/" title="🧠 Master Context" subtitle="Learn advanced context patterns and persistence" >}}
+{{< card link="../tools/" title="🔧 Advanced Tool Discovery" subtitle="Custom naming, validation, and OpenAPI extensions" >}}
+{{< card link="../registry/" title="🌐 Registry Deep Dive" subtitle="Publishing APIs and private registries" >}}
+{{< card link="../ide/" title="💻 IDE Workflows" subtitle="Multi-agent coordination and workspace patterns" >}}
 {{< /cards >}}
 
 Or check out real-world examples:
 
 {{< cards >}}
-{{< card link="/examples/" title="📋 Examples" subtitle="Complete projects using OCP" >}}
+{{< card link="../examples/" title="📋 Examples" subtitle="Complete projects using OCP" >}}
 {{< card link="../learning-paths/" title="📚 Learning Paths" subtitle="Guided paths by your role and goals" >}}
 {{< /cards >}}
 

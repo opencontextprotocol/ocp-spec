@@ -3,8 +3,6 @@ title: "HTTP Headers"
 weight: 1
 ---
 
-# HTTP Headers
-
 OCP uses standard HTTP headers to transmit context information between agents and APIs.
 
 ## Required Headers

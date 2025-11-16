@@ -27,6 +27,13 @@ params:
       link: /
       width: 204
       height: 30
+  editURL:
+    enable: true
+    base: "https://github.com/opencontextprotocol/specification/edit/main/docs/content"
+  footer:
+    enable: true
+    displayCopyright: true
+    displayPoweredBy: true
 
 markup:
   goldmark:
@@ -58,95 +65,51 @@ enableInlineShortcodes: true
 
 menu:
   main:
-    - identifier: superpowers
-      name: Getting Started
+    - name: Documentation
+      pageRef: /documentation
       weight: 1
-    - identifier: context
-      name: 🧠 Context
-      pageRef: /context
-      parent: superpowers
-    - identifier: tools
-      name: 🔧 Tools
-      pageRef: /tools
-      parent: superpowers
-    - identifier: registry
-      name: 🌐 Registry
-      pageRef: /registry
-      parent: superpowers
-    - identifier: ide
-      name: 💻 IDE
-      pageRef: /ide
-      parent: superpowers
-    - identifier: examples
-      name: Examples
-      pageRef: /examples
-      weight: 3
-    - identifier: specification
-      name: Specification
-      pageRef: /specification
-      weight: 4
-    - identifier: libraries
-      name: Libraries
-      pageRef: /libraries
-      weight: 5
+    - identifier: versions
+      name: Versions
+      weight: 2
+    - name: v1.0
+      pageRef: /
+      parent: versions
+    - name: Latest
+      pageRef: /
+      parent: versions
     - name: Search
-      weight: 6
+      weight: 3
       params:
         type: search
     - name: GitHub
-      weight: 7
+      weight: 4
       url: "https://github.com/opencontextprotocol/specification"
       params:
         icon: github
 
   sidebar:
-    # Quick navigation to superpowers
-    - identifier: superpowers-quick
-      name: "Introduction"
-      params:
-        type: separator
-      weight: 1
-    - name: "🧠 Context"
-      pageRef: "/context"
-      weight: 2
-    - name: "🔧 Tools"
-      pageRef: "/tools" 
-      weight: 3
-    - name: "🌐 Registry"
-      pageRef: "/registry"
-      weight: 4
-    - name: "💻 IDE"
-      pageRef: "/ide"
-      weight: 5
-    
-    # Resources section
+    # Resources section for documentation
     - identifier: resources
       name: "Resources"
       params:
         type: separator
-      weight: 6
-    - name: "Examples"
-      pageRef: "/examples"
-      weight: 7
-    - name: "Libraries"
-      pageRef: "/libraries"
-      weight: 8
+      weight: 100
     - name: "JSON Schemas ↗"
       url: "https://github.com/opencontextprotocol/specification/tree/main/schemas"
-      weight: 9
+      weight: 101
       
     # External links
     - identifier: github-links  
-      name: "GitHub"
+      name: "GitHub Libraries"
       params:
         type: separator
-      weight: 10
+      weight: 102
     - name: "Python Library ↗"
       url: "https://github.com/opencontextprotocol/ocp-python"
-      weight: 11
+      weight: 103
     - name: "JavaScript Library ↗"
       url: "https://github.com/opencontextprotocol/ocp-javascript"
-      weight: 12
+      weight: 104
     - name: "VS Code Extension ↗"
       url: "https://github.com/opencontextprotocol/ocp-vscode"
-      weight: 13
+      weight: 105

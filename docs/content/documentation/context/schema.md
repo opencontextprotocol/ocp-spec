@@ -3,8 +3,6 @@ title: "Context Schema"
 weight: 2
 ---
 
-# Context Schema
-
 The `OCP-Session` header contains a Base64-encoded JSON object that represents the full agent context.
 
 ## Minimal Context (Level 1)

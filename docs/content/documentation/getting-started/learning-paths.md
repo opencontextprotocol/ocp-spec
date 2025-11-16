@@ -22,23 +22,23 @@ Build sophisticated AI agents that leverage OCP's context awareness and automati
 #### Phase 1: Foundation (30 minutes)
 {{< cards >}}
 {{< card link="../quick-start/" title="⚡ Complete Quick Start" subtitle="5-minute demo of all superpowers" >}}
-{{< card link="/context/" title="🧠 Context Mastery" subtitle="Learn context patterns for stateful agents" >}}
+{{< card link="../context/" title="🧠 Context Mastery" subtitle="Learn context patterns for stateful agents" >}}
 {{< /cards >}}
 
 **Milestone**: Create an agent that maintains context across multiple API calls
 
 #### Phase 2: Tool Integration (45 minutes)
 {{< cards >}}
-{{< card link="/tools/" title="🔧 Tool Discovery Deep Dive" subtitle="Automatic API integration techniques" >}}
-{{< card link="/examples/github-api/" title="📖 GitHub Agent Example" subtitle="Complete agent implementation" >}}
+{{< card link="../tools/" title="🔧 Tool Discovery Deep Dive" subtitle="Automatic API integration techniques" >}}
+{{< card link="../examples/github-api/" title="📝 GitHub Agent Example" subtitle="Complete agent implementation" >}}
 {{< /cards >}}
 
 **Milestone**: Build an agent that discovers and uses GitHub APIs automatically
 
 #### Phase 3: Advanced Patterns (60 minutes)
 {{< cards >}}
-{{< card link="/registry/" title="🌐 Registry Integration" subtitle="Leverage community APIs" >}}
-{{< card link="/ide/" title="💻 Multi-Agent Coordination" subtitle="IDE-aware agent workflows" >}}
+{{< card link="../registry/" title="🌐 Registry Integration" subtitle="Leverage community APIs" >}}
+{{< card link="../ide/" title="💻 Multi-Agent Coordination" subtitle="IDE-aware agent workflows" >}}
 {{< /cards >}}
 
 **Milestone**: Deploy a multi-agent system with workspace awareness
@@ -70,23 +70,23 @@ Add OCP context awareness to your backends, enable automatic API discovery, and 
 #### Phase 1: Integration Basics (20 minutes)
 {{< cards >}}
 {{< card link="../quick-start/" title="⚡ Quick Start" subtitle="See OCP in action" >}}
-{{< card link="/context/" title="🧠 Context Headers" subtitle="Learn OCP HTTP header format" >}}
+{{< card link="../context/" title="🧠 Context Headers" subtitle="Learn OCP HTTP header format" >}}
 {{< /cards >}}
 
 **Milestone**: Add OCP context headers to existing API calls
 
 #### Phase 2: API Discovery (40 minutes)
 {{< cards >}}
-{{< card link="/tools/" title="🔧 OpenAPI Extensions" subtitle="Make your APIs OCP-discoverable" >}}
-{{< card link="/specification/" title="📋 Protocol Reference" subtitle="Technical implementation details" >}}
+{{< card link="../tools/" title="🔧 OpenAPI Extensions" subtitle="Make your APIs OCP-discoverable" >}}
+{{< card link="../specification/" title="📋 Protocol Reference" subtitle="Technical implementation details" >}}
 {{< /cards >}}
 
 **Milestone**: Update your OpenAPI specs with OCP extensions
 
 #### Phase 3: Registry Publishing (30 minutes)
 {{< cards >}}
-{{< card link="/registry/" title="🌐 Registry API" subtitle="Publish to community registry" >}}
-{{< card link="/examples/stripe-api/" title="📖 Stripe Example" subtitle="Real-world API integration" >}}
+{{< card link="../registry/" title="🌐 Registry API" subtitle="Publish to community registry" >}}
+{{< card link="../examples/stripe-api/" title="📝 Stripe Example" subtitle="Real-world API integration" >}}
 {{< /cards >}}
 
 **Milestone**: Publish your API to the OCP registry
@@ -118,22 +118,22 @@ Create interactive applications that leverage OCP for seamless API integration a
 #### Phase 1: Client-Side OCP (25 minutes)
 {{< cards >}}
 {{< card link="../quick-start/" title="⚡ Quick Start (JavaScript)" subtitle="OCP in the browser" >}}
-{{< card link="/context/" title="🧠 Client Context Patterns" subtitle="Frontend-specific context management" >}}
+{{< card link="../context/" title="🧠 Client Context Patterns" subtitle="Frontend-specific context management" >}}
 {{< /cards >}}
 
 **Milestone**: Create a web app that maintains context across API calls
 
 #### Phase 2: Dynamic Tool Discovery (35 minutes)
 {{< cards >}}
-{{< card link="/tools/" title="🔧 Runtime Discovery" subtitle="Discover APIs from user input" >}}
-{{< card link="/registry/" title="🌐 Registry Search" subtitle="Let users find and connect APIs" >}}
+{{< card link="../tools/" title="🔧 Runtime Discovery" subtitle="Discover APIs from user input" >}}
+{{< card link="../registry/" title="🌐 Registry Search" subtitle="Let users find and connect APIs" >}}
 {{< /cards >}}
 
 **Milestone**: Build a tool that lets users connect to any API dynamically
 
 #### Phase 3: IDE Integration (20 minutes)
 {{< cards >}}
-{{< card link="/ide/" title="💻 VS Code Extension" subtitle="Integrate with development workflow" >}}
+{{< card link="../ide/" title="💻 VS Code Extension" subtitle="Integrate with development workflow" >}}
 {{< /cards >}}
 
 **Milestone**: Create VS Code extension features using OCP
@@ -172,16 +172,16 @@ Learn how OCP reduces integration friction, improves developer onboarding, and c
 
 #### Phase 2: Developer Experience Impact (20 minutes)
 {{< cards >}}
-{{< card link="/tools/" title="🔧 Zero-Config Integration" subtitle="How developers connect instantly" >}}
-{{< card link="/registry/" title="🌐 Discovery & Distribution" subtitle="API marketplace effects" >}}
+{{< card link="../tools/" title="🔧 Zero-Config Integration" subtitle="How developers connect instantly" >}}
+{{< card link="../registry/" title="🌐 Discovery & Distribution" subtitle="API marketplace effects" >}}
 {{< /cards >}}
 
 **Key Insight**: Faster time-to-value for API consumers
 
 #### Phase 3: Technical Requirements (25 minutes)
 {{< cards >}}
-{{< card link="/specification/" title="📋 Technical Specification" subtitle="What your team needs to implement" >}}
-{{< card link="/examples/" title="📖 Implementation Examples" subtitle="Real-world case studies" >}}
+{{< card link="../specification/" title="📋 Technical Specification" subtitle="What your team needs to implement" >}}
+{{< card link="../examples/" title="📝 Implementation Examples" subtitle="Real-world case studies" >}}
 {{< /cards >}}
 
 **Key Insight**: Implementation effort vs. adoption benefits
@@ -212,16 +212,16 @@ Deep dive into OCP's design principles, contribute to the specification, and exp
 
 #### Phase 1: Protocol Deep Dive (45 minutes)
 {{< cards >}}
-{{< card link="/specification/" title="📋 Complete Specification" subtitle="Every technical detail" >}}
-{{< card link="/context/" title="🧠 Context Schema Design" subtitle="JSON schema and validation" >}}
+{{< card link="../specification/" title="📋 Complete Specification" subtitle="Every technical detail" >}}
+{{< card link="../context/" title="🧠 Context Schema Design" subtitle="JSON schema and validation" >}}
 {{< /cards >}}
 
 **Understanding**: Complete protocol mechanics
 
 #### Phase 2: Implementation Analysis (60 minutes)
 {{< cards >}}
-{{< card link="/tools/" title="🔧 Schema Discovery Algorithm" subtitle="OpenAPI parsing and tool generation" >}}
-{{< card link="/examples/" title="📖 Reference Implementations" subtitle="Study working code" >}}
+{{< card link="../tools/" title="🔧 Schema Discovery Algorithm" subtitle="OpenAPI parsing and tool generation" >}}
+{{< card link="../examples/" title="📝 Reference Implementations" subtitle="Study working code" >}}
 {{< /cards >}}
 
 **Understanding**: How OCP works under the hood
@@ -299,5 +299,5 @@ Start your journey today! Pick the path that matches your role and dive in.
 
 {{< cards >}}
 {{< card link="../quick-start/" title="⚡ Start Quick Start" subtitle="5 minutes to see all superpowers" >}}
-{{< card link="/examples/" title="📖 Browse Examples" subtitle="Real-world OCP implementations" >}}
+{{< card link="../examples/" title="📝 Browse Examples" subtitle="Real-world OCP implementations" >}}
 {{< /cards >}}

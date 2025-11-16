@@ -1,6 +1,6 @@
 ---
 title: "IDE Integration"
-weight: 4
+weight: 5
 cascade:
   type: docs
 ---
@@ -355,9 +355,9 @@ class MyAgent {
 Now that you understand IDE integration, explore the foundational OCP superpowers:
 
 {{< cards >}}
-{{< card link="/context/" title="🧠 Context" subtitle="Understand how workspace context is captured and used" >}}
-{{< card link="/tools/" title="🔧 Tool Discovery" subtitle="See how APIs become instantly available in your IDE" >}}
-{{< card link="/registry/" title="🌐 Community Registry" subtitle="Browse thousands of APIs from within VS Code" >}}
+{{< card link="../context/" title="🧠 Context" subtitle="Understand how workspace context is captured and used" >}}
+{{< card link="../tools/" title="🔧 Tool Discovery" subtitle="See how APIs become instantly available in your IDE" >}}
+{{< card link="../registry/" title="🌐 Community Registry" subtitle="Browse thousands of APIs from within VS Code" >}}
 {{< /cards >}}
 
 **Ready to install?** [Get the VS Code Extension →](vscode-extension/)

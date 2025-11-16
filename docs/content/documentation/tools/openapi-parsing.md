@@ -3,8 +3,6 @@ title: "OpenAPI Parsing"
 weight: 1
 ---
 
-# OpenAPI Parsing
-
 OCP's schema discovery engine processes OpenAPI specifications (v3.0+) to extract API operations and convert them into callable agent tools.
 
 ## Parsing Process

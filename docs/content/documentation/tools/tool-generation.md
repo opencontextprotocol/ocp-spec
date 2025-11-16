@@ -3,8 +3,6 @@ title: "Tool Generation"
 weight: 2
 ---
 
-# Tool Generation
-
 OCP converts OpenAPI operations into callable Python/JavaScript functions with automatic parameter validation and request building.
 
 ## Tool Structure
