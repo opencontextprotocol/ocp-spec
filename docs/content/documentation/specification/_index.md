@@ -5,9 +5,9 @@ cascade:
   type: docs
 ---
 
-# Open Context Protocol (OCP) v1.0
+# Open Context Protocol v1.0
 
-The Open Context Protocol enables AI agents to maintain persistent context across HTTP API calls and automatically discover tools from OpenAPI specifications using standard HTTP headers.
+The Open Context Protocol (OCP) enables AI agents to maintain persistent context across HTTP API calls and automatically discover tools from OpenAPI specifications using standard HTTP headers.
 
 ## Overview
 
@@ -42,7 +42,7 @@ OCP uses standard HTTP headers to transmit context information between agents an
 
 #### Optional Headers
 
-**`OCP-Agent-Goal`**
+**`OCP-Current-Goal`**
 - **Purpose**: Current agent objective
 - **Format**: 1-256 characters
 - **Example**: `debug_payment_error`
@@ -69,9 +69,10 @@ OCP uses standard HTTP headers to transmit context information between agents an
 
 #### Complete Example
 ```http
+GET /api/resource HTTP/1.1
 OCP-Context-ID: ocp-a1b2c3d4
 OCP-Agent-Type: ide_coding_assistant
-OCP-Agent-Goal: debug_payment_error
+OCP-Current-Goal: debug_payment_error
 OCP-User: alice
 OCP-Workspace: payment-service
 OCP-Session: eyJjb250ZXh0X2lkIjoib2NwLWExYjJjM2Q0In0=

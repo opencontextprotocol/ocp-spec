@@ -27,13 +27,13 @@ OCP-Agent-Type: ide_coding_assistant
 
 ## Optional Headers
 
-### `OCP-Agent-Goal`
+### `OCP-Current-Goal`
 - **Purpose**: Current agent objective or task
 - **Format**: Max 256 characters  
 - **Example**: `debug_deployment_failure`, `implement_payment_feature`
 
 ```http
-OCP-Agent-Goal: debug_payment_validation_error
+OCP-Current-Goal: debug_payment_validation_error
 ```
 
 ### `OCP-Session`
@@ -73,7 +73,7 @@ Host: api.github.com
 Authorization: Bearer ghp_xxxxxxxxxxxx
 OCP-Context-ID: ocp-debug-payment-abc123
 OCP-Agent-Type: ide_coding_assistant
-OCP-Agent-Goal: debug_payment_validation_error
+OCP-Current-Goal: debug_payment_validation_error
 OCP-User: alice
 OCP-Workspace: ecommerce-backend
 OCP-Session: eyJjb250ZXh0X2lkIjoib2NwLWRlYnVnLXBheW1lbnQtYWJjMTIzIiwiYWdlbnRfdHlwZSI6ImlkZV9jb2RpbmdfYXNzaXN0YW50IiwiY3VycmVudF9nb2FsIjoiZGVidWdfcGF5bWVudF92YWxpZGF0aW9uX2Vycm9yIiwiY3VycmVudF9maWxlIjoicGF5bWVudF92YWxpZGF0b3IucHkiLCJnaXRfYnJhbmNoIjoiZml4LXBheW1lbnQtZXJyb3IifQ==

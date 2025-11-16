@@ -48,7 +48,7 @@ APIs receive context headers but don't modify behavior. Your agent maintains con
 GET /repos/owner/project/issues HTTP/1.1
 Host: api.github.com
 OCP-Context-ID: ctx-debug-payment
-OCP-Agent-Goal: debug_payment_failure
+OCP-Current-Goal: debug_payment_failure
 OCP-Workspace: ecommerce-app
 ```
 

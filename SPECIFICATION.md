@@ -71,7 +71,7 @@ OCP uses standard HTTP headers to transmit context information:
 - `OCP-Agent-Type`: Type of agent making the request (max 128 chars)
 
 **Optional Headers**:
-- `OCP-Agent-Goal`: Current agent objective (max 256 chars)
+- `OCP-Current-Goal`: Current agent objective (max 256 chars)
 - `OCP-Session`: Base64-encoded compressed JSON context (max 8KB)
 - `OCP-User`: User identifier (max 64 chars)
 - `OCP-Workspace`: Current workspace/project (max 128 chars)
@@ -80,7 +80,7 @@ OCP uses standard HTTP headers to transmit context information:
 ```http
 OCP-Context-ID: ocp-a1b2c3d4
 OCP-Agent-Type: ide_coding_assistant
-OCP-Agent-Goal: debug_deployment_failure
+OCP-Current-Goal: debug_deployment_failure
 OCP-User: alice
 OCP-Workspace: payment-service
 OCP-Session: eyJjb250ZXh0X2lkIjoib2NwLWExYjJjM2Q0IiwiYWdlbnRfdHlwZSI6ImlkZV9jb2RpbmdfYXNzaXN0YW50In0=
@@ -260,7 +260,7 @@ Host: api.github.com
 Authorization: token ghp_xxxxxxxxxxxx
 OCP-Context-ID: ocp-abc123
 OCP-Agent-Type: coding_assistant
-OCP-Agent-Goal: debug_test_failure
+OCP-Current-Goal: debug_test_failure
 OCP-Session: eyJjdXJyZW50X2ZpbGUiOiJ0ZXN0X3BheW1lbnQucHkifQ==
 ```
 
@@ -323,7 +323,7 @@ const response = await fetch('https://api.github.com/search/issues', {
   headers: {
     'Authorization': 'token ghp_xxx',
     'OCP-Context-ID': 'debug-session-456',
-    'OCP-Agent-Goal': 'debug_test_failure',
+    'OCP-Current-Goal': 'debug_test_failure',
     'OCP-Session': base64(JSON.stringify(context))
   },
   params: {q: 'repo:myproject payment test failure'}
@@ -1294,7 +1294,7 @@ pip install open-context-agent
 1. **Read OCP Headers**:
    ```python
    context_id = request.headers.get('OCP-Context-ID')
-   agent_goal = request.headers.get('OCP-Agent-Goal')
+   agent_goal = request.headers.get('OCP-Current-Goal')
    session_data = parse_ocp_session(request.headers.get('OCP-Session'))
    ```
 
