@@ -7,20 +7,7 @@ cascade:
 
 # Open Context Protocol v1.0
 
-The Open Context Protocol (OCP) enables AI agents to maintain persistent context across HTTP API calls and automatically discover tools from OpenAPI specifications using standard HTTP headers.
-
-## Overview
-
-OCP solves two fundamental problems:
-1. **Context Loss**: Agents lose conversation state between API calls
-2. **Manual Integration**: Each API requires custom integration code
-
-OCP provides:
-- **Context Persistence**: Standard HTTP headers carry conversation state
-- **Tool Discovery**: Automatic tool generation from OpenAPI specifications
-- **Zero Infrastructure**: No servers or custom protocols required
-
----
+The Open Context Protocol (OCP) is a specification for maintaining persistent context across HTTP API calls using standard HTTP headers and automatically discovering tools from OpenAPI specifications.
 
 ## Protocol Definition
 
@@ -131,7 +118,7 @@ The `OCP-Session` header contains a JSON object that MUST conform to the [OCP Co
 
 ## Compatibility Levels
 
-### Level 1: Context-Aware (Available Today)
+### Level 1: Context-Aware
 
 APIs receive OCP headers but do not modify their behavior. Context management is entirely client-side.
 
@@ -140,9 +127,7 @@ APIs receive OCP headers but do not modify their behavior. Context management is
 - Process requests normally regardless of OCP header presence
 - Optionally log context for debugging (respecting privacy)
 
-**Works with:** Any existing HTTP API
-
-### Level 2: Context-Enhanced (Future)
+### Level 2: Context-Enhanced
 
 APIs read OCP context and provide enhanced, context-aware responses.
 
@@ -152,14 +137,14 @@ APIs read OCP context and provide enhanced, context-aware responses.
 - Include context-aware information in responses
 - Support OCP OpenAPI extensions for behavior specification
 
-**OpenAPI Extensions**: APIs can declare OCP support using extensions defined in the [OCP OpenAPI Extensions Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-openapi-extensions.json):
+{{< callout type="info" >}}
+APIs can declare OCP support using the [OCP OpenAPI Extensions Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-openapi-extensions.json):
 
 - `x-ocp-enabled`: API acknowledges OCP headers
 - `x-ocp-context-aware`: API uses context data in responses
 - `x-ocp-context`: Operation-level context behavior
 - `x-ocp-enhanced-response`: Additional response properties with context
-
-**Implementation:** Requires API-side OCP support
+{{< /callout >}}
 
 ---
 
@@ -262,7 +247,7 @@ All OCP client libraries MUST provide:
 
 - **Tool Discovery**: SHOULD cache OpenAPI specifications locally
 - **Context Compression**: MUST compress contexts >1KB before encoding  
-- **Memory Efficiency**: MUST handle large OpenAPI specifications without excessive memory usage
+- **Memory Efficiency**: MUST handle large OpenAPI specifications
 - **Network Optimization**: SHOULD minimize redundant specification downloads
 
 ### Validation Requirements
