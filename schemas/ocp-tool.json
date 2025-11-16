@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opencontextprotocol.org/schemas/ocp-tool.json",
+  "title": "OCP Tool Definition",
+  "description": "Tool generated from OpenAPI specification for OCP agent use",
+  "type": "object",
+  "required": ["name", "description", "method", "path", "parameters"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Deterministic tool name generated from operationId or method+path",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description from OpenAPI operation summary/description"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
+      "description": "HTTP method for this operation"
+    },
+    "path": {
+      "type": "string",
+      "description": "API endpoint path template with {parameter} placeholders",
+      "pattern": "^/"
+    },
+    "operation_id": {
+      "type": "string",
+      "description": "Original OpenAPI operationId if present"
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Parameter definitions extracted from OpenAPI specification",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_]*$": {
+          "type": "object",
+          "required": ["type", "required", "location"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["string", "number", "integer", "boolean", "array", "object"],
+              "description": "Parameter data type"
+            },
+            "required": {
+              "type": "boolean",
+              "description": "Whether this parameter is required"
+            },
+            "location": {
+              "type": "string",
+              "enum": ["path", "query", "header", "body"],
+              "description": "Where this parameter should be placed in the HTTP request"
+            },
+            "schema": {
+              "type": "object",
+              "description": "Full OpenAPI schema definition for this parameter"
+            },
+            "description": {
+              "type": "string",
+              "description": "Human-readable parameter description"
+            },
+            "default": {
+              "description": "Default value for optional parameters"
+            },
+            "enum": {
+              "type": "array",
+              "description": "Allowed values for enumerated parameters"
+            },
+            "format": {
+              "type": "string", 
+              "description": "OpenAPI format specifier (e.g., 'date-time', 'email')"
+            },
+            "items": {
+              "type": "object",
+              "description": "Schema for array items when type is 'array'"
+            },
+            "properties": {
+              "type": "object",
+              "description": "Property schemas when type is 'object'"
+            },
+            "minimum": {
+              "type": "number",
+              "description": "Minimum value for numeric parameters"
+            },
+            "maximum": {
+              "type": "number", 
+              "description": "Maximum value for numeric parameters"
+            },
+            "minLength": {
+              "type": "integer",
+              "description": "Minimum length for string parameters"
+            },
+            "maxLength": {
+              "type": "integer",
+              "description": "Maximum length for string parameters"
+            },
+            "pattern": {
+              "type": "string",
+              "description": "Regular expression pattern for string validation"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "response_schema": {
+      "type": "object",
+      "description": "OpenAPI response schema for successful responses (2xx status codes)",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object"
+        },
+        "items": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "OpenAPI tags for categorizing and organizing tools",
+      "uniqueItems": true
+    },
+    "security": {
+      "type": "array",
+      "description": "Security requirements from OpenAPI specification",
+      "items": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "servers": {
+      "type": "array",
+      "description": "Server information from OpenAPI specification",
+      "items": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deprecated": {
+      "type": "boolean",
+      "description": "Whether this operation is marked as deprecated in OpenAPI",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

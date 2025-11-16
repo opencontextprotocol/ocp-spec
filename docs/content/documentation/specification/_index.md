@@ -5,443 +5,384 @@ cascade:
   type: docs
 ---
 
-**TL;DR**: OCP enables persistent context sharing across HTTP API calls using standard headers, with automatic API discovery from OpenAPI specifications and optional community registry integration for fast tool discovery - no servers or infrastructure required.
+# Open Context Protocol (OCP) v1.0
+
+The Open Context Protocol enables AI agents to maintain persistent context across HTTP API calls and automatically discover tools from OpenAPI specifications using standard HTTP headers.
+
+## Overview
+
+OCP solves two fundamental problems:
+1. **Context Loss**: Agents lose conversation state between API calls
+2. **Manual Integration**: Each API requires custom integration code
+
+OCP provides:
+- **Context Persistence**: Standard HTTP headers carry conversation state
+- **Tool Discovery**: Automatic tool generation from OpenAPI specifications
+- **Zero Infrastructure**: No servers or custom protocols required
 
 ---
 
-## Problem & Solution Overview
+## Protocol Definition
 
-### The AI Agent Integration Challenge
+### HTTP Headers
 
-**Current Limitations**:
-- Agents lose context between API calls
-- Manual integration for each API service
-- Complex server infrastructure for simple context passing
-- No standard way to share conversation state
-- Fragmented tooling across different APIs
+OCP uses standard HTTP headers to transmit context information between agents and APIs.
 
-**OCP's Solution**:
-- ✅ **Context Persistence**: HTTP headers carry conversation state across calls
-- ✅ **API Discovery**: Auto-generate tools from OpenAPI specifications
-- ✅ **Community Registry**: Fast API discovery from pre-indexed specifications (optional)
-- ✅ **Zero Infrastructure**: No servers, just standard HTTP headers
-- ✅ **Standards-Based**: Built on HTTP, OpenAPI, and JSON
-- ✅ **Immediate Compatibility**: Works with existing APIs today
+#### Required Headers
 
-### Core Capabilities
+**`OCP-Context-ID`**
+- **Purpose**: Unique identifier for the agent session
+- **Format**: 1-64 characters, pattern `^[a-zA-Z0-9\-]{1,64}$`
+- **Example**: `ocp-a1b2c3d4`
 
-**What OCP Provides**:
-- Persistent context across tool calls
-- Automatic API discovery from OpenAPI specs
-- Optional community registry for fast tool discovery
-- Parameter validation and request building
-- Session tracking and interaction history
-- Framework-agnostic integration
+**`OCP-Agent-Type`**
+- **Purpose**: Type of agent making the request
+- **Format**: 1-128 characters, pattern `^[a-zA-Z0-9_\-\.]{1,128}$`
+- **Example**: `ide_coding_assistant`
 
-**What OCP Doesn't Require**:
-- New servers or infrastructure
-- API modifications (Level 1 compatibility)
-- Custom protocols or message formats
-- Complex authentication systems
+#### Optional Headers
 
-### The Agent Tool Flow:
-```mermaid
-graph LR
-    A[AI Agent] -->|1. Discover Tools| B[OpenAPI Spec]
-    B -->|2. Available Tools| A
-    A -->|3. Tool Call + Context| C[API Endpoint]
-    C -->|4. Context-Aware Response| A
-    A -->|5. Updated Context| D[Next Tool Call]
-    
-    subgraph "Zero Additional Infrastructure"
-        B
-        C  
-        D
-    end
-```
+**`OCP-Agent-Goal`**
+- **Purpose**: Current agent objective
+- **Format**: 1-256 characters
+- **Example**: `debug_payment_error`
 
-**Key Insight**: Agents discover tools dynamically AND maintain context across calls.
+**`OCP-Session`**
+- **Purpose**: Base64-encoded context object (see Context Schema)
+- **Format**: Base64-encoded, optionally gzip-compressed JSON
+- **Size Limit**: 8KB after encoding
 
----
+**`OCP-User`**
+- **Purpose**: User identifier
+- **Format**: 1-64 characters
+- **Example**: `alice`
 
-## Protocol Specification
+**`OCP-Workspace`**
+- **Purpose**: Current workspace or project
+- **Format**: 1-128 characters
+- **Example**: `payment-service`
 
-### HTTP Header Format
+**`OCP-Version`**
+- **Purpose**: OCP specification version
+- **Format**: Semantic version string
+- **Value**: `1.0`
 
-OCP uses standard HTTP headers to transmit context information:
-
-**Required Headers**:
-- `OCP-Context-ID`: Unique identifier for the agent session (max 64 chars, alphanumeric + hyphens)
-- `OCP-Agent-Type`: Type of agent making the request (max 128 chars)
-
-**Optional Headers**:
-- `OCP-Agent-Goal`: Current agent objective (max 256 chars)
-- `OCP-Session`: Base64-encoded compressed JSON context (max 8KB)
-- `OCP-User`: User identifier (max 64 chars)
-- `OCP-Workspace`: Current workspace/project (max 128 chars)
-
-**Header Example**:
+#### Complete Example
 ```http
 OCP-Context-ID: ocp-a1b2c3d4
 OCP-Agent-Type: ide_coding_assistant
-OCP-Agent-Goal: debug_deployment_failure
+OCP-Agent-Goal: debug_payment_error
 OCP-User: alice
 OCP-Workspace: payment-service
-OCP-Session: eyJjb250ZXh0X2lkIjoib2NwLWExYjJjM2Q0IiwiYWdlbnRfdHlwZSI6ImlkZV9jb2RpbmdfYXNzaXN0YW50In0=
+OCP-Session: eyJjb250ZXh0X2lkIjoib2NwLWExYjJjM2Q0In0=
+OCP-Version: 1.0
 ```
 
-### Context Object Schema
+### Context Schema
 
-The `OCP-Session` header contains a Base64-encoded, optionally compressed JSON object:
+The `OCP-Session` header contains a JSON object that MUST conform to the [OCP Context Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-context.json).
 
-**Minimal Context** (Level 1 - Always Present):
+**Schema Location**: `/schemas/ocp-context.json`
+
+#### Required Fields
+- `context_id`: Unique session identifier (matches `OCP-Context-ID` header)
+- `agent_type`: Type of agent (matches `OCP-Agent-Type` header)
+- `created_at`: ISO 8601 timestamp of context creation
+- `last_updated`: ISO 8601 timestamp of last update
+- `session`: Session metadata object
+- `history`: Array of interaction history
+- `api_specs`: Object mapping API names to their OpenAPI specification URLs
+
+#### Optional Fields
+- `user`: User identifier
+- `workspace`: Current workspace or project
+- `current_goal`: Current agent objective
+- `current_file`: Currently active file
+- `git_branch`: Current git branch
+- `workspace_context`: Workspace metadata (project type, framework, etc.)
+- `context_summary`: Brief summary of conversation context
+- `error_context`: Error information for debugging
+- `recent_changes`: Array of recent modifications
+
+#### Minimal Valid Context
 ```json
 {
   "context_id": "ocp-a1b2c3d4",
-  "agent_type": "ide_coding_assistant",
-  "created_at": "2025-10-24T15:30:00Z",
-  "last_updated": "2025-10-24T15:35:00Z"
-}
-```
-
-**Extended Context** (Level 1 - Optional Fields):
-```json
-{
-  "context_id": "ocp-a1b2c3d4",
-  "agent_type": "ide_coding_assistant", 
-  "user": "alice",
-  "workspace": "payment-service",
-  "current_goal": "debug_deployment_failure",
+  "agent_type": "cli_tool",
+  "created_at": "2025-11-16T10:30:00Z",
+  "last_updated": "2025-11-16T10:30:00Z",
   "session": {
-    "interaction_count": 5,
-    "last_api_call": "github.listRepositoryIssues"
+    "start_time": "2025-11-16T10:30:00Z",
+    "interaction_count": 0,
+    "agent_type": "cli_tool"
   },
-  "history": [
-    {
-      "timestamp": "2025-10-24T15:30:00Z",
-      "action": "api_call",
-      "api": "github",
-      "operation": "listRepositoryIssues",
-      "result": "success"
-    }
-  ],
-  "created_at": "2025-10-24T15:30:00Z",
-  "last_updated": "2025-10-24T15:35:00Z"
+  "history": [],
+  "api_specs": {}
 }
 ```
 
-### Encoding Rules
+### Encoding Requirements
 
 1. **JSON Serialization**: Context must be valid UTF-8 JSON
-2. **Compression**: Optional gzip compression before Base64 encoding
-3. **Base64 Encoding**: Standard Base64 encoding (RFC 4648)
+2. **Compression**: Optional gzip compression before Base64 encoding for contexts >1KB
+3. **Base64 Encoding**: Standard Base64 encoding per RFC 4648
 4. **Size Limits**: Maximum 8KB for `OCP-Session` header after encoding
 
 ### Error Handling
 
-**Invalid Context**: APIs should ignore invalid OCP headers and process requests normally
-
-**Oversized Context**: Headers exceeding limits should be truncated or ignored
-
-**Missing Context**: APIs work normally without OCP headers (backward compatibility)
-
-### Security Considerations
-
-- **No Sensitive Data**: Never include passwords, tokens, or secrets in context
-- **Size Limits**: Enforce header size limits to prevent abuse
-- **Logging**: Consider context privacy when logging HTTP requests
-- **Validation**: Validate context structure but don't fail requests on invalid context
-
-### API Compatibility Levels
-
-**Level 1 - Context Aware (Available Today)**:
-- API receives OCP headers but doesn't modify behavior
-- Client-side context management only
-- Works with any existing HTTP API
-
-**Level 2 - Context Enhanced (Future)**:
-- API reads OCP context and provides enhanced responses
-- Requires API-side OCP implementation
-- Optional OpenAPI extensions for behavior specification
+- **Invalid Headers**: APIs MUST ignore invalid OCP headers and process requests normally
+- **Oversized Context**: Headers exceeding limits MUST be ignored
+- **Missing Context**: APIs MUST function normally without OCP headers
+- **Malformed JSON**: Invalid JSON in `OCP-Session` MUST be ignored
 
 ---
 
-## Core OCP Components
+## Compatibility Levels
 
-OCP consists of two fundamental capabilities that work together:
+### Level 1: Context-Aware (Available Today)
 
-### 1. **Context Management** (Header-Based)
-Smart context injection into existing HTTP APIs using standard headers. Enables persistent conversation state and session tracking across API calls.
+APIs receive OCP headers but do not modify their behavior. Context management is entirely client-side.
 
-### 2. **Schema Discovery** (OpenAPI-Based)  
-Automatic API tool discovery and invocation from OpenAPI specifications. Converts any OpenAPI-documented API into callable tools with parameter validation.
+**Requirements:**
+- Accept OCP headers without errors
+- Process requests normally regardless of OCP header presence
+- Optionally log context for debugging (respecting privacy)
 
-**Together**: Context + Discovery = Complete agent-ready API integration with zero infrastructure.
+**Works with:** Any existing HTTP API
+
+### Level 2: Context-Enhanced (Future)
+
+APIs read OCP context and provide enhanced, context-aware responses.
+
+**Requirements:**
+- Parse and validate OCP context
+- Modify responses based on context (when appropriate)
+- Include context-aware information in responses
+- Support OpenAPI extensions for OCP behavior
+
+**Implementation:** Requires API-side OCP support
 
 ---
 
-## Schema Discovery: API Tool Generation
+## Schema Discovery
 
-### Automatic Tool Discovery from OpenAPI
-OCP automatically converts OpenAPI specifications into callable tools for AI agents:
+### Tool Generation from OpenAPI
 
-```python
-from ocp_agent import OCPAgent
+OCP implementations MUST be able to parse OpenAPI 3.0+ specifications and generate callable tools.
 
-# Create agent with context
-agent = OCPAgent(
-    agent_type="api_explorer",
-    workspace="my-project"
-)
+#### Tool Schema Definition
 
-# Register GitHub API (auto-discovers tools)
-api_spec = agent.register_api('github', 'https://api.github.com/rest/openapi.json')
+Each discovered tool MUST conform to the [OCP Tool Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-tool.json).
 
-# List available tools
-tools = agent.list_tools('github')
-print(f"Discovered {len(tools)} tools")
+**Schema Location**: `/schemas/ocp-tool.json`
 
-# Search for specific tools
-issue_tools = agent.search_tools('create issue')
+**Key Requirements**:
+- `name`: Deterministic tool name (alphanumeric + underscore, starts with letter)
+- `description`: Human-readable description from OpenAPI
+- `method`: HTTP method (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)
+- `path`: API endpoint path template with `{parameter}` placeholders
+- `parameters`: Object mapping parameter names to their definitions
+- `response_schema`: OpenAPI response schema for successful responses
+- `tags`: OpenAPI tags for organization (optional)
 
-# Call tools with automatic context injection
-response = agent.call_tool('createIssue', {
-    'owner': 'myorg',
-    'repo': 'myproject', 
-    'title': 'Bug found in payment flow',
-    'body': 'Discovered during debugging session'
-})
+**Parameter Definition Requirements**:
+- `type`: Data type (string, number, integer, boolean, array, object)
+- `required`: Boolean indicating if parameter is required
+- `location`: Where parameter goes (path, query, header, body)
+- `schema`: Full OpenAPI schema definition
+- Additional validation properties (format, enum, min/max, etc.)
+
+#### Deterministic Naming
+
+Tool names MUST be generated deterministically:
+
+1. **Use operationId**: If present in OpenAPI specification
+2. **Generate from HTTP method + path**: If operationId is missing
+   - Convert path to snake_case
+   - Prefix with lowercase HTTP method
+   - Replace path parameters with descriptive names
+
+**Examples:**
+```
+operationId: "listRepositories" → Tool name: "listRepositories"
+GET /repos/{owner}/{repo}/issues → Tool name: "get_repos_owner_repo_issues"  
+POST /users → Tool name: "post_users"
 ```
 
-### Tool Schema Generation
-Each OpenAPI operation becomes a callable tool with full parameter validation:
+#### Parameter Processing
 
-```python
-# Tool generated from OpenAPI operation
+For each OpenAPI operation, implementations MUST:
+
+1. Extract path parameters from the URL template
+2. Extract query parameters from the `parameters` array
+3. Extract request body schema for POST/PUT/PATCH operations
+4. Validate parameter types against OpenAPI schema
+5. Map parameters to the appropriate HTTP location
+
+#### Specification Validation
+
+Implementations MUST:
+- Validate OpenAPI specification structure
+- Support OpenAPI 3.0 and 3.1
+- Handle missing or malformed specifications gracefully
+- Provide clear error messages for invalid specifications
+
+---
+
+## Implementation Requirements
+
+### Client Libraries
+
+All OCP client libraries MUST provide:
+
+1. **Context Management**
+   - Create, update, and serialize AgentContext objects
+   - Generate OCP headers from context
+   - Parse context from HTTP response headers
+   - Validate context against JSON schema
+
+2. **Schema Discovery**
+   - Fetch and parse OpenAPI specifications
+   - Generate tools according to deterministic naming rules
+   - Validate tool parameters against OpenAPI schemas
+   - Cache specifications for performance
+
+3. **Tool Execution**
+   - Build HTTP requests from tool calls and parameters
+   - Inject OCP headers into all requests
+   - Parse and validate API responses
+   - Update context based on tool execution results
+
+4. **Error Handling**
+   - Gracefully handle malformed OpenAPI specifications
+   - Validate context without failing requests
+   - Provide meaningful error messages
+   - Support operation without OCP headers (degraded mode)
+
+### Performance Requirements
+
+- **Tool Discovery**: SHOULD cache OpenAPI specifications locally
+- **Context Compression**: MUST compress contexts >1KB before encoding  
+- **Memory Efficiency**: MUST handle large OpenAPI specifications without excessive memory usage
+- **Network Optimization**: SHOULD minimize redundant specification downloads
+
+### Validation Requirements
+
+Implementations MUST validate:
+- OCP header format and constraints
+- Context object against JSON schema
+- OpenAPI specification structure
+- Tool parameter types and requirements
+
+---
+
+## Examples
+
+### Minimal Context
+```json
 {
-    'name': 'createIssue',
-    'description': 'Create an issue',
-    'method': 'POST',
-    'path': '/repos/{owner}/{repo}/issues',
-    'parameters': {
-        'owner': {'type': 'string', 'required': True, 'location': 'path'},
-        'repo': {'type': 'string', 'required': True, 'location': 'path'},
-        'title': {'type': 'string', 'required': True, 'location': 'body'},
-        'body': {'type': 'string', 'required': False, 'location': 'body'},
-        'labels': {'type': 'array', 'required': False, 'location': 'body'}
+  "context_id": "ocp-a1b2c3d4",
+  "agent_type": "cli_tool",
+  "created_at": "2025-11-16T10:30:00Z",
+  "last_updated": "2025-11-16T10:30:00Z",
+  "session": {
+    "start_time": "2025-11-16T10:30:00Z",
+    "interaction_count": 0,
+    "agent_type": "cli_tool"
+  },
+  "history": [],
+  "api_specs": {}
+}
+```
+
+### Complete Context
+```json
+{
+  "context_id": "ocp-debug-123",
+  "agent_type": "ide_coding_assistant",
+  "user": "alice",
+  "workspace": "payment-service", 
+  "current_goal": "debug_payment_validation",
+  "current_file": "payment_validator.py",
+  "git_branch": "fix-validation-bug",
+  "session": {
+    "start_time": "2025-11-16T10:20:00Z",
+    "interaction_count": 5,
+    "agent_type": "ide_coding_assistant"
+  },
+  "workspace": {
+    "project_type": "python_web_app",
+    "framework": "django",
+    "language": "python"
+  },
+  "history": [
+    {
+      "timestamp": "2025-11-16T10:25:00Z",
+      "action": "api_call",
+      "api_endpoint": "https://api.github.com/repos/alice/payment-service/issues",
+      "result": "success",
+      "metadata": {
+        "operation": "list_issues",
+        "tool_name": "github.list_issues"
+      }
+    }
+  ],
+  "context_summary": "Debugging payment validation error in Django app",
+  "recent_changes": [
+    "Modified payment_validator.py line 42",
+    "Added test case for edge condition"
+  ],
+  "api_specs": {
+    "github": "https://api.github.com/openapi.json",
+    "stripe": "https://stripe.com/openapi.json"
+  },
+  "created_at": "2025-11-16T10:20:00Z",
+  "last_updated": "2025-11-16T10:30:00Z"
+}
+```
+
+### Tool Example
+```json
+{
+  "name": "create_issue",
+  "description": "Create a new issue in a repository", 
+  "method": "POST",
+  "path": "/repos/{owner}/{repo}/issues",
+  "operation_id": "issues/create",
+  "parameters": {
+    "owner": {
+      "type": "string",
+      "required": true,
+      "location": "path",
+      "description": "Repository owner"
     },
-    'response_schema': {...}  # OpenAPI response schema
+    "repo": {
+      "type": "string", 
+      "required": true,
+      "location": "path",
+      "description": "Repository name"
+    },
+    "title": {
+      "type": "string",
+      "required": true, 
+      "location": "body",
+      "description": "Issue title"
+    },
+    "body": {
+      "type": "string",
+      "required": false,
+      "location": "body", 
+      "description": "Issue description"
+    }
+  },
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "id": {"type": "integer"},
+      "title": {"type": "string"},
+      "state": {"type": "string"}
+    }
+  },
+  "tags": ["issues"]
 }
 ```
-
-### Deterministic Tool Naming
-OCP ensures predictable tool names for consistent agent behavior:
-
-```python
-# Tool naming follows deterministic rules:
-# 1. Use operationId when present in OpenAPI spec
-{
-    "operationId": "listRepositories",  # → Tool name: "listRepositories"
-    "operationId": "createIssue"        # → Tool name: "createIssue"
-}
-
-# 2. Generate from HTTP method + path when operationId missing
-{
-    "GET /items":     # → Tool name: "get_items"
-    "POST /items":    # → Tool name: "post_items"  
-    "GET /items/{id}" # → Tool name: "get_items_id"
-}
-
-# This ensures:
-# - Agents can reliably reference tools across sessions
-# - Tool names remain consistent across API spec updates
-# - Integration scripts don't break due to name changes
-```
-
----
-
-## Community Registry Integration
-
-### Fast API Discovery with Pre-indexed Specifications
-
-For improved performance and developer experience, OCP supports integration with community registries that maintain pre-discovered and validated API specifications. This enables instant tool discovery instead of parsing OpenAPI specs on every request.
-
-### Registry-First Discovery
-
-```python
-from ocp_agent import OCPAgent
-
-# Agent automatically uses registry for fast lookup
-agent = OCPAgent(
-    agent_type="api_explorer",
-    registry_url="https://registry.ocp.dev"  # Optional, defaults to env var
-)
-
-# Fast registry lookup (50ms vs 2-5 seconds for OpenAPI parsing)
-api_spec = agent.register_api('github')  # No OpenAPI URL needed
-
-# Fallback to direct OpenAPI if not in registry
-api_spec = agent.register_api('custom-api', 'https://api.example.com/openapi.json')
-
-# Registry integration with base URL override
-api_spec = agent.register_api('github', base_url='https://enterprise.github.com/api/v3')
-```
-
-### Registry Benefits
-
-**Performance**: 
-- Registry lookup: ~50ms response time
-- Direct OpenAPI parsing: 2-5 seconds depending on spec size
-- Significant improvement for agent startup and tool discovery
-
-**Reliability**:
-- Pre-validated API specifications
-- Consistent tool naming across versions
-- Cached and optimized for fast access
-
-**Developer Experience**:
-- Typo detection with suggestions
-- Searchable API catalog
-- Base URL override for different environments
-
-**Backward Compatibility**:
-- Seamless fallback to direct OpenAPI URLs
-- No breaking changes to existing code
-- Optional enhancement, not requirement
-
----
-
-## OpenAPI Integration Levels
-
-### Level 1: Standard OpenAPI (Works Today)
-OCP works immediately with any existing OpenAPI specification:
-
-```python
-from ocp_agent import OCPAgent
-
-# Works with GitHub's existing OpenAPI spec
-agent = OCPAgent(
-    agent_type="api_client",
-    user="alice"
-)
-agent.register_api('github', 'https://api.github.com/rest/openapi.json')
-
-# All GitHub API operations become available as tools
-response = agent.call_tool('listUserRepos', {'username': 'octocat'})
-```
-
-### Level 2: OCP-Enhanced OpenAPI (Future)
-
-> **Note**: The following features require API provider adoption and are not available today. Level 1 OCP (above) works with any existing API immediately.
-
-APIs can optionally add OCP extensions to their OpenAPI specs to provide context-aware responses:
-
-```yaml
-# Enhanced GitHub OpenAPI spec (future)
-openapi: 3.0.0
-info:
-  title: GitHub API
-  version: 3.0.0
-  x-ocp-enabled: true              # This API can read OCP context
-
-paths:
-  /repos/{owner}/{repo}/issues:
-    post:
-      summary: Create an issue
-      x-ocp-context:                # OCP behavior for this operation
-        enhances_with:
-          - agent_goal              # Use agent goal to customize response
-          - workspace_context       # Use workspace info for smarter defaults
-          - conversation_history    # Use chat history for better issue descriptions
-      responses:
-        201:
-          description: Issue created
-          x-ocp-enhanced-response:  # What gets added when OCP context is present
-            properties:
-              suggested_labels:     # Auto-suggest labels based on context
-                type: array
-              related_issues:       # Find related issues based on context
-                type: array
-              next_actions:         # Suggest follow-up actions
-                type: array
-```
-
----
-
-## Client Library Design Philosophy
-
-**Protocol-Only Specification**: This specification defines the HTTP protocol layer only. OCP focuses on standardizing how context flows between agents and APIs via HTTP headers, not how client libraries should be structured.
-
-**Core Requirements**: All OCP client libraries must provide:
-1. **Context Management**: Create, update, and inject OCP context headers
-2. **Schema Discovery**: Parse OpenAPI specs and generate callable tools
-3. **Tool Invocation**: Execute API operations with automatic context injection
-4. **Parameter Validation**: Validate tool parameters against OpenAPI schemas
-
-**Language-Idiomatic Implementations**: Client libraries should follow idiomatic patterns for their respective languages while correctly implementing the OCP HTTP protocol. This approach:
-
-- Enables **natural APIs** for each programming language
-- Encourages **innovation** in client design patterns  
-- Reduces **adoption friction** by feeling familiar to developers
-- Ensures **interoperability** through the shared HTTP protocol
-
-**What Must Be Consistent**:
-- HTTP header format (`OCP-Context-ID`, `OCP-Session`, etc.)
-- Context object JSON schema
-- Base64 encoding and compression rules
-- OpenAPI parsing and tool generation
-- Tool invocation parameter mapping
-
-## Detailed Protocol References
-
-For complete implementation details, see the protocol specification subsections:
-
-{{< cards >}}
-{{< card link="protocol/http-protocol/" title="HTTP Protocol" subtitle="Header formats, encoding rules, and transmission standards" icon="globe" >}}
-{{< card link="protocol/context-schema/" title="Context Schema" subtitle="JSON schema definitions and validation rules" icon="document-text" >}}
-{{< card link="protocol/compatibility/" title="Compatibility Levels" subtitle="Level 1 and Level 2 API compatibility requirements" icon="check" >}}
-{{< card link="protocol/headers/" title="Header Reference" subtitle="Complete OCP header specification and examples" icon="code" >}}
-{{< card link="protocol/encoding/" title="Encoding Rules" subtitle="Base64, compression, and size limit specifications" icon="cog" >}}
-{{< /cards >}}
-- **Context Serialization**: 100% test coverage for encoding/decoding
-- **Tool Generation**: Deterministic naming and parameter extraction
-- **HTTP Integration**: Header injection and response parsing
-- **OpenAPI Parsing**: Handle malformed specifications gracefully
-
-### Performance Standards
-- **Tool Discovery**: Cache OpenAPI specifications locally
-- **Context Compression**: Compress contexts >1KB before encoding
-- **Memory Efficiency**: Handle large API specifications without excessive memory
-- **Network Optimization**: Minimize redundant specification downloads
-
-## Version Compatibility
-
-### Current Version: OCP 2.0
-
-**Breaking Changes from 1.0:**
-- Agent-focused header naming (`OCP-Agent-*` prefix)
-- Simplified context schema with required/optional field distinction
-- Enhanced OpenAPI tool generation with deterministic naming
-
-**Backward Compatibility:**
-- OCP 1.0 headers supported in transition period
-- Graceful fallback for unsupported features
-- OpenAPI 2.0 specifications supported with limitations
-
-### Future Versioning
-- **Semantic Versioning**: Major.Minor.Patch format
-- **Specification Stability**: Backward compatibility within major versions  
-- **Implementation Guidelines**: Clear migration paths for breaking changes
-
-## Reference Implementations
-
-### Production Libraries
-- **Python**: [`ocp-python`](https://github.com/opencontextprotocol/ocp-python) - Reference implementation
-- **JavaScript**: [`ocp-javascript`](https://github.com/opencontextprotocol/ocp-javascript) - 1:1 parity with Python
-- **CLI**: [`ocp-cli`](https://github.com/opencontextprotocol/ocp-cli) - Command-line tools and validation
-
-### Validation Tools
-- **Specification Validator**: Validate OCP compliance
-- **Context Schema Validator**: JSON schema validation
-- **OpenAPI Compatibility Checker**: Verify tool generation
-- **Performance Benchmarks**: Reference performance metrics
