@@ -277,9 +277,9 @@ ocp.set_registry_mode("offline")
 Now that you understand the registry, see how it integrates with other OCP superpowers:
 
 {{< cards >}}
-{{< card link="../tools/" title="🔧 Tool Discovery" subtitle="See how registry accelerates tool generation" >}}
-{{< card link="../context/" title="🧠 Context" subtitle="Learn how context enhances API interactions" >}}
-{{< card link="../ide/" title="💻 IDE Integration" subtitle="Use registry APIs directly in your development workflow" >}}
+{{< card link="../tools/" title="Tool Discovery" subtitle="See how registry accelerates tool generation" icon="cog" >}}
+{{< card link="../context/" title="Context" subtitle="Learn how context enhances API interactions" icon="chat" >}}
+{{< card link="../ide/" title="IDE Integration" subtitle="Use registry APIs directly in your development workflow" icon="code" >}}
 {{< /cards >}}
 
 **Ready to explore APIs?** [Browse the API Catalog →](api-catalog/)

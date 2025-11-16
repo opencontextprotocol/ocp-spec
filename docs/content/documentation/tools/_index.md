@@ -168,9 +168,9 @@ payment = stripe.create_payment_intent(
 Now that you understand tool discovery, explore how it works with other OCP superpowers:
 
 {{< cards >}}
-{{< card link="../context/" title="🧠 Context" subtitle="See how context flows through your generated tools" >}}
-{{< card link="../registry/" title="🌐 Community Registry" subtitle="Discover thousands of pre-indexed APIs instantly" >}}
-{{< card link="../ide/" title="💻 IDE Integration" subtitle="Use tools directly in your VS Code workflow" >}}
+{{< card link="../context/" title="Context" subtitle="See how context flows through your generated tools" icon="chat" >}}
+{{< card link="../registry/" title="Community Registry" subtitle="Discover thousands of pre-indexed APIs instantly" icon="collection" >}}
+{{< card link="../ide/" title="IDE Integration" subtitle="Use tools directly in your VS Code workflow" icon="code" >}}
 {{< /cards >}}
 
 **Ready to generate tools?** [Start with OpenAPI Parsing →](openapi-parsing/)

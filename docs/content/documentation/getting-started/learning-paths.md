@@ -21,24 +21,24 @@ Build sophisticated AI agents that leverage OCP's context awareness and automati
 
 #### Phase 1: Foundation (30 minutes)
 {{< cards >}}
-{{< card link="../quick-start/" title="⚡ Complete Quick Start" subtitle="5-minute demo of all superpowers" >}}
-{{< card link="../context/" title="🧠 Context Mastery" subtitle="Learn context patterns for stateful agents" >}}
+{{< card link="../quick-start/" title="Complete Quick Start" subtitle="5-minute demo of all superpowers" icon="lightning-bolt" >}}
+{{< card link="../context/" title="Context Mastery" subtitle="Learn context patterns for stateful agents" icon="chat" >}}
 {{< /cards >}}
 
 **Milestone**: Create an agent that maintains context across multiple API calls
 
 #### Phase 2: Tool Integration (45 minutes)
 {{< cards >}}
-{{< card link="../tools/" title="🔧 Tool Discovery Deep Dive" subtitle="Automatic API integration techniques" >}}
-{{< card link="../examples/github-api/" title="📝 GitHub Agent Example" subtitle="Complete agent implementation" >}}
+{{< card link="../tools/" title="Tool Discovery Deep Dive" subtitle="Automatic API integration techniques" icon="cog" >}}
+{{< card link="../examples/github-api/" title="GitHub Agent Example" subtitle="Complete agent implementation" icon="document-text" >}}
 {{< /cards >}}
 
 **Milestone**: Build an agent that discovers and uses GitHub APIs automatically
 
 #### Phase 3: Advanced Patterns (60 minutes)
 {{< cards >}}
-{{< card link="../registry/" title="🌐 Registry Integration" subtitle="Leverage community APIs" >}}
-{{< card link="../ide/" title="💻 Multi-Agent Coordination" subtitle="IDE-aware agent workflows" >}}
+{{< card link="../registry/" title="Registry Integration" subtitle="Leverage community APIs" icon="collection" >}}
+{{< card link="../ide/" title="Multi-Agent Coordination" subtitle="IDE-aware agent workflows" icon="code" >}}
 {{< /cards >}}
 
 **Milestone**: Deploy a multi-agent system with workspace awareness
@@ -69,24 +69,24 @@ Add OCP context awareness to your backends, enable automatic API discovery, and 
 
 #### Phase 1: Integration Basics (20 minutes)
 {{< cards >}}
-{{< card link="../quick-start/" title="⚡ Quick Start" subtitle="See OCP in action" >}}
-{{< card link="../context/" title="🧠 Context Headers" subtitle="Learn OCP HTTP header format" >}}
+{{< card link="../quick-start/" title="Quick Start" subtitle="See OCP in action" icon="lightning-bolt" >}}
+{{< card link="../context/" title="Context Headers" subtitle="Learn OCP HTTP header format" icon="chat" >}}
 {{< /cards >}}
 
 **Milestone**: Add OCP context headers to existing API calls
 
 #### Phase 2: API Discovery (40 minutes)
 {{< cards >}}
-{{< card link="../tools/" title="🔧 OpenAPI Extensions" subtitle="Make your APIs OCP-discoverable" >}}
-{{< card link="../specification/" title="📋 Protocol Reference" subtitle="Technical implementation details" >}}
+{{< card link="../tools/" title="OpenAPI Extensions" subtitle="Make your APIs OCP-discoverable" icon="cog" >}}
+{{< card link="../specification/" title="Protocol Reference" subtitle="Technical implementation details" icon="document-text" >}}
 {{< /cards >}}
 
 **Milestone**: Update your OpenAPI specs with OCP extensions
 
 #### Phase 3: Registry Publishing (30 minutes)
 {{< cards >}}
-{{< card link="../registry/" title="🌐 Registry API" subtitle="Publish to community registry" >}}
-{{< card link="../examples/stripe-api/" title="📝 Stripe Example" subtitle="Real-world API integration" >}}
+{{< card link="../registry/" title="Registry API" subtitle="Publish to community registry" icon="collection" >}}
+{{< card link="../examples/stripe-api/" title="Stripe Example" subtitle="Real-world API integration" icon="document-text" >}}
 {{< /cards >}}
 
 **Milestone**: Publish your API to the OCP registry
@@ -117,23 +117,23 @@ Create interactive applications that leverage OCP for seamless API integration a
 
 #### Phase 1: Client-Side OCP (25 minutes)
 {{< cards >}}
-{{< card link="../quick-start/" title="⚡ Quick Start (JavaScript)" subtitle="OCP in the browser" >}}
-{{< card link="../context/" title="🧠 Client Context Patterns" subtitle="Frontend-specific context management" >}}
+{{< card link="../quick-start/" title="Quick Start (JavaScript)" subtitle="OCP in the browser" icon="lightning-bolt" >}}
+{{< card link="../context/" title="Client Context Patterns" subtitle="Frontend-specific context management" icon="chat" >}}
 {{< /cards >}}
 
 **Milestone**: Create a web app that maintains context across API calls
 
 #### Phase 2: Dynamic Tool Discovery (35 minutes)
 {{< cards >}}
-{{< card link="../tools/" title="🔧 Runtime Discovery" subtitle="Discover APIs from user input" >}}
-{{< card link="../registry/" title="🌐 Registry Search" subtitle="Let users find and connect APIs" >}}
+{{< card link="../tools/" title="Runtime Discovery" subtitle="Discover APIs from user input" icon="cog" >}}
+{{< card link="../registry/" title="Registry Search" subtitle="Let users find and connect APIs" icon="collection" >}}
 {{< /cards >}}
 
 **Milestone**: Build a tool that lets users connect to any API dynamically
 
 #### Phase 3: IDE Integration (20 minutes)
 {{< cards >}}
-{{< card link="../ide/" title="💻 VS Code Extension" subtitle="Integrate with development workflow" >}}
+{{< card link="../ide/" title="VS Code Extension" subtitle="Integrate with development workflow" icon="code" >}}
 {{< /cards >}}
 
 **Milestone**: Create VS Code extension features using OCP

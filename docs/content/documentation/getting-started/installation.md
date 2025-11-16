@@ -251,12 +251,12 @@ code --enable-extension opencontextprotocol.ocp-vscode
 Now that OCP is installed, try the quick start guide:
 
 {{< cards >}}
-{{< card link="../quick-start/" title="⚡ Quick Start" subtitle="Get your first OCP agent working in 5 minutes" >}}
+{{< card link="../quick-start/" title="Quick Start" subtitle="Get your first OCP agent working in 5 minutes" icon="lightning-bolt" >}}
 {{< /cards >}}
 
 Or dive deeper into the superpowers:
 
 {{< cards >}}
-{{< card link="../context/" title="🧠 Context" subtitle="Understand persistent context across API calls" >}}
-{{< card link="../tools/" title="🔧 Tool Discovery" subtitle="Learn automatic API integration" >}}
+{{< card link="../context/" title="Context" subtitle="Understand persistent context across API calls" icon="chat" >}}
+{{< card link="../tools/" title="Tool Discovery" subtitle="Learn automatic API integration" icon="cog" >}}
 {{< /cards >}}

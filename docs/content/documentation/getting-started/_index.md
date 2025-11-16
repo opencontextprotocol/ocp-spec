@@ -11,12 +11,12 @@ Welcome to the **Open Context Protocol** - the revolutionary way to turn any API
 
 OCP transforms agent-API interactions through four breakthrough capabilities that work together:
 
-{{< hextra/feature-grid >}}
-{{< hextra/feature-card title="🧠 Context" subtitle="APIs become conversational participants with persistent memory across calls" link="../context/" >}}
-{{< hextra/feature-card title="🔧 Tool Discovery" subtitle="Instant tool generation from any OpenAPI specification - zero manual work" link="../tools/" >}}
-{{< hextra/feature-card title="🌐 Registry" subtitle="Pre-indexed API catalog searchable by users and agents" link="../registry/" >}}
-{{< hextra/feature-card title="💻 IDE Integration" subtitle="Drop-in VS Code extension for workspace-aware agents" link="../ide/" >}}
-{{< /hextra/feature-grid >}}
+{{< cards >}}
+{{< card title="Context" subtitle="APIs become conversational participants with persistent memory across calls" link="../context/" icon="chat" >}}
+{{< card title="Tool Discovery" subtitle="Instant tool generation from any OpenAPI specification - zero manual work" link="../tools/" icon="cog" >}}
+{{< card title="Registry" subtitle="Pre-indexed API catalog searchable by users and agents" link="../registry/" icon="collection" >}}
+{{< card title="IDE Integration" subtitle="Drop-in VS Code extension for workspace-aware agents" link="../ide/" icon="code" >}}
+{{< /cards >}}
 
 ## What Makes OCP Revolutionary?
 
@@ -95,9 +95,9 @@ Open VS Code → Extension detects workspace → Agents get instant context + AP
 Choose your starting point based on what you want to accomplish:
 
 {{< cards >}}
-{{< card link="installation/" title="📦 Installation" subtitle="Set up OCP in your environment" >}}
-{{< card link="quick-start/" title="⚡ Quick Start" subtitle="Working example in 5 minutes" >}}
-{{< card link="learning-paths/" title="🎓 Learning Paths" subtitle="Guided journey by user type" >}}
+{{< card link="installation/" title="Installation" subtitle="Set up OCP in your environment" icon="download" >}}
+{{< card link="quick-start/" title="Quick Start" subtitle="Working example in 5 minutes" icon="lightning-bolt" >}}
+{{< card link="learning-paths/" title="Learning Paths" subtitle="Guided journey by user type" icon="academic-cap" >}}
 {{< /cards >}}
 
 ## Next Steps

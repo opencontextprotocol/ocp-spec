@@ -82,9 +82,9 @@ APIs read context and provide enhanced, context-aware responses.
 Now that you understand how context works, explore the other OCP superpowers:
 
 {{< cards >}}
-{{< card link="../tools/" title="🔧 Tool Discovery" subtitle="Learn how OCP automatically generates tools from any API" >}}
-{{< card link="../registry/" title="🌐 Community Registry" subtitle="Discover pre-indexed APIs for instant integration" >}}
-{{< card link="../ide/" title="💻 IDE Integration" subtitle="Install the VS Code extension for workspace-aware agents" >}}
+{{< card link="../tools/" title="Tool Discovery" subtitle="Learn how OCP automatically generates tools from any API" icon="cog" >}}
+{{< card link="../registry/" title="Community Registry" subtitle="Discover pre-indexed APIs for instant integration" icon="collection" >}}
+{{< card link="../ide/" title="IDE Integration" subtitle="Install the VS Code extension for workspace-aware agents" icon="code" >}}
 {{< /cards >}}
 
 **Ready to start?** [Get Started with Context →](headers/)
