@@ -5,15 +5,15 @@ layout: "hextra-home"
 
 {{< hextra/hero-badge >}}
   <div class="hx:w-2 hx:h-2 hx:rounded-full hx:bg-primary-400"></div>
-  Zero Infra Tooling for AI Agents
+  Open Standards for AI Agents
 {{< /hextra/hero-badge >}}
 
 {{< hextra/hero-headline style="margin-top: 1.5rem; margin-bottom: 1.5rem;" >}}
-  Turn any API into an <br/> intelligent agent tool
+  Turn any API into <br/> intelligent agent tools
 {{< /hextra/hero-headline >}}
 
 {{< hextra/hero-subtitle style="margin-bottom: 3rem;" >}}
-  OCP enables AI agents to maintain persistent <br/> context across API calls using open standards.
+  Automatic tool discovery with persistent context <br/> using only HTTP headers and open standards.
 {{< /hextra/hero-subtitle >}}
 
 {{< hextra/hero-button text="Get Started" link="documentation/getting-started/" style="margin-bottom: 1.5rem;" >}}
