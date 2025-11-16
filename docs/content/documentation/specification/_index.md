@@ -5,9 +5,6 @@ cascade:
   type: docs
 ---
 
-# Open Context Protocol (OCP)
-## Context-Aware API Integration for AI Agents
-
 **TL;DR**: OCP enables persistent context sharing across HTTP API calls using standard headers, with automatic API discovery from OpenAPI specifications and optional community registry integration for fast tool discovery - no servers or infrastructure required.
 
 ---
