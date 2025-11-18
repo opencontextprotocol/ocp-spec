@@ -26,7 +26,7 @@ const SCHEMA_CONFIGS = [
   {
     file: 'ocp-openapi-extensions.json',
     outputFile: 'openapi-extensions-schema.md',
-    title: 'OpenAPI Extensions Schema',
+    title: 'OpenAPI Schema',
     weight: 9,
     description: 'Schema for OCP extensions in OpenAPI specifications.'
   }

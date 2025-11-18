@@ -1,5 +1,5 @@
 ---
-title: OpenAPI Extensions Schema
+title: OpenAPI Schema
 weight: 9
 cascade:
   type: docs
