@@ -55,6 +55,7 @@
     },
     "session": {
       "type": "object",
+      "description": "Session tracking information for this context",
       "properties": {
         "start_time": {
           "type": "string",
@@ -64,11 +65,12 @@
         "interaction_count": {
           "type": "integer",
           "minimum": 0,
-          "default": 0
+          "default": 0,
+          "description": "Number of interactions in this session"
         },
         "agent_type": {
           "type": "string",
-          "description": "Agent type (duplicated for session metadata)"
+          "description": "Type of agent for this session"
         }
       },
       "required": ["start_time", "interaction_count", "agent_type"],
@@ -77,25 +79,31 @@
     },
     "history": {
       "type": "array",
+      "description": "Chronological record of actions and API calls",
       "items": {
         "type": "object",
         "properties": {
           "timestamp": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "When this action occurred"
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "Type of action performed"
           },
           "api_endpoint": {
-            "type": ["string", "null"]
+            "type": ["string", "null"],
+            "description": "API endpoint called if applicable"
           },
           "result": {
-            "type": ["string", "null"]
+            "type": ["string", "null"],
+            "description": "Summary of action result"
           },
           "metadata": {
             "type": "object",
-            "default": {}
+            "default": {},
+            "description": "Additional contextual data for this action"
           }
         },
         "required": ["timestamp", "action"],
@@ -117,11 +125,13 @@
     },
     "created_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When this context was first created"
     },
     "last_updated": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When this context was last modified"
     }
   },
   "additionalProperties": false

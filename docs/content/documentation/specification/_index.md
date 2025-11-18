@@ -68,37 +68,11 @@ OCP-Version: 1.0
 
 ### Context Schema
 
-The `OCP-Session` header contains a JSON object that MUST conform to the [OCP Context Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-context.json).
+The `OCP-Session` header contains a JSON object that MUST conform to the [Context Schema](context-schema).
 
-**Schema Location**: `/schemas/ocp-context.json`
-
-#### Required Fields
-- `context_id`: Unique session identifier (matches `OCP-Context-ID` header)
-- `agent_type`: Type of agent (matches `OCP-Agent-Type` header)
-- `created_at`: ISO 8601 timestamp of context creation
-- `last_updated`: ISO 8601 timestamp of last update
-
-#### Optional Fields
-- `user`: User identifier
-- `workspace`: Current workspace or project
-- `current_goal`: Current agent objective
-- `current_file`: Currently active file
-- `context_summary`: Brief summary of conversation context
-- `error_context`: Error information for debugging
-- `recent_changes`: Array of recent modifications (max 10)
-- `session`: Session metadata object with start_time, interaction_count, agent_type
-- `history`: Array of interaction history with timestamp, action, api_endpoint, result, metadata
-- `api_specs`: Object mapping API names to their OpenAPI specification URLs
-
-#### Minimal Valid Context
-```json
-{
-  "context_id": "ocp-a1b2c3d4",
-  "agent_type": "cli_tool",
-  "created_at": "2025-11-16T10:30:00Z",
-  "last_updated": "2025-11-16T10:30:00Z"
-}
-```
+{{< callout type="info" >}}
+For detailed field definitions, validation rules, and examples, see the [Context Schema documentation](context-schema).
+{{< /callout >}}
 
 ### Encoding Requirements
 
@@ -138,7 +112,7 @@ APIs read OCP context and provide enhanced, context-aware responses.
 - Support OCP OpenAPI extensions for behavior specification
 
 {{< callout type="info" >}}
-APIs can declare OCP support using the [OCP OpenAPI Extensions Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-openapi-extensions.json):
+APIs can declare OCP support using extensions defined in the [OpenAPI Extensions Schema](openapi-extensions-schema):
 
 - `x-ocp-enabled`: API acknowledges OCP headers
 - `x-ocp-context-aware`: API uses context data in responses
@@ -156,25 +130,11 @@ OCP implementations MUST be able to parse OpenAPI 3.0+ specifications and genera
 
 #### Tool Schema Definition
 
-Each discovered tool MUST conform to the [OCP Tool Schema](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-tool.json).
+Each discovered tool MUST conform to the [Tool Schema](tool-schema).
 
-**Schema Location**: `/schemas/ocp-tool.json`
-
-**Key Requirements**:
-- `name`: Deterministic tool name (alphanumeric + underscore, starts with letter)
-- `description`: Human-readable description from OpenAPI
-- `method`: HTTP method (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)
-- `path`: API endpoint path template with `{parameter}` placeholders
-- `parameters`: Object mapping parameter names to their definitions
-- `response_schema`: OpenAPI response schema for successful responses
-- `tags`: OpenAPI tags for organization (optional)
-
-**Parameter Definition Requirements**:
-- `type`: Data type (string, number, integer, boolean, array, object)
-- `required`: Boolean indicating if parameter is required
-- `location`: Where parameter goes (path, query, header, body)
-- `schema`: Full OpenAPI schema definition
-- Additional validation properties (format, enum, min/max, etc.)
+{{< callout type="info" >}}
+For complete parameter definitions, validation rules, and examples, see the [Tool Schema documentation](tool-schema).
+{{< /callout >}}
 
 #### Deterministic Naming
 
@@ -258,102 +218,3 @@ Implementations MUST validate:
 - OpenAPI specification structure
 - Tool parameter types and requirements
 
----
-
-## Examples
-
-### Minimal Context
-```json
-{
-  "context_id": "ocp-a1b2c3d4",
-  "agent_type": "cli_tool",
-  "created_at": "2025-11-16T10:30:00Z",
-  "last_updated": "2025-11-16T10:30:00Z"
-}
-```
-
-### Complete Context
-```json
-{
-  "context_id": "ocp-debug-123",
-  "agent_type": "ide_coding_assistant",
-  "user": "alice",
-  "workspace": "payment-service", 
-  "current_goal": "debug_payment_validation",
-  "current_file": "payment_validator.py",
-  "session": {
-    "start_time": "2025-11-16T10:20:00Z",
-    "interaction_count": 5,
-    "agent_type": "ide_coding_assistant"
-  },
-  "history": [
-    {
-      "timestamp": "2025-11-16T10:25:00Z",
-      "action": "api_call",
-      "api_endpoint": "https://api.github.com/repos/alice/payment-service/issues",
-      "result": "success",
-      "metadata": {
-        "operation": "list_issues",
-        "tool_name": "github.list_issues"
-      }
-    }
-  ],
-  "context_summary": "Debugging payment validation error in Django app",
-  "recent_changes": [
-    "Modified payment_validator.py line 42",
-    "Added test case for edge condition"
-  ],
-  "api_specs": {
-    "github": "https://api.github.com/openapi.json",
-    "stripe": "https://stripe.com/openapi.json"
-  },
-  "created_at": "2025-11-16T10:20:00Z",
-  "last_updated": "2025-11-16T10:30:00Z"
-}
-```
-
-### Tool Example
-```json
-{
-  "name": "create_issue",
-  "description": "Create a new issue in a repository", 
-  "method": "POST",
-  "path": "/repos/{owner}/{repo}/issues",
-  "operation_id": "issues/create",
-  "parameters": {
-    "owner": {
-      "type": "string",
-      "required": true,
-      "location": "path",
-      "description": "Repository owner"
-    },
-    "repo": {
-      "type": "string", 
-      "required": true,
-      "location": "path",
-      "description": "Repository name"
-    },
-    "title": {
-      "type": "string",
-      "required": true, 
-      "location": "body",
-      "description": "Issue title"
-    },
-    "body": {
-      "type": "string",
-      "required": false,
-      "location": "body", 
-      "description": "Issue description"
-    }
-  },
-  "response_schema": {
-    "type": "object",
-    "properties": {
-      "id": {"type": "integer"},
-      "title": {"type": "string"},
-      "state": {"type": "string"}
-    }
-  },
-  "tags": ["issues"]
-}
-```

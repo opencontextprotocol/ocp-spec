@@ -110,13 +110,16 @@
       "description": "OpenAPI response schema for successful responses (2xx status codes)",
       "properties": {
         "type": {
-          "type": "string"
+          "type": "string",
+          "description": "Response data type"
         },
         "properties": {
-          "type": "object"
+          "type": "object",
+          "description": "Object property definitions"
         },
         "items": {
-          "type": "object"
+          "type": "object",
+          "description": "Array item schema definition"
         }
       },
       "additionalProperties": true
@@ -151,10 +154,12 @@
         "properties": {
           "url": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "description": "Base URL for this server"
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "Human-readable description of this server"
           }
         }
       }
