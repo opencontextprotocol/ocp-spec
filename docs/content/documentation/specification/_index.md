@@ -67,11 +67,7 @@ OCP-Version: 1.0
 
 ### Context Schema
 
-The `OCP-Session` header contains a JSON object that MUST conform to the [Context Schema](context-schema).
-
-{{< callout type="info" >}}
-For detailed field definitions, validation rules, and examples, see the [Context Schema documentation](context-schema).
-{{< /callout >}}
+The `OCP-Session` header contains a JSON object that MUST conform to the [Context Schema](context-schema). See the schema for detailed field definitions, validation rules, and examples.
 
 ### Encoding Requirements
 
@@ -90,6 +86,10 @@ For detailed field definitions, validation rules, and examples, see the [Context
 ---
 
 ## Compatibility Levels
+
+{{< callout type="info" >}}
+APIs can declare OCP support using extensions defined in the [OpenAPI Extensions Schema](openapi-extensions-schema).
+{{< /callout >}}
 
 ### Level 1: Context-Aware
 
@@ -110,15 +110,6 @@ APIs read OCP context and provide enhanced, context-aware responses.
 - Include context-aware information in responses
 - Support OCP OpenAPI extensions for behavior specification
 
-{{< callout type="info" >}}
-APIs can declare OCP support using extensions defined in the [OpenAPI Extensions Schema](openapi-extensions-schema):
-
-- `x-ocp-enabled`: API acknowledges OCP headers
-- `x-ocp-context-aware`: API uses context data in responses
-- `x-ocp-context`: Operation-level context behavior
-- `x-ocp-enhanced-response`: Additional response properties with context
-{{< /callout >}}
-
 ---
 
 ## Schema Discovery
@@ -129,11 +120,7 @@ OCP implementations MUST be able to parse OpenAPI 3.0+ specifications and genera
 
 #### Tool Schema Definition
 
-Each discovered tool MUST conform to the [Tool Schema](tool-schema).
-
-{{< callout type="info" >}}
-For complete parameter definitions, validation rules, and examples, see the [Tool Schema documentation](tool-schema).
-{{< /callout >}}
+Each discovered tool MUST conform to the [Tool Schema](tool-schema). See the schema for complete parameter definitions, validation rules, and examples.
 
 #### Deterministic Naming
 
