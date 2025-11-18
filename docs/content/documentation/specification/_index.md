@@ -1,11 +1,10 @@
 ---
-title: Specification
+title: Open Context Protocol v1.0
+linkTitle: Specification
 weight: 6
 cascade:
   type: docs
 ---
-
-# Open Context Protocol v1.0
 
 The Open Context Protocol (OCP) is a specification for maintaining persistent context across HTTP API calls using standard HTTP headers and automatically discovering tools from OpenAPI specifications.
 
