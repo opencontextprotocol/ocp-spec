@@ -2,7 +2,7 @@
 title: Documentation
 ---
 
-OCP turns any API into an intelligent agent tool with persistent context.
+Turn any OpenAPI spec into hundreds of agent tools instantly.
 
 ## Core Features
 
@@ -15,24 +15,27 @@ OCP turns any API into an intelligent agent tool with persistent context.
 
 ## How It Works
 
-**Without OCP:** Manual API integration, no context between calls
 ```python
-# Isolated calls
-issues = github_list_issues()      # No context
-commits = github_list_commits()    # No memory  
-files = github_list_files()        # No connection
+from ocp_agent import OCPAgent
+
+agent = OCPAgent(workspace="ecommerce-app")
+
+# Registry lookup + instant tool discovery
+github_api = agent.register_api("github")           # 800+ tools from registry
+stripe_api = agent.register_api("stripe")           # 300+ tools from registry
+
+# Use any tool with auth + context automatically
+issues = agent.call_tool("search_issues", {"q": "payment"}, 
+                        headers={"Authorization": f"token {github_token}"})
+payment = agent.call_tool("create_payment_intent", {"amount": 2000},
+                         headers={"Authorization": f"Bearer {stripe_key}"})
 ```
 
-**With OCP:** Instant tools + persistent context
-```python
-# Context flows automatically
-agent = ocp.Agent(goal="debug_payment_error", workspace="ecommerce-app")
-github = agent.discover_tools("github")  # 800+ tools instantly
-
-issues = github.search_issues(q="payment")    # Context: debugging payment
-commits = github.list_commits()               # Context: previous search + goal
-files = github.get_contents(path="payment/")   # Context: full history
-```
+**The Magic:**
+- 🔥 **Registry Integration**: Just name the API → get instant access
+- 🚀 **Auto Tool Discovery**: Hundreds of tools from OpenAPI specs automatically  
+- 🧠 **Workspace Context**: Every tool call knows your project context
+- 🔐 **Simple Auth**: Pass headers inline, no complex setup
 
 ## Next
 
