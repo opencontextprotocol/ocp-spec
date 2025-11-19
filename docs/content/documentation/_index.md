@@ -2,14 +2,14 @@
 title: Documentation
 ---
 
-The **Open Context Protocol** turns any API into an intelligent agent tool with persistent context.
+OCP turns any API into an intelligent agent tool with persistent context.
 
 ## Core Features
 
 {{< cards >}}
-{{< card title="Context" subtitle="Persistent state across API calls" link="context/" icon="chat" >}}
 {{< card title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" link="tools/" icon="cog" >}}
-{{< card title="Registry" subtitle="Pre-indexed API catalog" link="registry/" icon="collection" >}}
+{{< card title="HTTP Context" subtitle="Persistent state across API calls" link="context/" icon="chat" >}}
+{{< card title="Marketplace" subtitle="Pre-indexed API catalog" link="registry/" icon="collection" >}}
 {{< card title="IDE Integration" subtitle="Workspace-aware agents" link="ide/" icon="code" >}}
 {{< /cards >}}
 
