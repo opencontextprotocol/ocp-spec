@@ -21,24 +21,24 @@ Build sophisticated AI agents that leverage OCP's context awareness and automati
 
 #### Phase 1: Foundation (30 minutes)
 {{< cards >}}
-{{< card link="../quick-start/" title="Complete Quick Start" subtitle="5-minute demo of all superpowers" icon="lightning-bolt" >}}
-{{< card link="../context/" title="Context Mastery" subtitle="Learn context patterns for stateful agents" icon="chat" >}}
+{{< card link="getting-started/" title="Getting Started" subtitle="5-minute setup and first OCP agent" icon="lightning-bolt" >}}
+{{< card link="context/" title="Context Mastery" subtitle="Learn context patterns for stateful agents" icon="chat" >}}
 {{< /cards >}}
 
 **Milestone**: Create an agent that maintains context across multiple API calls
 
 #### Phase 2: Tool Integration (45 minutes)
 {{< cards >}}
-{{< card link="../tools/" title="Tool Discovery Deep Dive" subtitle="Automatic API integration techniques" icon="cog" >}}
-{{< card link="../examples/github-api/" title="GitHub Agent Example" subtitle="Complete agent implementation" icon="document-text" >}}
+{{< card link="tools/" title="Tool Discovery Deep Dive" subtitle="Automatic API integration techniques" icon="cog" >}}
+{{< card link="examples/github-api/" title="GitHub Agent Example" subtitle="Complete agent implementation" icon="document-text" >}}
 {{< /cards >}}
 
 **Milestone**: Build an agent that discovers and uses GitHub APIs automatically
 
 #### Phase 3: Advanced Patterns (60 minutes)
 {{< cards >}}
-{{< card link="../registry/" title="Registry Integration" subtitle="Leverage community APIs" icon="collection" >}}
-{{< card link="../ide/" title="Multi-Agent Coordination" subtitle="IDE-aware agent workflows" icon="code" >}}
+{{< card link="registry/" title="Registry Integration" subtitle="Leverage community APIs" icon="collection" >}}
+{{< card link="ide/" title="Multi-Agent Coordination" subtitle="IDE-aware agent workflows" icon="code" >}}
 {{< /cards >}}
 
 **Milestone**: Deploy a multi-agent system with workspace awareness

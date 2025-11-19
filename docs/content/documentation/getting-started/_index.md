@@ -5,143 +5,154 @@ cascade:
   type: docs
 ---
 
-Set up OCP and turn any API into hundreds of agent tools in seconds.
+Turn any OpenAPI spec into hundreds of agent tools in seconds.
 
-## Prerequisites
-
-- Python 3.8+ or Node.js 16+
-- GitHub token for API access
-
-## Authentication
+## Installation & Quick Start
 
 {{< tabs items="Python,JavaScript,VS Code" >}}
 
 {{< tab >}}
-Get a GitHub token:
-1. Go to GitHub → Settings → Developer settings → Personal access tokens
-2. Generate a new token with `repo` scope
-3. Save it as environment variable:
+**Prerequisites:** Python 3.8+
 
 ```bash
-export GITHUB_TOKEN="ghp_your_token_here"
+# Install the library
+pip install open-context-agent
+```
+
+**Quick Start:**
+```python
+from ocp_agent import OCPAgent
+
+# Create an agent with workspace context
+agent = OCPAgent(
+    agent_type="api_explorer",
+    workspace="my-project"
+)
+
+# Register GitHub API (discovers all available tools automatically)
+api_spec = agent.register_api(
+    name="github", 
+    spec_url="https://api.github.com/openapi.json"
+)
+print(f"🚀 Auto-discovered {len(api_spec.tools)} GitHub tools from OpenAPI spec!")
+
+# That's it. No manual tool definitions, no containers, no proxy servers.
+# You now have access to the entire GitHub API as agent tools.
+
+# List some tools
+tools = agent.list_tools("github")
+print(f"Available: {[tool.name for tool in tools[:5]]}...")
+
+# Call any tool
+issues = agent.call_tool("search_issues", {"q": "bug in:readme"})
+```
+
+**With Authentication:**
+```python
+import os
+# Set your GitHub token
+os.environ['GITHUB_TOKEN'] = 'ghp_your_token_here'
+
+# Or pass headers directly when calling tools
+result = agent.call_tool("search_issues", 
+    {"q": "bug"}, 
+    headers={"Authorization": f"token {os.getenv('GITHUB_TOKEN')}"})
 ```
 {{< /tab >}}
 
 {{< tab >}}
-Get a GitHub token:
-1. Go to GitHub → Settings → Developer settings → Personal access tokens
-2. Generate a new token with `repo` scope
-3. Save it as environment variable:
+**Prerequisites:** Node.js 16+
 
 ```bash
-export GITHUB_TOKEN="ghp_your_token_here"
-```
-{{< /tab >}}
-
-{{< tab >}}
-Configure API authentication in VS Code settings:
-1. Open VS Code settings (Cmd/Ctrl + ,)
-2. Search for "ocp"
-3. Add your GitHub token:
-
-```json
-{
-  "ocp.apiAuth": {
-    "github": {
-      "Authorization": "Bearer ghp_your_token_here"
-    }
-  }
-}
-```
-{{< /tab >}}
-
-{{< /tabs >}}
-
-## Installation
-
-{{< tabs items="Python,JavaScript,VS Code" >}}
-
-{{< tab >}}
-```bash
-pip install ocp-python
-```
-{{< /tab >}}
-
-{{< tab >}}
-```bash
+# Install the library
 npm install @opencontextprotocol/agent
 ```
-{{< /tab >}}
 
-{{< tab >}}
-```bash
-ext install opencontextprotocol.ocp-vscode
-```
-{{< /tab >}}
-
-{{< /tabs >}}
-
-## First Usage
-
-{{< tabs items="Python,JavaScript,VS Code" >}}
-
-{{< tab >}}
-```python
-import ocp
-import os
-
-# Create agent
-agent = ocp.OCPAgent(workspace="my-project")
-
-# Register GitHub API
-github_spec = agent.register_api("github")
-print(f"{len(github_spec.tools)} tools discovered from GitHub API")
-
-# Use tools with authentication
-headers = {"Authorization": f"Bearer {os.getenv('GITHUB_TOKEN')}"}
-issues = agent.call_tool("github", "search_issues", {"q": "bug"}, headers=headers)
-```
-{{< /tab >}}
-
-{{< tab >}}
-```javascript
+**Quick Start:**
+```typescript
 import { OCPAgent } from '@opencontextprotocol/agent';
 
-// Create agent
-const agent = new OCPAgent({workspace: "my-project"});
+// Create an agent with workspace context
+const agent = new OCPAgent(
+    'api_explorer',
+    undefined,
+    'my-project'
+);
 
-// Register GitHub API
-const githubSpec = await agent.registerApi("github");
-console.log(`${githubSpec.tools.length} tools discovered from GitHub API`);
+# Register GitHub API (discovers all available tools automatically)
+const apiSpec = await agent.registerApi(
+    'github',
+    'https://api.github.com/openapi.json'
+);
+console.log(`🚀 Auto-discovered ${apiSpec.tools.length} GitHub tools from OpenAPI spec!`);
 
-// Use tools with authentication
-const headers = {"Authorization": `Bearer ${process.env.GITHUB_TOKEN}`};
-const issues = await agent.callTool("github", "search_issues", {q: "bug"}, {headers});
+// That's it. No manual tool definitions, no containers, no proxy servers.
+// You now have access to the entire GitHub API as agent tools.
+
+// List some tools
+const tools = agent.listTools('github');
+console.log(`Available: ${tools.slice(0, 5).map(t => t.name).join(', ')}...`);
+
+// Call any tool
+const issues = await agent.callTool('search_issues', {q: 'bug in:readme'});
+```
+
+**With Authentication:**
+```typescript
+// Set environment variable
+process.env.GITHUB_TOKEN = 'ghp_your_token_here';
+
+// Or pass headers when calling tools
+const result = await agent.callTool('search_issues', 
+    {q: 'bug'}, 
+    {headers: {'Authorization': `token ${process.env.GITHUB_TOKEN}`}});
 ```
 {{< /tab >}}
 
 {{< tab >}}
+**Prerequisites:** VS Code
+
+```bash
+# Install the extension
+code --install-extension opencontextprotocol.ocp-vscode-extension
+```
+
+**Quick Start:**
 1. Open VS Code in your project folder
-2. Install the OCP extension (if not already done)
-3. Use Copilot Chat or any AI agent:
+2. Open any AI chat (Copilot, Cursor, etc.)
+3. Try this prompt:
 
 ```
-@workspace Please use the ocp_registerApi tool to register the GitHub API, then use ocp_listTools to see what's available.
+Use the ocp_registerApi tool to add the GitHub API. Watch as it auto-discovers hundreds of tools from the OpenAPI spec instantly.
 ```
 
-The AI agent will:
-- Register GitHub API (using your configured auth)
-- Show you hundreds of available tools
-- Use tools with full workspace context
+**What happens:**
+- OCP hits the OpenAPI spec URL
+- Automatically converts every endpoint to an agent tool  
+- No manual tool definitions required
+- No containers or proxy servers
+- Direct API integration that just works
+
+Try this prompt:
+```
+Register the GitHub API with ocp_registerApi, then show me the tools you discovered with ocp_listTools.
+```
 {{< /tab >}}
 
 {{< /tabs >}}
+
+## What You Just Did
+
+🤯 **Auto Tool Discovery**: One API registration = hundreds of tools instantly available.
+
+⚡ **Direct Integration**: OCP talks directly to APIs using their OpenAPI specs.
+
+🔧 **Zero Setup**: No servers, no containers, no infrastructure required.
 
 ## Next Steps
 
 {{< cards >}}
-{{< card link="../tools/" title="Tool Discovery" subtitle="Add your own APIs and discover more tools" icon="cog" >}}
-{{< card link="../examples/" title="Examples" subtitle="Real-world use cases and implementations" icon="book-open" >}}
-{{< card link="../context/" title="Understanding Context" subtitle="How persistent context enhances responses" icon="chat" >}}
-{{< card link="../ide/" title="IDE Integration" subtitle="VS Code workspace integration" icon="code" >}}
+{{< card link="../examples/" title="More Examples" subtitle="Stripe, Slack, and other real-world integrations" icon="book-open" >}}
+{{< card link="../tools/" title="Add Any API" subtitle="Turn any OpenAPI spec into agent tools" icon="cog" >}}
+{{< card link="../context/" title="Context Deep Dive" subtitle="How workspace context enhances tool responses" icon="chat" >}}
 {{< /cards >}}
