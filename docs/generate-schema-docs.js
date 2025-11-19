@@ -52,7 +52,8 @@ function parseProperty(name, prop, required = []) {
   // Check if property has constraints that warrant a dedicated section
   const hasConstraints = prop.enum || prop.pattern || prop.format || 
                         prop.minLength || prop.maxLength || 
-                        prop.minimum !== undefined || prop.maximum !== undefined;
+                        prop.minimum !== undefined || prop.maximum !== undefined ||
+                        prop.default !== undefined;
 
   // Add links for complex types that will have their own sections
   const hasNestedContent = (prop.type === 'object' && (prop.properties || prop.patternProperties)) || 
@@ -260,7 +261,8 @@ function generatePatternSection(name, pattern, schema, prefix = '') {
 function hasPropertyConstraints(prop) {
   return prop.enum || prop.pattern || prop.format || 
          prop.minLength || prop.maxLength || 
-         prop.minimum !== undefined || prop.maximum !== undefined;
+         prop.minimum !== undefined || prop.maximum !== undefined ||
+         prop.default !== undefined;
 }
 
 function generateConstrainedPropertySection(name, schema, prefix = '') {
@@ -293,8 +295,18 @@ function generateConstrainedPropertySection(name, schema, prefix = '') {
     section += `**Length:** ${schema.minLength || 0} to ${schema.maxLength || '∞'} characters\n\n`;
   }
   
-  if (schema.minimum !== undefined || schema.maximum !== undefined) {
-    section += `**Range:** ${schema.minimum || '-∞'} to ${schema.maximum || '∞'}\n\n`;
+  // Handle minimum and maximum constraints more precisely
+  if (schema.minimum !== undefined && schema.maximum !== undefined) {
+    section += `**Range:** ${schema.minimum} to ${schema.maximum}\n\n`;
+  } else if (schema.minimum !== undefined) {
+    section += `**Minimum:** ${schema.minimum}\n\n`;
+  } else if (schema.maximum !== undefined) {
+    section += `**Maximum:** ${schema.maximum}\n\n`;
+  }
+  
+  // Handle default values
+  if (schema.default !== undefined) {
+    section += `**Default:** \`${JSON.stringify(schema.default)}\`\n\n`;
   }
   
   return section;

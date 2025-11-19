@@ -19,7 +19,7 @@ Schema for tools generated from OpenAPI specifications.
 | `parameters` | [object](#parameters) | Yes | Parameter definitions extracted from OpenAPI specification |
 | `path` | [string](#path) | Yes | API endpoint path template with {parameter} placeholders |
 | `response_schema` | [object](#response_schema) | Yes | OpenAPI response schema for successful responses (2xx status codes) |
-| `deprecated` | boolean | No | Whether this operation is marked as deprecated in OpenAPI |
+| `deprecated` | [boolean](#deprecated) | No | Whether this operation is marked as deprecated in OpenAPI |
 | `operation_id` | string? | No | Original OpenAPI operationId if present |
 | `security` | array | No | Security requirements from OpenAPI specification |
 | `servers` | [array](#servers) | No | Server information from OpenAPI specification |
@@ -84,7 +84,7 @@ Each property matching this pattern must be an object with:
 | `required` | boolean | Yes | Whether this parameter is required |
 | `type` | [string](#type) | Yes | Parameter data type |
 | `default` | any | No | Default value for optional parameters |
-| `description` | string | No | Human-readable parameter description |
+| `description` | [string](#description) | No | Human-readable parameter description |
 | `enum` | array | No | Allowed values for enumerated parameters |
 | `format` | string | No | OpenAPI format specifier (e.g., 'date-time', 'email') |
 | `items` | object | No | Schema for array items when type is 'array' |
@@ -127,6 +127,15 @@ Where this parameter should be placed in the HTTP request
 - `body`
 
 
+### `parameters.parameters_pattern.description`
+
+**Type:** string
+
+Human-readable parameter description
+
+**Default:** `""`
+
+
 ### `response_schema`
 
 **Type:** object
@@ -167,4 +176,13 @@ Server information from OpenAPI specification
 Base URL for this server
 
 **Format:** uri
+
+
+### `deprecated`
+
+**Type:** boolean
+
+Whether this operation is marked as deprecated in OpenAPI
+
+**Default:** `false`
 

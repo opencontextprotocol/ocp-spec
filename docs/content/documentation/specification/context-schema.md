@@ -23,7 +23,7 @@ Schema for OCP context objects carried in the OCP-Session header.
 | `current_goal` | string? | No | Agent's current objective |
 | `error_context` | string? | No | Error information for debugging |
 | `history` | [array](#history) | No | Chronological record of actions and API calls |
-| `recent_changes` | array | No | Recent changes or modifications (max 10) |
+| `recent_changes` | [array](#recent_changes) | No | Recent changes or modifications (max 10) |
 | `session` | [object](#session) | No | Session tracking information for this context |
 | `user` | string? | No | User identifier |
 | `workspace` | string? | No | Current workspace or project |
@@ -36,6 +36,15 @@ Schema for OCP context objects carried in the OCP-Session header.
 Unique identifier for this context
 
 **Pattern:** `^ocp-[a-f0-9]{8,}$`
+
+
+### `recent_changes`
+
+**Type:** array
+
+Recent changes or modifications (max 10)
+
+**Default:** `[]`
 
 
 ### `session`
@@ -68,7 +77,9 @@ Session start timestamp
 
 Number of interactions in this session
 
-**Range:** -∞ to ∞
+**Minimum:** 0
+
+**Default:** `0`
 
 
 ### `history`
@@ -88,7 +99,7 @@ Chronological record of actions and API calls
 | `action` | string | Yes | Type of action performed |
 | `timestamp` | [string](#timestamp) | Yes | When this action occurred |
 | `api_endpoint` | string? | No | API endpoint called if applicable |
-| `metadata` | object | No | Additional contextual data for this action |
+| `metadata` | [object](#metadata) | No | Additional contextual data for this action |
 | `result` | string? | No | Summary of action result |
 
 
@@ -99,6 +110,15 @@ Chronological record of actions and API calls
 When this action occurred
 
 **Format:** date-time
+
+
+### `history.metadata`
+
+**Type:** object
+
+Additional contextual data for this action
+
+**Default:** `{}`
 
 
 ### `api_specs`
