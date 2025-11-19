@@ -5,50 +5,59 @@ cascade:
   type: docs
 ---
 
-Welcome to the **Open Context Protocol** - the revolutionary way to turn any API into an intelligent agent tool with persistent context.
+Set up OCP and turn any API into hundreds of agent tools in seconds.
 
-## The 4 Superpowers
+## Prerequisites
 
-OCP transforms agent-API interactions through four breakthrough capabilities that work together:
+- Python 3.8+ or Node.js 16+
+- GitHub token for API access
 
-{{< cards >}}
-{{< card title="Context" subtitle="APIs become conversational participants with persistent memory across calls" link="../context/" icon="chat" >}}
-{{< card title="Tool Discovery" subtitle="Instant tool generation from any OpenAPI specification - zero manual work" link="../tools/" icon="cog" >}}
-{{< card title="Registry" subtitle="Pre-indexed API catalog searchable by users and agents" link="../registry/" icon="collection" >}}
-{{< card title="IDE Integration" subtitle="Drop-in VS Code extension for workspace-aware agents" link="../ide/" icon="code" >}}
-{{< /cards >}}
+## Authentication
 
-## What Makes OCP Revolutionary?
+{{< tabs items="Python,JavaScript,VS Code" >}}
 
-### ❌ **The Old Way**
-```python
-# Manual integration hell
-def github_create_issue(owner, repo, title):
-    headers = {"Authorization": f"Bearer {token}"}
-    data = {"title": title}
-    response = requests.post(f"https://api.github.com/repos/{owner}/{repo}/issues", 
-                           headers=headers, json=data)
-    return response.json()
+{{< tab >}}
+Get a GitHub token:
+1. Go to GitHub → Settings → Developer settings → Personal access tokens
+2. Generate a new token with `repo` scope
+3. Save it as environment variable:
 
-# Context lost between calls  
-issues = github_list_issues()      # No context
-commits = github_list_commits()    # No memory
-files = github_list_files()        # No connection
+```bash
+export GITHUB_TOKEN="ghp_your_token_here"
 ```
+{{< /tab >}}
 
-### ✅ **The OCP Way**
-```python
-# Instant tool discovery + persistent context
-agent = ocp.Agent(goal="debug_payment_error", workspace="ecommerce-app")
-github = agent.discover_tools("github")  # 800+ tools instantly
+{{< tab >}}
+Get a GitHub token:
+1. Go to GitHub → Settings → Developer settings → Personal access tokens
+2. Generate a new token with `repo` scope
+3. Save it as environment variable:
 
-# Context flows automatically across all calls
-issues = github.search_issues(q="payment")    # Context: debugging payment in ecommerce-app
-commits = github.list_commits()               # Context: previous search + goal  
-files = github.get_contents(path="payment/")  # Context: full conversation history
+```bash
+export GITHUB_TOKEN="ghp_your_token_here"
 ```
+{{< /tab >}}
 
-## Quick Setup
+{{< tab >}}
+Configure API authentication in VS Code settings:
+1. Open VS Code settings (Cmd/Ctrl + ,)
+2. Search for "ocp"
+3. Add your GitHub token:
+
+```json
+{
+  "ocp.apiAuth": {
+    "github": {
+      "Authorization": "Bearer ghp_your_token_here"
+    }
+  }
+}
+```
+{{< /tab >}}
+
+{{< /tabs >}}
+
+## Installation
 
 {{< tabs items="Python,JavaScript,VS Code" >}}
 
@@ -56,27 +65,11 @@ files = github.get_contents(path="payment/")  # Context: full conversation histo
 ```bash
 pip install ocp-python
 ```
-
-```python
-import ocp
-
-agent = ocp.Agent(workspace="my-project")
-github = agent.discover_tools("github")
-print(f"✅ {len(github.tools)} tools ready!")
-```
 {{< /tab >}}
 
 {{< tab >}}
 ```bash
 npm install @opencontextprotocol/agent
-```
-
-```javascript
-import { Agent } from '@opencontextprotocol/agent';
-
-const agent = new Agent({workspace: "my-project"});
-const github = await agent.discoverTools("github");
-console.log(`✅ ${github.tools.length} tools ready!`);
 ```
 {{< /tab >}}
 
@@ -84,30 +77,71 @@ console.log(`✅ ${github.tools.length} tools ready!`);
 ```bash
 ext install opencontextprotocol.ocp-vscode
 ```
-
-Open VS Code → Extension detects workspace → Agents get instant context + API access
 {{< /tab >}}
 
 {{< /tabs >}}
 
-## Your Learning Path
+## First Usage
 
-Choose your starting point based on what you want to accomplish:
+{{< tabs items="Python,JavaScript,VS Code" >}}
 
-{{< cards >}}
-{{< card link="installation/" title="Installation" subtitle="Set up OCP in your environment" icon="download" >}}
-{{< card link="quick-start/" title="Quick Start" subtitle="Working example in 5 minutes" icon="lightning-bolt" >}}
-{{< card link="learning-paths/" title="Learning Paths" subtitle="Guided journey by user type" icon="academic-cap" >}}
-{{< /cards >}}
+{{< tab >}}
+```python
+import ocp
+import os
+
+# Create agent
+agent = ocp.OCPAgent(workspace="my-project")
+
+# Register GitHub API
+github_spec = agent.register_api("github")
+print(f"{len(github_spec.tools)} tools discovered from GitHub API")
+
+# Use tools with authentication
+headers = {"Authorization": f"Bearer {os.getenv('GITHUB_TOKEN')}"}
+issues = agent.call_tool("github", "search_issues", {"q": "bug"}, headers=headers)
+```
+{{< /tab >}}
+
+{{< tab >}}
+```javascript
+import { OCPAgent } from '@opencontextprotocol/agent';
+
+// Create agent
+const agent = new OCPAgent({workspace: "my-project"});
+
+// Register GitHub API
+const githubSpec = await agent.registerApi("github");
+console.log(`${githubSpec.tools.length} tools discovered from GitHub API`);
+
+// Use tools with authentication
+const headers = {"Authorization": `Bearer ${process.env.GITHUB_TOKEN}`};
+const issues = await agent.callTool("github", "search_issues", {q: "bug"}, {headers});
+```
+{{< /tab >}}
+
+{{< tab >}}
+1. Open VS Code in your project folder
+2. Install the OCP extension (if not already done)
+3. Use Copilot Chat or any AI agent:
+
+```
+@workspace Please use the ocp_registerApi tool to register the GitHub API, then use ocp_listTools to see what's available.
+```
+
+The AI agent will:
+- Register GitHub API (using your configured auth)
+- Show you hundreds of available tools
+- Use tools with full workspace context
+{{< /tab >}}
+
+{{< /tabs >}}
 
 ## Next Steps
 
-**Ready to see OCP in action?** → [⚡ Quick Start](quick-start/)  
-**Want to understand the foundation?** → [🧠 Context](/context/)  
-**Need to set up your environment first?** → [📦 Installation](installation/)
-
----
-
-{{< callout type="info" >}}
-**💡 Pro Tip**: The 4 superpowers are most powerful when used together. Context makes your tools smarter, Registry makes discovery instant, and IDE Integration brings everything into your workflow.
-{{< /callout >}}
+{{< cards >}}
+{{< card link="../tools/" title="Tool Discovery" subtitle="Add your own APIs and discover more tools" icon="cog" >}}
+{{< card link="../examples/" title="Examples" subtitle="Real-world use cases and implementations" icon="book-open" >}}
+{{< card link="../context/" title="Understanding Context" subtitle="How persistent context enhances responses" icon="chat" >}}
+{{< card link="../ide/" title="IDE Integration" subtitle="VS Code workspace integration" icon="code" >}}
+{{< /cards >}}

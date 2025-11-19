@@ -2,12 +2,42 @@
 title: Documentation
 ---
 
+The **Open Context Protocol** turns any API into an intelligent agent tool with persistent context.
+
+## Core Features
+
 {{< cards >}}
-{{< card link="getting-started/" title="Getting Started" subtitle="Installation, quick start, and learning paths" icon="play" >}}
-{{< card link="context/" title="Context" subtitle="Persistent state across API calls" icon="chat" >}}
-{{< card link="tools/" title="Tool Discovery" subtitle="Zero-config API integration" icon="cog" >}}
-{{< card link="registry/" title="Registry" subtitle="Community catalog of APIs" icon="collection" >}}
-{{< card link="ide/" title="IDE Integration" subtitle="Workspace-aware agents" icon="code" >}}
-{{< card link="specification/" title="Specification" subtitle="Technical reference" icon="document-text" >}}
-{{< card link="examples/" title="Examples" subtitle="Real-world implementations" icon="book-open" >}}
+{{< card title="Context" subtitle="Persistent state across API calls" link="context/" icon="chat" >}}
+{{< card title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" link="tools/" icon="cog" >}}
+{{< card title="Registry" subtitle="Pre-indexed API catalog" link="registry/" icon="collection" >}}
+{{< card title="IDE Integration" subtitle="Workspace-aware agents" link="ide/" icon="code" >}}
+{{< /cards >}}
+
+## How It Works
+
+**Without OCP:** Manual API integration, no context between calls
+```python
+# Isolated calls
+issues = github_list_issues()      # No context
+commits = github_list_commits()    # No memory  
+files = github_list_files()        # No connection
+```
+
+**With OCP:** Instant tools + persistent context
+```python
+# Context flows automatically
+agent = ocp.Agent(goal="debug_payment_error", workspace="ecommerce-app")
+github = agent.discover_tools("github")  # 800+ tools instantly
+
+issues = github.search_issues(q="payment")    # Context: debugging payment
+commits = github.list_commits()               # Context: previous search + goal
+files = github.get_contents(path="payment/")   # Context: full history
+```
+
+## Next
+
+Dive into the following section to begin using OCP:
+
+{{< cards >}}
+{{< card link="getting-started/" title="Getting Started" subtitle="Setup and first usage" icon="play" >}}
 {{< /cards >}}
