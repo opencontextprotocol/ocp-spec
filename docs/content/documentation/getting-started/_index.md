@@ -105,25 +105,28 @@ const issues = await agent.callTool('search_issues',
 code --install-extension opencontextprotocol.ocp-vscode-extension
 ```
 
+**Auth Setup:**
+1. Get a GitHub token with `repo` scope
+2. Open VS Code settings in JSON mode  
+3. Search for `ocp` and add your token:
+
+```json
+{
+  "ocp.apiAuth": {
+    "github": {
+      "Authorization": "Bearer ghp_your_token_here"
+    }
+  }
+}
+```
+
 **Quick Start:**
 1. Open VS Code in your project folder
 2. Open any AI chat (Copilot, Cursor, etc.)
 3. Try this prompt:
 
 ```
-Use the ocp_registerApi tool to add the GitHub API. Watch as it auto-discovers hundreds of tools from the OpenAPI spec instantly.
-```
-
-**What happens:**
-- OCP hits the OpenAPI spec URL
-- Automatically converts every endpoint to an agent tool  
-- No manual tool definitions required
-- No containers or proxy servers
-- Direct API integration that just works
-
-Try this prompt:
-```
-Register the GitHub API with ocp_registerApi, then show me the tools you discovered with ocp_listTools.
+Use ocp to register the GitHub API, then show me what tools you discovered.
 ```
 {{< /tab >}}
 
