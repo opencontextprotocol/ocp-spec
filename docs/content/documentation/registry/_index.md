@@ -1,6 +1,6 @@
 ---
 title: "Registry"
-weight: 20
+weight: 3
 cascade:
   type: docs
 ---
@@ -50,8 +50,3 @@ custom = agent.register_api("my-api", "https://api.example.com/openapi.json")  #
 - **Community verified** specifications
 - **Automatic fallback** for custom APIs
 - **Zero configuration** required
-
-{{< cards >}}
-{{< card link="../ide/" title="IDE Integration" subtitle="VS Code extension for AI agents" icon="code" >}}
-{{< card link="../getting-started/" title="Get Started" subtitle="Install and start using OCP" icon="play" >}}
-{{< /cards >}}

@@ -1,6 +1,6 @@
 ---
 title: "Tool Discovery"
-weight: 10
+weight: 2
 cascade:
   type: docs
 ---
@@ -43,9 +43,3 @@ agent.call_tool("create_payment_intent", {"amount": 2000})
 **🎯 Zero Setup**: Works with existing APIs, no infrastructure required
 
 ## Next Steps
-
-{{< cards >}}
-{{< card link="../registry/" title="Registry" subtitle="50ms lookup for popular APIs" icon="collection" >}}
-{{< card link="../ide/" title="IDE Integration" subtitle="VS Code Language Model tools" icon="code" >}}
-{{< card link="../getting-started/" title="Get Started" subtitle="Install and first usage" icon="play" >}}
-{{< /cards >}}

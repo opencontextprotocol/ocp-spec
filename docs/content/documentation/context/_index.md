@@ -1,11 +1,11 @@
 ---
 title: "Context"
-weight: 40
+weight: 5
 cascade:
   type: docs
 ---
 
-HTTP headers that carry agent context across API calls, enabling persistent conversations without server infrastructure.
+HTTP headers that carry agent context across API calls, enabling persistent conversations.
 
 ## What It Is
 
@@ -46,8 +46,3 @@ OCP-Workspace: my-project
 - **Workspace awareness** for better responses  
 - **Zero infrastructure** - just HTTP headers
 - **Cross-API workflows** with shared state
-
-{{< cards >}}
-{{< card link="../tools/" title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" icon="cog" >}}
-{{< card link="../getting-started/" title="Get Started" subtitle="Install and start using OCP" icon="play" >}}
-{{< /cards >}}

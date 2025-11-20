@@ -1,6 +1,6 @@
 ---
 title: "IDE Integration"
-weight: 30
+weight: 4
 cascade:
   type: docs
 ---
@@ -52,8 +52,3 @@ Install the OCP extension in VS Code, and every chat agent automatically gets ac
 - **Secure**: API keys in settings, not exposed to agents  
 - **Instant**: Zero configuration, works immediately
 - **Contextual**: Tools know your current workspace
-
-{{< cards >}}
-{{< card link="../context/" title="Context Protocol" subtitle="HTTP headers for persistent state" icon="chat" >}}
-{{< card link="../getting-started/" title="Get Started" subtitle="Install and start using OCP" icon="play" >}}
-{{< /cards >}}

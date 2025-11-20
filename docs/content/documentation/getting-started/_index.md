@@ -142,6 +142,8 @@ Use ocp to register the GitHub API, then show me what tools you discovered.
 
 ## Next Steps
 
+Dive into the following sections to learn more about OCP:
+
 {{< cards >}}
 {{< card link="../examples/" title="More Examples" subtitle="Stripe, Slack, and other real-world integrations" icon="book-open" >}}
 {{< card link="../tools/" title="Add Any API" subtitle="Turn any OpenAPI spec into agent tools" icon="cog" >}}

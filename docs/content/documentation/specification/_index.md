@@ -1,7 +1,7 @@
 ---
 title: Open Context Protocol v1.0
 linkTitle: Specification
-weight: 6
+weight: 7
 cascade:
   type: docs
 ---

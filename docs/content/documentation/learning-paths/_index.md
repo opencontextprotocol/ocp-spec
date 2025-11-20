@@ -1,6 +1,6 @@
 ---
 title: Learning Paths
-weight: 3
+weight: 6
 ---
 
 Choose your learning path based on your role and goals. Each path is designed to get you productive with OCP as quickly as possible.
