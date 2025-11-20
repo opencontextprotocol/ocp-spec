@@ -1,5 +1,5 @@
 ---
-title: "Registry"
+title: "API Registry"
 weight: 3
 cascade:
   type: docs
