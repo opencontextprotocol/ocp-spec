@@ -134,19 +134,17 @@ Use ocp to register the GitHub API, then show me what tools you discovered.
 
 ## What You Just Did
 
-🤯 **Auto Tool Discovery**: One API registration = hundreds of tools instantly available.
-
-⚡ **Direct Integration**: OCP talks directly to APIs using their OpenAPI specs.
-
-🔧 **Zero Setup**: No servers, no containers, no infrastructure required.
+- 🤯 **Auto Tool Discovery**: One API registration = hundreds of tools instantly available.
+- ⚡ **Direct Integration**: OCP talks directly to APIs using their OpenAPI specs.
+- 🔧 **Zero Setup**: No servers, no containers, no infrastructure required.
 
 ## Next Steps
 
 Dive into the following sections to learn more about OCP:
 
 {{< cards >}}
-{{< card link="../tools/" title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" icon="cog" >}}
-{{< card link="../registry/" title="Registry" subtitle="Fast lookup for popular APIs" icon="collection" >}}
-{{< card link="../ide/" title="IDE Integration" subtitle="VS Code extension for AI agents" icon="code" >}}
-{{< card link="../context/" title="Context Protocol" subtitle="HTTP headers for persistent state" icon="chat" >}}
+{{< card link="../tool-discovery/" title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" icon="cog" >}}
+{{< card link="../api-registry/" title="API Registry" subtitle="Fast lookup for popular APIs" icon="collection" >}}
+{{< card link="../ide-integration/" title="IDE Integration" subtitle="VS Code extension for AI agents" icon="code" >}}
+{{< card link="../agent-context/" title="Agent Context" subtitle="HTTP headers for persistent state" icon="chat" >}}
 {{< /cards >}}

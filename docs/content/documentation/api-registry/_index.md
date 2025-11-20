@@ -5,16 +5,11 @@ cascade:
   type: docs
 ---
 
-Community-maintained registry for instant API tool discovery - 50ms vs 2-5 seconds.
+Community-maintained registry for instant API tool discovery.
 
 ## What It Is
 
-The registry pre-indexes popular OpenAPI specs so agents get tools instantly instead of waiting for spec parsing.
-
-**Performance:**
-- **Registry lookup**: 50ms for GitHub, Stripe, Slack, etc.
-- **Direct OpenAPI**: 2-5 seconds for custom APIs
-- **Fallback**: Registry → OpenAPI parsing automatically
+The registry pre-indexes popular OpenAPI specs so agents get tools instantly.
 
 ```python
 from ocp_agent import OCPAgent
@@ -22,11 +17,11 @@ from ocp_agent import OCPAgent
 agent = OCPAgent()
 
 # Fast registry lookup
-github = agent.register_api("github")    # 50ms → 800+ tools
-stripe = agent.register_api("stripe")    # 50ms → 300+ tools
+github = agent.register_api("github")   # → 800+ tools
+stripe = agent.register_api("stripe")   # → 300+ tools
 
 # Falls back to direct OpenAPI parsing
-custom = agent.register_api("my-api", "https://api.example.com/openapi.json")  # 2-5s
+custom = agent.register_api("my-api", "https://api.example.com/openapi.json")
 ```
 
 ## Popular APIs
@@ -38,11 +33,9 @@ custom = agent.register_api("my-api", "https://api.example.com/openapi.json")  #
 
 ## How It Works
 
-**Community Maintained**: Popular APIs are pre-indexed and verified by the community.
-
-**Automatic Fallback**: If API not in registry, automatically fetches and parses OpenAPI spec.
-
-**Optional**: Registry is just a speed optimization - OCP works without it.
+- **Community Maintained**: Popular APIs are pre-indexed and verified by the community.
+- **Automatic Fallback**: If API not in registry, fetches and parses OpenAPI spec.
+- **Optional**: Registry provides speed and convenience.. OCP works without it.
 
 ## Benefits
 

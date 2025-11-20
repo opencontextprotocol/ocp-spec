@@ -5,11 +5,11 @@ cascade:
   type: docs
 ---
 
-VS Code extension that gives any AI agent access to OCP's tool discovery capabilities.
+VS Code extension that gives any AI agent access to OCP's capabilities.
 
 ## What It Does
 
-Install the OCP extension in VS Code, and every chat agent automatically gets access to hundreds of API tools.
+Install the OCP extension in VS Code, and every chat agent automatically gets access to hundreds of API tools and persistent context.
 
 **For Users:**
 - Install extension once
@@ -23,14 +23,12 @@ Install the OCP extension in VS Code, and every chat agent automatically gets ac
 
 ## How It Works
 
-**Language Model API**: Extension registers 5 tools that any VS Code AI agent can use:
+Extension registers 5 tools that any VS Code AI agent can use:
 - `ocp_registerApi` - Register GitHub, Stripe, etc.
 - `ocp_listTools` - See available tools
 - `ocp_callTool` - Execute any tool
 - `ocp_searchTools` - Find tools by name
 - `ocp_getContext` - Get workspace info
-
-**Workspace Context**: Extension automatically provides current workspace, user, and project context to all tools.
 
 ## Setup
 
@@ -44,7 +42,7 @@ Install the OCP extension in VS Code, and every chat agent automatically gets ac
      }
    }
    ```
-3. **Use**: Chat with any AI agent - they now have access to hundreds of API tools
+3. **Use**: Chat with any AI agent.. they now have access to thousands of API tools
 
 ## Benefits
 

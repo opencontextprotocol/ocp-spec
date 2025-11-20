@@ -1,5 +1,5 @@
 ---
-title: "Context"
+title: "Agent Context"
 weight: 5
 cascade:
   type: docs
@@ -32,13 +32,10 @@ OCP-Workspace: my-project
 
 ## How It Works
 
-**Automatic**: OCP agents add headers to all API calls automatically.
-
-**Persistent**: Same context ID flows through entire conversation.
-
-**Compatible**: Works with any existing HTTP API immediately.
-
-**Stateful**: Enables multi-step workflows across different APIs.
+- **Automatic**: OCP agents add headers to all API calls automatically.
+- **Persistent**: Same context ID flows through entire conversation.
+- **Compatible**: Works with any existing HTTP API immediately.
+- **Stateful**: Enables multi-step workflows across different APIs.
 
 ## Benefits
 
