@@ -22,6 +22,10 @@ pip install open-context-agent
 **Quick Start:**
 ```python
 from ocp_agent import OCPAgent
+import os
+
+# Set your GitHub token
+os.environ['GITHUB_TOKEN'] = 'ghp_your_token_here'
 
 # Create an agent with workspace context
 agent = OCPAgent(
@@ -34,9 +38,9 @@ api_spec = agent.register_api(
     name="github", 
     spec_url="https://api.github.com/openapi.json"
 )
-print(f"🚀 Auto-discovered {len(api_spec.tools)} GitHub tools from OpenAPI spec!")
+print(f"🚀 Auto-discovered {len(api_spec.tools)} tools!")
 
-# That's it. No manual tool definitions, no containers, no proxy servers.
+# That's it. No manual tool definitions, no proxy servers.
 # You now have access to the entire GitHub API as agent tools.
 
 # List some tools
@@ -44,19 +48,9 @@ tools = agent.list_tools("github")
 print(f"Available: {[tool.name for tool in tools[:5]]}...")
 
 # Call any tool
-issues = agent.call_tool("search_issues", {"q": "bug in:readme"})
-```
-
-**With Authentication:**
-```python
-import os
-# Set your GitHub token
-os.environ['GITHUB_TOKEN'] = 'ghp_your_token_here'
-
-# Or pass headers directly when calling tools
-result = agent.call_tool("search_issues", 
-    {"q": "bug"}, 
-    headers={"Authorization": f"token {os.getenv('GITHUB_TOKEN')}"})
+issues = agent.call_tool("search_issues",
+    {"q": "bug in:readme"},
+    headers={"Authorization": f"token {os.getenv('GITHUB_TOKEN')}"}))
 ```
 {{< /tab >}}
 
@@ -72,6 +66,9 @@ npm install @opencontextprotocol/agent
 ```typescript
 import { OCPAgent } from '@opencontextprotocol/agent';
 
+// Set environment variable
+process.env.GITHUB_TOKEN = 'ghp_your_token_here';
+
 // Create an agent with workspace context
 const agent = new OCPAgent(
     'api_explorer',
@@ -84,9 +81,9 @@ const apiSpec = await agent.registerApi(
     'github',
     'https://api.github.com/openapi.json'
 );
-console.log(`🚀 Auto-discovered ${apiSpec.tools.length} GitHub tools from OpenAPI spec!`);
+console.log(`🚀 Auto-discovered ${apiSpec.tools.length} tools!`);
 
-// That's it. No manual tool definitions, no containers, no proxy servers.
+// That's it. No manual tool definitions, no proxy servers.
 // You now have access to the entire GitHub API as agent tools.
 
 // List some tools
@@ -94,17 +91,8 @@ const tools = agent.listTools('github');
 console.log(`Available: ${tools.slice(0, 5).map(t => t.name).join(', ')}...`);
 
 // Call any tool
-const issues = await agent.callTool('search_issues', {q: 'bug in:readme'});
-```
-
-**With Authentication:**
-```typescript
-// Set environment variable
-process.env.GITHUB_TOKEN = 'ghp_your_token_here';
-
-// Or pass headers when calling tools
-const result = await agent.callTool('search_issues', 
-    {q: 'bug'}, 
+const issues = await agent.callTool('search_issues',
+    {q: 'bug in:readme'},
     {headers: {'Authorization': `token ${process.env.GITHUB_TOKEN}`}});
 ```
 {{< /tab >}}
