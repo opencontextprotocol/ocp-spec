@@ -41,5 +41,3 @@ agent.call_tool("create_payment_intent", {"amount": 2000})
 **⚡ Registry Speed**: 50ms lookup vs 2-5 seconds for popular APIs  
 **✅ Auto Validation**: Parameters validated against schemas  
 **🎯 Zero Setup**: Works with existing APIs, no infrastructure required
-
-## Next Steps

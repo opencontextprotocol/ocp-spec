@@ -145,7 +145,8 @@ Use ocp to register the GitHub API, then show me what tools you discovered.
 Dive into the following sections to learn more about OCP:
 
 {{< cards >}}
-{{< card link="../examples/" title="More Examples" subtitle="Stripe, Slack, and other real-world integrations" icon="book-open" >}}
-{{< card link="../tools/" title="Add Any API" subtitle="Turn any OpenAPI spec into agent tools" icon="cog" >}}
-{{< card link="../context/" title="Context Deep Dive" subtitle="How workspace context enhances tool responses" icon="chat" >}}
+{{< card link="../tools/" title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" icon="cog" >}}
+{{< card link="../registry/" title="Registry" subtitle="Fast lookup for popular APIs" icon="collection" >}}
+{{< card link="../ide/" title="IDE Integration" subtitle="VS Code extension for AI agents" icon="code" >}}
+{{< card link="../context/" title="Context Protocol" subtitle="HTTP headers for persistent state" icon="chat" >}}
 {{< /cards >}}
