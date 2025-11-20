@@ -8,9 +8,9 @@ Turn any OpenAPI spec into hundreds of agent tools instantly.
 
 {{< cards >}}
 {{< card title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" link="tools/" icon="cog" >}}
-{{< card title="HTTP Context" subtitle="Persistent state across API calls" link="context/" icon="chat" >}}
-{{< card title="Marketplace" subtitle="Pre-indexed API catalog" link="registry/" icon="collection" >}}
-{{< card title="IDE Integration" subtitle="Workspace-aware agents" link="ide/" icon="code" >}}
+{{< card title="Registry" subtitle="Pre-indexed API catalog for speed" link="registry/" icon="collection" >}}
+{{< card title="IDE Integration" subtitle="VS Code Language Model tools" link="ide/" icon="code" >}}
+{{< card title="Context Protocol" subtitle="HTTP headers for state sharing" link="context/" icon="chat" >}}
 {{< /cards >}}
 
 ## How It Works
@@ -20,22 +20,23 @@ from ocp_agent import OCPAgent
 
 agent = OCPAgent(workspace="ecommerce-app")
 
-# Registry lookup + instant tool discovery
-github_api = agent.register_api("github")           # 800+ tools from registry
-stripe_api = agent.register_api("stripe")           # 300+ tools from registry
+# Tool Discovery: OpenAPI → hundreds of tools automatically
+github_api = agent.register_api("github")           # 50ms registry lookup → 800+ tools
+stripe_api = agent.register_api("stripe")           # 50ms registry lookup → 300+ tools
 
-# Use any tool with auth + context automatically
-issues = agent.call_tool("search_issues", {"q": "payment"}, 
-                        headers={"Authorization": f"token {github_token}"})
-payment = agent.call_tool("create_payment_intent", {"amount": 2000},
-                         headers={"Authorization": f"Bearer {stripe_key}"})
+# Or discover directly from OpenAPI spec (2-5 seconds)
+custom_api = agent.register_api("my-api", "https://api.example.com/openapi.json")
+
+# Use any discovered tool with automatic context injection
+issues = agent.call_tool("search_issues", {"q": "payment bug"})
+payment = agent.call_tool("create_payment_intent", {"amount": 2000})
 ```
 
-**The Magic:**
-- 🔥 **Registry Integration**: Just name the API → get instant access
-- 🚀 **Auto Tool Discovery**: Hundreds of tools from OpenAPI specs automatically  
-- 🧠 **Workspace Context**: Every tool call knows your project context
-- 🔐 **Simple Auth**: Pass headers inline, no complex setup
+**The Value:**
+- 🔥 **Instant Tools**: OpenAPI specs become hundreds of callable tools automatically  
+- 🚀 **Registry Speed**: 50ms lookup vs 2-5 seconds for popular APIs
+- 🧠 **Smart Context**: HTTP headers carry state across all tool calls
+- 🔐 **Simple Integration**: Works with existing APIs, no server setup required
 
 ## Next
 
