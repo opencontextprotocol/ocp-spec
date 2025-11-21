@@ -88,28 +88,21 @@ menu:
         icon: github
 
   sidebar:
-    # Resources section for documentation
-    - identifier: resources
-      name: "Resources"
+    # External links
+    - identifier: github-links  
+      name: "GitHub"
       params:
         type: separator
       weight: 100
     - name: "JSON Schemas ↗"
       url: "https://github.com/opencontextprotocol/specification/tree/main/schemas"
       weight: 101
-      
-    # External links
-    - identifier: github-links  
-      name: "GitHub Libraries"
-      params:
-        type: separator
-      weight: 102
     - name: "Python Library ↗"
       url: "https://github.com/opencontextprotocol/ocp-python"
-      weight: 103
+      weight: 102
     - name: "JavaScript Library ↗"
       url: "https://github.com/opencontextprotocol/ocp-javascript"
-      weight: 104
+      weight: 103
     - name: "VS Code Extension ↗"
       url: "https://github.com/opencontextprotocol/ocp-vscode"
-      weight: 105
+      weight: 104

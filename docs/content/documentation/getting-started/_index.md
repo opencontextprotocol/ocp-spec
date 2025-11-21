@@ -5,7 +5,7 @@ cascade:
   type: docs
 ---
 
-Turn any OpenAPI spec into hundreds of agent tools in seconds.
+Turn any OpenAPI spec into hundreds of agent tools with persistent context.
 
 ## Installation & Quick Start
 

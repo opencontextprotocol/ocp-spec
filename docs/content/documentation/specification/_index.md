@@ -6,11 +6,9 @@ cascade:
   type: docs
 ---
 
-The Open Context Protocol (OCP) is a specification for maintaining persistent context across HTTP API calls using standard HTTP headers and automatically discovering tools from OpenAPI specifications.
+Open Context Protocol (OCP) is a spec for automatically discovering tools from OpenAPI definitions, and maintaining persistent context across API calls using HTTP headers.
 
-## Protocol Definition
-
-### HTTP Headers
+## Context Protocol
 
 OCP uses standard HTTP headers to transmit context information between agents and APIs.
 
@@ -67,7 +65,9 @@ OCP-Version: 1.0
 
 ### Context Schema
 
+{{< callout type="info" >}}
 The `OCP-Session` header contains a JSON object that MUST conform to the [Context Schema](context-schema). See the schema for detailed field definitions, validation rules, and examples.
+{{< /callout >}}
 
 ### Encoding Requirements
 
@@ -85,33 +85,6 @@ The `OCP-Session` header contains a JSON object that MUST conform to the [Contex
 
 ---
 
-## Compatibility Levels
-
-{{< callout type="info" >}}
-APIs can declare OCP support using extensions defined in the [OpenAPI Extensions Schema](openapi-extensions-schema).
-{{< /callout >}}
-
-### Level 1: Context-Aware
-
-APIs receive OCP headers but do not modify their behavior. Context management is entirely client-side.
-
-**Requirements:**
-- Accept OCP headers without errors
-- Process requests normally regardless of OCP header presence
-- Optionally log context for debugging (respecting privacy)
-
-### Level 2: Context-Enhanced
-
-APIs read OCP context and provide enhanced, context-aware responses.
-
-**Requirements:**
-- Parse and validate OCP context
-- Modify responses based on context (when appropriate)
-- Include context-aware information in responses
-- Support OCP OpenAPI extensions for behavior specification
-
----
-
 ## Schema Discovery
 
 ### Tool Generation from OpenAPI
@@ -120,7 +93,9 @@ OCP implementations MUST be able to parse OpenAPI 3.0+ specifications and genera
 
 #### Tool Schema Definition
 
+{{< callout type="info" >}}
 Each discovered tool MUST conform to the [Tool Schema](tool-schema). See the schema for complete parameter definitions, validation rules, and examples.
+{{< /callout >}}
 
 #### Deterministic Naming
 
@@ -158,6 +133,31 @@ Implementations MUST:
 - Provide clear error messages for invalid specifications
 
 ---
+
+## Compatibility Levels
+
+{{< callout type="info" >}}
+APIs can declare OCP support using extensions defined in the [OpenAPI Extensions Schema](openapi-extensions-schema).
+{{< /callout >}}
+
+### Level 1: Context-Aware
+
+APIs receive OCP headers but do not modify their behavior. Context management is entirely client-side.
+
+**Requirements:**
+- Accept OCP headers without errors
+- Process requests normally regardless of OCP header presence
+- Optionally log context for debugging (respecting privacy)
+
+### Level 2: Context-Enhanced
+
+APIs read OCP context and provide enhanced, context-aware responses.
+
+**Requirements:**
+- Parse and validate OCP context
+- Modify responses based on context (when appropriate)
+- Include context-aware information in responses
+- Support OCP OpenAPI extensions for behavior specification
 
 ## Implementation Requirements
 
