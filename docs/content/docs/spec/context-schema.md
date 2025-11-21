@@ -1,6 +1,8 @@
 ---
 title: Context Schema
 weight: 1
+prev: /docs/spec/
+next: /docs/spec/tool-schema/
 cascade:
   type: docs
 ---

@@ -1,6 +1,8 @@
 ---
 title: Tool Schema
 weight: 2
+prev: /docs/spec/context-schema/
+next: /docs/spec/openapi-extensions-schema/
 cascade:
   type: docs
 ---

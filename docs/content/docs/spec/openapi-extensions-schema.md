@@ -1,6 +1,8 @@
 ---
 title: OpenAPI Schema
 weight: 3
+prev: /docs/spec/tool-schema/
+next: /docs/examples/
 cascade:
   type: docs
 ---

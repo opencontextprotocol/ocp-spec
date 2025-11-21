@@ -75,13 +75,91 @@ function parseProperty(name, prop, required = []) {
   };
 }
 
+function generateNavigation(weight) {
+  // Read the parent spec page weight dynamically
+  const specIndexPath = path.join(OUTPUT_DIR, '_index.md');
+  
+  if (!fs.existsSync(specIndexPath)) {
+    throw new Error(`Spec index file not found at ${specIndexPath}`);
+  }
+  
+  const specContent = fs.readFileSync(specIndexPath, 'utf8');
+  const specWeightMatch = specContent.match(/weight:\s*(\d+)/);
+  
+  if (!specWeightMatch) {
+    throw new Error(`Weight not found in spec index file at ${specIndexPath}. Weight must be set in frontmatter.`);
+  }
+  
+  const specWeight = parseInt(specWeightMatch[1]);
+  
+  // Find the next section after spec by scanning all docs pages
+  const docsDir = path.join(__dirname, 'content', 'docs');
+  const docsSections = fs.readdirSync(docsDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => {
+      const indexPath = path.join(docsDir, dirent.name, '_index.md');
+      if (fs.existsSync(indexPath)) {
+        const content = fs.readFileSync(indexPath, 'utf8');
+        const weightMatch = content.match(/weight:\s*(\d+)/);
+        return {
+          name: dirent.name,
+          weight: weightMatch ? parseInt(weightMatch[1]) : 999
+        };
+      }
+      return null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.weight - b.weight);
+  
+  const nextSectionAfterSpec = docsSections.find(section => section.weight > specWeight);
+  
+  // Sort schema configs by weight to find prev/next
+  const sortedConfigs = SCHEMA_CONFIGS.sort((a, b) => a.weight - b.weight);
+  const currentIndex = sortedConfigs.findIndex(config => config.weight === weight);
+  
+  let navigation = '';
+  
+  // Previous page
+  if (weight === 1) {
+    // First page: prev is always the parent spec page
+    navigation += '\nprev: /docs/spec/';
+  } else {
+    // Find previous page by weight
+    const prevConfig = sortedConfigs[currentIndex - 1];
+    if (prevConfig) {
+      const prevSlug = prevConfig.outputFile.replace('.md', '/');
+      navigation += `\nprev: /docs/spec/${prevSlug}`;
+    }
+  }
+  
+  // Next page
+  if (currentIndex === sortedConfigs.length - 1) {
+    // Last page: next is the section after spec
+    if (nextSectionAfterSpec) {
+      navigation += `\nnext: /docs/${nextSectionAfterSpec.name}/`;
+    }
+  } else {
+    // Find next page by weight
+    const nextConfig = sortedConfigs[currentIndex + 1];
+    if (nextConfig) {
+      const nextSlug = nextConfig.outputFile.replace('.md', '/');
+      navigation += `\nnext: /docs/spec/${nextSlug}`;
+    }
+  }
+  
+  return navigation;
+}
+
 function generateSchemaMarkdown(config) {
   const schemaPath = path.join(SCHEMAS_DIR, config.file);
   const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
   
+  // Generate next/prev navigation based on weight
+  const navigation = generateNavigation(config.weight);
+  
   let markdown = `---
 title: ${config.title}
-weight: ${config.weight}
+weight: ${config.weight}${navigation}
 cascade:
   type: docs
 ---
