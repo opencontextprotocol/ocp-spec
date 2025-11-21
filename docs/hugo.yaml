@@ -34,6 +34,9 @@ params:
     enable: true
     displayCopyright: true
     displayPoweredBy: true
+  theme:
+    default: system
+    displayToggle: true
 
 markup:
   goldmark:
