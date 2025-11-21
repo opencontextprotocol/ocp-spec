@@ -8,10 +8,10 @@ Turn any OpenAPI spec into hundreds of agent tools instantly.
 ## Core Features
 
 {{< cards >}}
-{{< card title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" link="tools/" icon="cog" >}}
-{{< card title="Registry" subtitle="Pre-indexed API catalog for speed" link="registry/" icon="collection" >}}
-{{< card title="IDE Integration" subtitle="VS Code Language Model tools" link="ide/" icon="code" >}}
-{{< card title="Context Protocol" subtitle="HTTP headers for state sharing" link="context/" icon="chat" >}}
+{{< card title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" link="tool-discovery/" icon="cog" >}}
+{{< card title="Registry" subtitle="Pre-indexed API catalog for speed" link="api-registry/" icon="collection" >}}
+{{< card title="IDE Integration" subtitle="VS Code Language Model tools" link="ide-integration/" icon="code" >}}
+{{< card title="Context Protocol" subtitle="HTTP headers for state sharing" link="agent-context/" icon="chat" >}}
 {{< /cards >}}
 
 ## How It Works

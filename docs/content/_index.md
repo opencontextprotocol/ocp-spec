@@ -16,15 +16,15 @@ layout: "hextra-home"
   Automatic tool discovery with persistent context <br/> using only HTTP headers and open standards.
 {{< /hextra/hero-subtitle >}}
 
-{{< hextra/hero-button text="Get Started" link="documentation/getting-started/" style="margin-bottom: 1.5rem;" >}}
+{{< hextra/hero-button text="Get Started" link="docs/getting-started/" style="margin-bottom: 1.5rem;" >}}
 
 <div class="hx:mt-6"></div>
 
 {{< hextra/feature-grid >}}
-{{< hextra/feature-card title="Context" subtitle="Enabling APIs to become conversational participants in the agent workflow." link="documentation/context/" action="Learn Context" icon="chat" >}}
-{{< hextra/feature-card title="Tool Discovery" subtitle="Automatic tool generation via OpenAPI specifications.. zero integration required." link="documentation/tools/" action="Discover Tools" icon="cog" >}}
-{{< hextra/feature-card title="Community Registry" subtitle="Pre-indexed APIs searchable by users and agents for instant tool discovery." link="documentation/registry/" action="Browse APIs" icon="collection" >}}
-{{< hextra/feature-card title="IDE Integration" subtitle="Drop-in VS Code extension that empowers chat agents with all OCP capabilities." link="documentation/ide/" action="Install Extension" icon="code" >}}
-{{< hextra/feature-card title="Open Standards" subtitle="Built on HTTP, OpenAPI, and JSON. Works with existing APIs without modification." link="documentation/specification/" action="Read Spec" icon="globe" >}}
-{{< hextra/feature-card title="Immediate Compatibility" subtitle="Level 1 compatibility works today. Level 2 enables context-aware API responses." link="documentation/specification/protocol/compatibility/" action="Learn Compatibility" icon="check" >}}
+{{< hextra/feature-card title="Tool Discovery" subtitle="Automatic tool generation via OpenAPI specifications.. zero integration required." link="docs/tool-discovery/" action="Discover Tools" icon="cog" >}}
+{{< hextra/feature-card title="Community Registry" subtitle="Pre-indexed APIs searchable by users and agents for instant tool discovery." link="docs/api-registry/" action="Browse APIs" icon="collection" >}}
+{{< hextra/feature-card title="IDE Integration" subtitle="Drop-in VS Code extension that empowers chat agents with all OCP capabilities." link="docs/ide-integration/" action="Install Extension" icon="code" >}}
+{{< hextra/feature-card title="Context" subtitle="Enabling APIs to become conversational participants in the agent workflow." link="docs/agent-context/" action="Learn Context" icon="chat" >}}
+{{< hextra/feature-card title="Open Standards" subtitle="Built on HTTP, OpenAPI, and JSON. Works with existing APIs without modification." link="docs/spec/" action="Read Spec" icon="globe" >}}
+{{< hextra/feature-card title="Immediate Compatibility" subtitle="Level 1 compatibility works today. Level 2 enables context-aware API responses." link="/docs/spec/#compatibility-levels" action="Learn Compatibility" icon="check" >}}
 {{< /hextra/feature-grid >}}
