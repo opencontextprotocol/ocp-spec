@@ -1,6 +1,6 @@
 ---
 title: OpenAPI Schema
-weight: 9
+weight: 3
 cascade:
   type: docs
 ---

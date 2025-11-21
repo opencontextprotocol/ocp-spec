@@ -1,5 +1,7 @@
 ---
 title: "Agent Context"
+next: /docs/spec
+prev: /docs/ide-integration
 weight: 5
 cascade:
   type: docs

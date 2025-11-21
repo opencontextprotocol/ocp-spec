@@ -1,5 +1,6 @@
 ---
-title: Documentation
+title: Introduction
+linkTItle: Documentation
 ---
 
 Turn any OpenAPI spec into hundreds of agent tools instantly.

@@ -1,6 +1,6 @@
 ---
 title: Context Schema
-weight: 7
+weight: 1
 cascade:
   type: docs
 ---

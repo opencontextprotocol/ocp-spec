@@ -1,5 +1,7 @@
 ---
 title: "IDE Integration"
+next: /docs/agent-context
+prev: /docs/api-registry
 weight: 4
 cascade:
   type: docs

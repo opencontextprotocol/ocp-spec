@@ -1,6 +1,6 @@
 ---
 title: Tool Schema
-weight: 8
+weight: 2
 cascade:
   type: docs
 ---

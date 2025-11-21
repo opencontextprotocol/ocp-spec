@@ -1,5 +1,7 @@
 ---
 title: "API Registry"
+next: /docs/ide-integration
+prev: /docs/tool-discovery
 weight: 3
 cascade:
   type: docs

@@ -1,7 +1,9 @@
 ---
 title: Open Context Protocol v1.0
 linkTitle: Specification
-weight: 7
+next: /docs/spec/context-schema
+prev: /docs/agent-context
+weight: 6
 cascade:
   type: docs
 ---

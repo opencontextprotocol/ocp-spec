@@ -1,6 +1,8 @@
 ---
 title: Getting Started
 weight: 1
+next: /docs/tool-discovery
+prev: /docs
 cascade:
   type: docs
 ---

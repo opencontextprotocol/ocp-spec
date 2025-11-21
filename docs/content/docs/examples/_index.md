@@ -1,6 +1,7 @@
 ---
 title: Examples
-weight: 8
+prev: /docs/spec
+weight: 7
 cascade:
   type: docs
 ---

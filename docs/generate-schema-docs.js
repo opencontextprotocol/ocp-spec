@@ -5,7 +5,7 @@ const path = require('path');
 
 // Configuration
 const SCHEMAS_DIR = path.join(__dirname, '..', 'schemas');
-const OUTPUT_DIR = path.join(__dirname, 'content', 'documentation', 'specification');
+const OUTPUT_DIR = path.join(__dirname, 'content', 'docs', 'spec');
 
 // Schema file mappings
 const SCHEMA_CONFIGS = [
@@ -13,21 +13,21 @@ const SCHEMA_CONFIGS = [
     file: 'ocp-context.json',
     outputFile: 'context-schema.md',
     title: 'Context Schema',
-    weight: 7,
+    weight: 1,
     description: 'Schema for OCP context objects carried in the OCP-Session header.'
   },
   {
     file: 'ocp-tool.json',
     outputFile: 'tool-schema.md', 
     title: 'Tool Schema',
-    weight: 8,
+    weight: 2,
     description: 'Schema for tools generated from OpenAPI specifications.'
   },
   {
     file: 'ocp-openapi-extensions.json',
     outputFile: 'openapi-extensions-schema.md',
     title: 'OpenAPI Schema',
-    weight: 9,
+    weight: 3,
     description: 'Schema for OCP extensions in OpenAPI specifications.'
   }
 ];

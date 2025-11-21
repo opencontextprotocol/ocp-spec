@@ -1,5 +1,7 @@
 ---
 title: "Tool Discovery"
+next: /docs/api-registry
+prev: /docs/getting-started
 weight: 2
 cascade:
   type: docs
