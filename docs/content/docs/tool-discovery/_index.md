@@ -15,8 +15,8 @@ from ocp_agent import OCPAgent
 agent = OCPAgent()
 
 # One spec → 800+ instant tools
-github = agent.register_api("github")   # ms from registry
-stripe = agent.register_api("stripe")   # ms from registry  
+github = agent.register_api("github")   # fast lookup from registry
+stripe = agent.register_api("stripe")   # fast lookup from registry  
 
 # Each endpoint becomes callable
 agent.call_tool("search_issues", {"q": "bug"})
@@ -33,6 +33,6 @@ agent.call_tool("create_payment_intent", {"amount": 2000})
 ## Benefits
 
 **🔥 Instant Tools**: Any OpenAPI spec becomes hundreds of callable tools  
-**⚡ Registry Speed**: 50ms lookup vs 2-5 seconds for popular APIs  
+**⚡ Registry Speed**: Huge library of popular APIs pre-indexed for fast lookup
 **✅ Auto Validation**: Parameters validated against schemas  
 **🎯 Zero Setup**: Works with existing APIs, no infrastructure required

@@ -22,8 +22,8 @@ from ocp_agent import OCPAgent
 agent = OCPAgent(workspace="ecommerce-app")
 
 # Tool Discovery: OpenAPI → hundreds of tools automatically
-github_api = agent.register_api("github")           # 50ms registry lookup → 800+ tools
-stripe_api = agent.register_api("stripe")           # 50ms registry lookup → 300+ tools
+github_api = agent.register_api("github")   # fast registry lookup → 800+ tools
+stripe_api = agent.register_api("stripe")   # fast registry lookup → 300+ tools
 
 # Or discover directly from OpenAPI spec (2-5 seconds)
 custom_api = agent.register_api("my-api", "https://api.example.com/openapi.json")
@@ -35,7 +35,7 @@ payment = agent.call_tool("create_payment_intent", {"amount": 2000})
 
 **The Value:**
 - 🔥 **Instant Tools**: OpenAPI specs become hundreds of callable tools automatically  
-- 🚀 **Registry Speed**: 50ms lookup vs 2-5 seconds for popular APIs
+- 🚀 **Registry Speed**: Huge library of popular APIs pre-indexed for fast lookup
 - 🧠 **Smart Context**: HTTP headers carry state across all tool calls
 - 🔐 **Simple Integration**: Works with existing APIs, no server setup required
 
