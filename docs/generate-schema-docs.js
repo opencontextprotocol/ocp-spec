@@ -5,7 +5,7 @@ const path = require('path');
 
 // Configuration
 const SCHEMAS_DIR = path.join(__dirname, '..', 'schemas');
-const OUTPUT_DIR = path.join(__dirname, 'content', 'docs', 'spec');
+const OUTPUT_DIR = path.join(__dirname, 'content', 'docs', 'specs');
 
 // Schema file mappings
 const SCHEMA_CONFIGS = [
@@ -122,13 +122,13 @@ function generateNavigation(weight) {
   // Previous page
   if (weight === 1) {
     // First page: prev is always the parent spec page
-    navigation += '\nprev: /docs/spec/';
+    navigation += '\nprev: /docs/specs/';
   } else {
     // Find previous page by weight
     const prevConfig = sortedConfigs[currentIndex - 1];
     if (prevConfig) {
       const prevSlug = prevConfig.outputFile.replace('.md', '/');
-      navigation += `\nprev: /docs/spec/${prevSlug}`;
+      navigation += `\nprev: /docs/specs/${prevSlug}`;
     }
   }
   
@@ -143,7 +143,7 @@ function generateNavigation(weight) {
     const nextConfig = sortedConfigs[currentIndex + 1];
     if (nextConfig) {
       const nextSlug = nextConfig.outputFile.replace('.md', '/');
-      navigation += `\nnext: /docs/spec/${nextSlug}`;
+      navigation += `\nnext: /docs/specs/${nextSlug}`;
     }
   }
   
@@ -392,6 +392,27 @@ function generateConstrainedPropertySection(name, schema, prefix = '') {
 
 // Generate documentation for each schema
 console.log('Generating schema documentation...');
+
+// Sort configs to find the first one (lowest weight)
+const sortedConfigs = SCHEMA_CONFIGS.sort((a, b) => a.weight - b.weight);
+const firstSchemaSlug = sortedConfigs[0].outputFile.replace('.md', '/');
+
+// Update parent spec page navigation to point to first child
+const specIndexPath = path.join(OUTPUT_DIR, '_index.md');
+if (fs.existsSync(specIndexPath)) {
+  let specContent = fs.readFileSync(specIndexPath, 'utf8');
+  
+  // Update or add next navigation to point to first schema page
+  if (specContent.includes('next:')) {
+    specContent = specContent.replace(/next:\s*[^\n]+/, `next: /docs/specs/${firstSchemaSlug}`);
+  } else {
+    // Add next after weight line
+    specContent = specContent.replace(/(weight:\s*\d+)/, `$1\nnext: /docs/specs/${firstSchemaSlug}`);
+  }
+  
+  fs.writeFileSync(specIndexPath, specContent, 'utf8');
+  console.log('✓ Updated parent spec navigation');
+}
 
 for (const config of SCHEMA_CONFIGS) {
   try {
