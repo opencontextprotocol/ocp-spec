@@ -18,12 +18,15 @@ module:
     - path: github.com/imfing/hextra
 
 params:
+  theme:
+    default: system
+    displayToggle: true
   navbar:
     displayTitle: false
     displayLogo: true
     logo:
-      path: images/light.svg
-      dark: images/dark.svg
+      path: images/logo.svg
+      dark: images/logo-dark.svg
       link: /
       width: 197
       height: 30
@@ -34,9 +37,6 @@ params:
     enable: true
     displayCopyright: true
     displayPoweredBy: true
-  theme:
-    default: system
-    displayToggle: true
 
 markup:
   goldmark:
