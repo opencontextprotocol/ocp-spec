@@ -23,7 +23,7 @@ agent.call_tool("search_issues", {"q": "bug"})
 agent.call_tool("create_payment_intent", {"amount": 2000})
 ```
 
-## Schema Discovery Process
+## Schema Discovery
 
 - **Intelligent Lookup**: Memory → Local Cache → Registry → Direct OpenAPI (network)
 - **OpenAPI Parsing**: Extracts endpoints, parameters, and response schemas
