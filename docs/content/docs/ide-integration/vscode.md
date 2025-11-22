@@ -7,16 +7,13 @@ cascade:
   type: docs
 ---
 
-VS Code extension that provides OCP tools to any AI agent through Language Model Tools API.
+VS Code extension that provides OCP capabilities to any AI agent through the VS Code [Language Model Tool API](https://code.visualstudio.com/api/extension-guides/ai/tools).
 
 ## Extension Installation
 
-1. Open VS Code Extensions (Ctrl+Shift+X)
+1. Open VS Code Extensions
 2. Search "Open Context Protocol"
 3. Install the extension
-4. Restart VS Code
-
-The extension automatically registers 5 OCP tools that any AI agent can use.
 
 ## Language Model Tools
 
@@ -61,11 +58,9 @@ Configure the extension through VS Code settings:
   "ocp.user": "john.doe",
   "ocp.registryUrl": "https://registry.opencontextprotocol.org", 
   "ocp.apiAuth": {
-    "github": {
-      "Authorization": "Bearer ghp_your_github_token"
-    },
-    "stripe": {
-      "Authorization": "Bearer sk_your_stripe_key"
+    "api-name": {
+      "Authorization": "Bearer your-token",
+      "X-Custom-Header": "custom-value"
     }
   }
 }
@@ -78,17 +73,18 @@ Configure the extension through VS Code settings:
 
 ## API Authentication
 
-API credentials are stored securely in VS Code settings and automatically merged with tool parameters:
+API credentials are stored securely in VS Code settings:
 
-**GitHub Token Setup:**
-1. Generate token at github.com/settings/tokens
-2. Add to settings: `"github": {"Authorization": "Bearer ghp_xxx"}`
-3. Agents can now call GitHub tools without exposing your token
-
-**Stripe API Key Setup:**
-1. Get API key from Stripe dashboard
-2. Add to settings: `"stripe": {"Authorization": "Bearer sk_xxx"}`
-3. Agents can process payments, create customers, etc.
+```json
+{
+  "ocp.apiAuth": {
+    "api-name": {
+      "Authorization": "Bearer your-token",
+      "X-Custom-Header": "custom-value"
+    }
+  }
+}
+```
 
 **Security:**
 - Credentials stay in VS Code settings
