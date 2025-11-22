@@ -7,7 +7,7 @@ cascade:
   type: docs
 ---
 
-Turn any OpenAPI spec into hundreds of agent tools with persistent context.
+Install and use OCP libraries for API tool discovery and context management.
 
 ## Installation & Quick Start
 
@@ -35,24 +35,19 @@ agent = OCPAgent(
     workspace="my-project"
 )
 
-# Register GitHub API (discovers all available tools automatically)
+# Register an API from OpenAPI spec
 api_spec = agent.register_api(
-    name="github", 
-    spec_url="https://api.github.com/openapi.json"
+    name="example_api", 
+    spec_url="https://petstore3.swagger.io/api/v3/openapi.json"
 )
-print(f"🚀 Auto-discovered {len(api_spec.tools)} tools!")
+print(f"Discovered {len(api_spec.tools)} tools")
 
-# That's it. No manual tool definitions, no proxy servers.
-# You now have access to the entire GitHub API as agent tools.
+# List available tools
+tools = agent.list_tools("example_api")
+print(f"Available tools: {[tool.name for tool in tools[:3]]}")
 
-# List some tools
-tools = agent.list_tools("github")
-print(f"Available: {[tool.name for tool in tools[:5]]}...")
-
-# Call any tool
-issues = agent.call_tool("search_issues",
-    {"q": "bug in:readme"},
-    headers={"Authorization": f"token {os.getenv('GITHUB_TOKEN')}"}))
+# Call a tool
+result = agent.call_tool("findPetsByStatus", {"status": "available"}))
 ```
 {{< /tab >}}
 
@@ -78,24 +73,19 @@ const agent = new OCPAgent(
     'my-project'
 );
 
-# Register GitHub API (discovers all available tools automatically)
+// Register an API from OpenAPI spec
 const apiSpec = await agent.registerApi(
-    'github',
-    'https://api.github.com/openapi.json'
+    'example_api',
+    'https://petstore3.swagger.io/api/v3/openapi.json'
 );
-console.log(`🚀 Auto-discovered ${apiSpec.tools.length} tools!`);
+console.log(`Discovered ${apiSpec.tools.length} tools`);
 
-// That's it. No manual tool definitions, no proxy servers.
-// You now have access to the entire GitHub API as agent tools.
+// List available tools
+const tools = agent.listTools('example_api');
+console.log(`Available tools: ${tools.slice(0, 3).map(t => t.name).join(', ')}`);
 
-// List some tools
-const tools = agent.listTools('github');
-console.log(`Available: ${tools.slice(0, 5).map(t => t.name).join(', ')}...`);
-
-// Call any tool
-const issues = await agent.callTool('search_issues',
-    {q: 'bug in:readme'},
-    {headers: {'Authorization': `token ${process.env.GITHUB_TOKEN}`}});
+// Call a tool
+const result = await agent.callTool('findPetsByStatus', {status: 'available'});
 ```
 {{< /tab >}}
 
@@ -107,38 +97,27 @@ const issues = await agent.callTool('search_issues',
 code --install-extension opencontextprotocol.ocp-vscode-extension
 ```
 
-**Auth Setup:**
-1. Get a GitHub token with `repo` scope
-2. Open VS Code settings in JSON mode  
-3. Search for `ocp` and add your token:
+**Configuration:**
+1. Open VS Code settings (JSON mode)
+2. Configure API authentication:
 
 ```json
 {
   "ocp.apiAuth": {
-    "github": {
-      "Authorization": "Bearer ghp_your_token_here"
+    "petstore": {
+      "api_key": "your_api_key_here"
     }
   }
 }
 ```
 
-**Quick Start:**
+**Usage:**
 1. Open VS Code in your project folder
-2. Open any AI chat (Copilot, Cursor, etc.)
-3. Try this prompt:
-
-```
-Use ocp to register the GitHub API, then show me what tools you discovered.
-```
+2. Use Language Model Tools to interact with OCP
+3. APIs registered through OCP become available as tools
 {{< /tab >}}
 
 {{< /tabs >}}
-
-## What You Just Did
-
-- 🤯 **Auto Tool Discovery**: One API registration = hundreds of tools instantly available.
-- ⚡ **Direct Integration**: OCP talks directly to APIs using their OpenAPI specs.
-- 🔧 **Zero Setup**: No servers, no containers, no infrastructure required.
 
 ## Next Steps
 
