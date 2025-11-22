@@ -8,11 +8,31 @@ cascade:
   type: docs
 ---
 
-Open Context Protocol (OCP) is a spec for automatically discovering tools from OpenAPI definitions, and maintaining persistent context across API calls using HTTP headers.
+Specification for automatic API tool discovery and persistent context sharing across HTTP APIs.
 
-## Context Protocol
+## Protocol Overview
 
-OCP uses standard HTTP headers to transmit context information between agents and APIs.
+Open Context Protocol (OCP) defines a standard for automatic API tool discovery and persistent context sharing across HTTP APIs. The protocol consists of two core specifications:
+
+**1. Tool Discovery**
+- Parse OpenAPI 3.0+ specifications into callable tools
+- Deterministic naming and parameter mapping
+- Standardized tool schema definition
+
+**2. Context Transmission**
+- HTTP headers for conversation state transmission
+- Session persistence and recovery
+- Cross-API workflow coordination
+
+**Compatibility Levels:**
+- **Level 1**: APIs accept context headers without modification
+- **Level 2**: APIs read context and provide enhanced responses
+
+---
+
+## HTTP Headers Specification
+
+OCP transmits context information using standard HTTP headers with defined formats and validation rules.
 
 #### Required Headers
 
@@ -87,13 +107,11 @@ The `OCP-Session` header contains a JSON object that MUST conform to the [Contex
 
 ---
 
-## Schema Discovery
+## OpenAPI Tool Discovery
 
-### Tool Generation from OpenAPI
+OCP defines how OpenAPI 3.0+ specifications are parsed into callable tools with deterministic naming and parameter mapping.
 
-OCP implementations MUST be able to parse OpenAPI 3.0+ specifications and generate callable tools.
-
-#### Tool Schema Definition
+### Tool Generation Rules
 
 {{< callout type="info" >}}
 Each discovered tool MUST conform to the [Tool Schema](tool-schema). See the schema for complete parameter definitions, validation rules, and examples.
@@ -101,7 +119,7 @@ Each discovered tool MUST conform to the [Tool Schema](tool-schema). See the sch
 
 #### Deterministic Naming
 
-Tool names MUST be generated deterministically:
+Tool names are generated using a deterministic algorithm:
 
 1. **Use operationId**: If present in OpenAPI specification
 2. **Generate from HTTP method + path**: If operationId is missing
@@ -116,23 +134,24 @@ GET /repos/{owner}/{repo}/issues → Tool name: "get_repos_owner_repo_issues"
 POST /users → Tool name: "post_users"
 ```
 
-#### Parameter Processing
+#### Parameter Mapping
 
-For each OpenAPI operation, implementations MUST:
+For each OpenAPI operation, parameter extraction follows this specification:
 
-1. Extract path parameters from the URL template
-2. Extract query parameters from the `parameters` array
-3. Extract request body schema for POST/PUT/PATCH operations
-4. Validate parameter types against OpenAPI schema
-5. Map parameters to the appropriate HTTP location
+1. **Path Parameters**: Extract from URL template (e.g., `{owner}`, `{repo}`)
+2. **Query Parameters**: Extract from `parameters` array with `in: "query"`
+3. **Request Body**: Extract schema for POST/PUT/PATCH operations
+4. **Headers**: Extract from `parameters` array with `in: "header"`
 
-#### Specification Validation
+All parameters maintain their OpenAPI type definitions and validation constraints.
 
-Implementations MUST:
-- Validate OpenAPI specification structure
-- Support OpenAPI 3.0 and 3.1
-- Handle missing or malformed specifications gracefully
-- Provide clear error messages for invalid specifications
+#### Validation Requirements
+
+Tool discovery MUST:
+- Support OpenAPI 3.0 and 3.1 specifications
+- Handle missing operationId gracefully
+- Preserve all parameter validation rules from OpenAPI schema
+- Generate consistent tool names across implementations
 
 ---
 
@@ -161,48 +180,44 @@ APIs read OCP context and provide enhanced, context-aware responses.
 - Include context-aware information in responses
 - Support OCP OpenAPI extensions for behavior specification
 
+---
+
 ## Implementation Requirements
 
-### Client Libraries
+### Client Library Requirements
 
-All OCP client libraries MUST provide:
+OCP-compliant client libraries MUST implement:
 
-1. **Context Management**
-   - Create, update, and serialize AgentContext objects
-   - Generate OCP headers from context
-   - Parse context from HTTP response headers
-   - Validate context against JSON schema
+**Context Management:**
+- Create and serialize AgentContext objects per [Context Schema](context-schema)
+- Generate OCP headers from context following encoding requirements
+- Parse context from HTTP response headers
+- Validate context against JSON schema
 
-2. **Schema Discovery**
-   - Fetch and parse OpenAPI specifications
-   - Generate tools according to deterministic naming rules
-   - Validate tool parameters against OpenAPI schemas
-   - Cache specifications for performance
+**Tool Discovery:**
+- Parse OpenAPI 3.0+ specifications
+- Generate tools using deterministic naming rules
+- Validate parameters against OpenAPI schemas
+- Cache specifications for performance optimization
 
-3. **Tool Execution**
-   - Build HTTP requests from tool calls and parameters
-   - Inject OCP headers into all requests
-   - Parse and validate API responses
-   - Update context based on tool execution results
+**HTTP Integration:**
+- Inject OCP headers into all API requests automatically
+- Build requests from tool calls and parameters
+- Parse API responses and extract context updates
+- Handle requests gracefully when OCP headers are rejected
 
-4. **Error Handling**
-   - Gracefully handle malformed OpenAPI specifications
-   - Validate context without failing requests
-   - Provide meaningful error messages
-   - Support operation without OCP headers (degraded mode)
+### Performance Standards
 
-### Performance Requirements
+- **Caching**: SHOULD cache OpenAPI specifications locally
+- **Compression**: MUST compress contexts >1KB before Base64 encoding
+- **Memory**: MUST handle large OpenAPI specifications
+- **Network**: SHOULD minimize redundant specification downloads
 
-- **Tool Discovery**: SHOULD cache OpenAPI specifications locally
-- **Context Compression**: MUST compress contexts >1KB before encoding  
-- **Memory Efficiency**: MUST handle large OpenAPI specifications
-- **Network Optimization**: SHOULD minimize redundant specification downloads
+### Error Handling Standards
 
-### Validation Requirements
-
-Implementations MUST validate:
-- OCP header format and constraints
-- Context object against JSON schema
-- OpenAPI specification structure
-- Tool parameter types and requirements
+Implementations MUST:
+- Process requests normally when OCP headers are invalid or rejected
+- Provide clear error messages for malformed OpenAPI specifications
+- Validate context without failing API requests
+- Support graceful degradation when context features are unavailable
 
