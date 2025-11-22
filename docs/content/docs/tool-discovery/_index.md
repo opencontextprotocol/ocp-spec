@@ -7,7 +7,7 @@ cascade:
   type: docs
 ---
 
-Automatically convert any OpenAPI specification into callable tools.
+OCP's schema discovery system automatically finds and converts OpenAPI specifications into callable tools with intelligent caching and lookup.
 
 ```python
 from ocp_agent import OCPAgent
@@ -23,19 +23,13 @@ agent.call_tool("search_issues", {"q": "bug"})
 agent.call_tool("create_payment_intent", {"amount": 2000})
 ```
 
-## How It Works
+## Schema Discovery Process
 
-- **OpenAPI Analysis**: OCP extracts endpoints, parameters, and schemas.
-- **Tool Generation**: Each operation becomes a callable tool with deterministic naming.
-- **Smart Caching**: Memory → Cache → Registry → Network lookup chain.
-- **Built-in Validation**: All parameters validated against OpenAPI schemas automatically.
-
-## Benefits
-
-- **🔥 Instant Tools**: Any OpenAPI spec becomes hundreds of callable tools  
-- **⚡ Registry Speed**: Huge library of popular APIs pre-indexed for fast lookup  
-- **✅ Auto Validation**: Parameters validated against schemas  
-- **🎯 Zero Setup**: Works with existing APIs, no infrastructure required
+- **Intelligent Lookup**: Memory → Local Cache → Registry → Direct OpenAPI (network)
+- **OpenAPI Parsing**: Extracts endpoints, parameters, and response schemas
+- **Tool Generation**: Each operation becomes a callable tool with deterministic naming
+- **Automatic Caching**: Specs cached locally for 7 days with configurable expiration
+- **Built-in Validation**: Parameters validated against OpenAPI schemas automatically
 
 ## Tool Naming Rules
 
@@ -84,7 +78,7 @@ jira_issue = agent.call_tool("createIssue", {
 }, "jira")
 ```
 
-## Error Handling
+## Handling Discovery Errors
 
 **Tool Not Found:**
 ```python
@@ -114,69 +108,78 @@ except Exception as e:
     print(f"Failed to register API: {e}")
 ```
 
-## Lookup Chain
+## Discovery Lookup Chain
 
-Memory → Cache → Registry → Network
+OCP uses a four-tier lookup system for maximum performance:
 
-**Use Registry (Recommended):**
+**1. Memory Cache (Instant)**
 ```python
-# Fast lookup for popular APIs
-agent.register_api("github")
-agent.register_api("stripe") 
-agent.register_api("slack")
+agent = OCPAgent()
+agent.register_api("github")  # Downloads and stores in memory
+agent.register_api("github")  # Instant memory hit
 ```
 
-**Use Direct OpenAPI:**
-```python
-# For custom/internal APIs
-agent.register_api("my-api", "https://api.company.com/openapi.json")
-
-# Enterprise GitHub with custom base URL
-agent.register_api("github", base_url="https://raw.githubusercontent.com/github/rest-api-description/refs/heads/main/descriptions/ghec/dereferenced/ghec.deref.json")
-```
-
-## Local Cache
-
-OCP automatically caches API specifications locally for faster repeat access:
-
-- **Cache Location:** `~/.ocp/cache/apis/`
-- **Default Expiration:** 7 days
-
+**2. Local Storage Cache (Fast)**
 ```python
 from ocp_agent import OCPAgent
 
+agent = OCPAgent()  # Cache enabled by default
+
+# First run: downloads and caches for 7 days
+agent.register_api("github")
+
+# Restart application, run again: instant cache hit
 agent = OCPAgent()
-
-# First registration: downloads and caches
-agent.register_api("github")
-
-# Subsequent registrations: instant cache hit
-agent.register_api("github")
+agent.register_api("github")  # No network call needed
 ```
+
+**3. Community Registry (Network, Pre-indexed)**
+```python
+# Fast registry lookup for popular APIs
+agent.register_api("github")
+agent.register_api("stripe") 
+```
+
+**4. Direct OpenAPI Discovery (Network, Parse)**
+```python
+# For custom/internal APIs  
+agent.register_api("my-api", "https://api.company.com/openapi.json")
+```
+
+## Cache Management
+
+OCP automatically caches discovered API specifications locally:
+
+- **Cache Location:** `~/.ocp/cache/apis/`  
+- **Default Expiration:** 7 days
+- **Survives Restarts:** Cache persists across application restarts
+- **Automatic Cleanup:** Expired specs automatically refetched when needed
 
 **Cache Control:**
 
 ```python
-from ocp_agent import OCPStorage
+from ocp_agent import OCPAgent, OCPStorage
 
+# List what's cached locally
 storage = OCPStorage()
-
-# List cached APIs
 cached_apis = storage.list_cached_apis()
 print(f"Cached: {cached_apis}")  # ['github', 'stripe', 'slack']
 
-# Clear specific API cache
-storage.clear_cache("github")    # Forces fresh download next time
+# Force fresh discovery (bypass cache)
+agent = OCPAgent()
+agent.register_api("github", max_age_days=0)  # Ignores cache, downloads fresh
 
-# Clear entire cache
-storage.clear_cache()            # Clears all cached APIs
-
-# Force fresh download (ignore cache)
-agent.register_api("github", max_age_days=0)
+# Clear cache to force re-discovery
+storage.clear_cache("github")    # Clear specific API
+storage.clear_cache()            # Clear all cached APIs
 ```
 
 **When Cache is Used:**
-- API specs cached for 7 days by default
-- Cache automatically bypassed when expired
-- Manual cache control for testing/debugging
-- Cache survives application restarts
+- Specs cached after first discovery
+- Cache checked before registry or network calls
+- Automatic expiration handling (7 days default)
+- Manual cache control for testing
+
+## Next: API Registry
+
+The cache hits in your local storage, but what about the first discovery? For popular APIs like GitHub, Stripe, and Slack, OCP's [API Registry](/docs/api-registry) provides pre-indexed specifications for instant discovery without parsing delays. Learn how the registry accelerates discovery and explore hundreds of pre-indexed APIs.
