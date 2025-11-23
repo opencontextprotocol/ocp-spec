@@ -14,10 +14,12 @@ versions: schemas
 build: versions
 	@echo "Hugo build completed via versions target"
 
-# Development server (with fresh schemas and versions)
-dev: versions
-	@echo "Starting Hugo development server..."
-	@cd docs && hugo server --buildDrafts --disableFastRender
+# Development server (serves pre-built docs/public directory)
+dev: build
+	@echo "Starting development server..."
+	@echo "Site available at http://localhost:1313"
+	@echo "Press Ctrl+C to stop"
+	@cd docs/public && python3 -m http.server 1313
 
 # Alias for dev
 serve: dev

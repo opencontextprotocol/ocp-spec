@@ -18,19 +18,20 @@ VERSIONS=(
 IFS=':' read -r MAIN_REF MAIN_NAME MAIN_DIR <<< "$MAIN_VERSION"
 
 # Ensure clean public directory
-rm -rf public
-mkdir -p public
-mkdir -p public/versions
+rm -rf $MAIN_DIR/public
+mkdir -p $MAIN_DIR/public
+mkdir -p $MAIN_DIR/public/versions
 
 # Checkout and build main site
 git checkout $MAIN_REF
 GIT_HASH=$(git rev-parse --short HEAD)
 echo "Building main site from $MAIN_REF (commit: $GIT_HASH)"
+cd $MAIN_DIR
 hugo \
   --minify \
-  --themesDir=../.. --source=$MAIN_DIR \
   --baseURL "$BASE_URL/" \
-  --destination=../public
+  --destination=public
+cd ..
 
 # Build all versions
 for VERSION in "${VERSIONS[@]}"; do
@@ -40,12 +41,13 @@ for VERSION in "${VERSIONS[@]}"; do
   GIT_HASH=$(git rev-parse --short HEAD)
   echo "Building version $NAME from $REF (commit: $GIT_HASH)"
 
-  mkdir -p "public/versions/$NAME"
+  mkdir -p "$MAIN_DIR/public/versions/$NAME"
+  cd $DIR
   hugo \
     --minify \
-    --themesDir=../.. --source=$DIR \
     --baseURL "$BASE_URL/versions/$NAME/" \
-    --destination="../public/versions/$NAME"
+    --destination="public/versions/$NAME"
+  cd ..
 done
 
 # Return to main branch
