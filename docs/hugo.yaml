@@ -13,7 +13,7 @@ outputs:
 module:
   hugoVersion:
     extended: true
-    min: "0.146.0"
+    min: "0.147.0"
   imports:
     - path: github.com/imfing/hextra
 
@@ -74,12 +74,13 @@ menu:
     - identifier: versions
       name: Versions
       weight: 2
-    - name: v1.0
-      pageRef: /
+    - identifier: latest
+      name: Latest ↗
+      url: https://opencontextprotocol.io/versions/latest/
       parent: versions
-    - name: Latest
-      pageRef: /
-      parent: versions
+      params:
+        type: link
+        icon: beaker
     - name: Search
       weight: 3
       params:
