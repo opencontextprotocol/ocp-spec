@@ -4,8 +4,8 @@ The Open Context Protocol (OCP) specification defines a standard for AI agents t
 
 ## Specification
 
-- **[Documentation Website](https://opencontextprotocol.io)** - Complete protocol specification and implementation guides
-- **[JSON Schemas](schemas/)** - Validation schemas for context objects, tools, and OpenAPI extensions
+- [Documentation Website](https://opencontextprotocol.io) - Complete protocol specification and implementation guides
+- [JSON Schemas](schemas/) - Validation schemas for context objects, tools, and OpenAPI extensions
 
 ## Implementation Libraries
 
