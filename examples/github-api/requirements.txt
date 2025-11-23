@@ -1,5 +1,0 @@
-# Requirements for GitHub OCP example
-
-ocp>=0.1.0
-requests>=2.31.0
-python-dateutil>=2.8.0

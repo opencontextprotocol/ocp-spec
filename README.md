@@ -1,14 +1,11 @@
-# Open Context Protocol
+# Open Context Protocol Specification
 
-The Open Context Protocol (OCP) turns any REST API with an OpenAPI specification into an intelligent tool for AI agents. Agents maintain persistent context across API calls using HTTP headers, discover tools automatically from OpenAPI specifications, and call APIs directly with no middleman servers required.
+The Open Context Protocol (OCP) specification defines a standard for AI agents to maintain persistent context across HTTP API calls and automatically discover tools from OpenAPI specifications.
 
-## Resources
+## Specification
 
-- **[SPECIFICATION.md](SPECIFICATION.md)** - Complete protocol specification
-- **[Documentation Website](https://opencontextprotocol.org)** - Full documentation and guides
-- **[JSON Schemas](schemas/)** - Validation schemas for implementations
-- **[Examples](examples/)** - Usage examples and samples
-- **[Contributing](docs/specification/draft/contributing/_index.md)** - How to contribute to OCP
+- **[Documentation Website](https://opencontextprotocol.io)** - Complete protocol specification and implementation guides
+- **[JSON Schemas](schemas/)** - Validation schemas for context objects, tools, and OpenAPI extensions
 
 ## Implementation Libraries
 
