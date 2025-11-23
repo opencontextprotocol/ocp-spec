@@ -10,10 +10,10 @@ The Open Context Protocol (OCP) specification defines a standard for AI agents t
 ## Implementation Libraries
 
 - [Python Library](https://github.com/opencontextprotocol/ocp-python)
-- [JavaScript/TypeScript Library](https://github.com/opencontextprotocol/ocp-javascript)
+- [JavaScript Library](https://github.com/opencontextprotocol/ocp-javascript)
 - [VS Code Extension](https://github.com/opencontextprotocol/ocp-vscode)
-- [CLI Tool](https://github.com/opencontextprotocol/ocp-cli)
 - [Registry Server](https://github.com/opencontextprotocol/ocp-registry)
+- [CLI Tool](https://github.com/opencontextprotocol/ocp-cli)
 
 ## License
 
