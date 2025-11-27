@@ -17,7 +17,7 @@ Schema for tools generated from OpenAPI specifications.
 |-------|------|----------|-------------|
 | `description` | string | Yes | Human-readable description from OpenAPI operation summary/description |
 | `method` | [string](#method) | Yes | HTTP method for this operation |
-| `name` | [string](#name) | Yes | Deterministic tool name generated from operationId or method+path |
+| `name` | [string](#name) | Yes | Deterministic camelCase tool name generated from operationId or method+path |
 | `parameters` | [object](#parameters) | Yes | Parameter definitions extracted from OpenAPI specification |
 | `path` | [string](#path) | Yes | API endpoint path template with {parameter} placeholders |
 | `response_schema` | [object](#response_schema) | Yes | OpenAPI response schema for successful responses (2xx status codes) |
@@ -32,9 +32,9 @@ Schema for tools generated from OpenAPI specifications.
 
 **Type:** string
 
-Deterministic tool name generated from operationId or method+path
+Deterministic camelCase tool name generated from operationId or method+path
 
-**Pattern:** `^[a-zA-Z][a-zA-Z0-9_]*$`
+**Pattern:** `^[a-z][a-zA-Z0-9]*$`
 
 
 ### `method`

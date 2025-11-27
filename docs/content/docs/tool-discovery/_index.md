@@ -19,8 +19,8 @@ github = agent.register_api("github")   # fast lookup from registry
 stripe = agent.register_api("stripe")   
 
 # Each endpoint becomes callable
-agent.call_tool("search_issues", {"q": "bug"})
-agent.call_tool("create_payment_intent", {"amount": 2000})
+agent.call_tool("searchIssues", {"q": "bug"})
+agent.call_tool("createPaymentIntent", {"amount": 2000})
 ```
 
 ## Schema Discovery
@@ -33,25 +33,40 @@ agent.call_tool("create_payment_intent", {"amount": 2000})
 
 ## Tool Naming Rules
 
-OCP generates predictable tool names from OpenAPI specifications:
+OCP generates predictable camelCase tool names from OpenAPI specifications with automatic normalization:
 
-**1. Use `operationId` (when present):**
+**1. Use `operationId` (when present) with camelCase normalization:**
 ```yaml
 # OpenAPI spec
 paths:
   /repos/{owner}/{repo}/issues:
     get:
       operationId: "listRepositoryIssues"  # → Tool name: "listRepositoryIssues"
+  /meta:
+    get:
+      operationId: "meta/root"             # → Tool name: "metaRoot"
+  /admin/apps:
+    put:
+      operationId: "admin_apps_approve"    # → Tool name: "adminAppsApprove"
+  /accounts:
+    get:
+      operationId: "FetchAccount"          # → Tool name: "fetchAccount"
 ```
 
-**2. Generate from HTTP method + path (when `operationId` missing):**
+**2. Generate from HTTP method + path (when `operationId` missing) with camelCase normalization:**
 ```yaml
 # OpenAPI spec                  # Generated tool name
-GET /items                      # → "get_items"
-POST /items                     # → "post_items"  
-GET /items/{id}                 # → "get_items_id"
-DELETE /repos/{owner}/{repo}    # → "delete_repos_owner_repo"
+GET /items                      # → "getItems"
+POST /items                     # → "postItems"  
+GET /items/{id}                 # → "getItemsId"
+DELETE /repos/{owner}/{repo}    # → "deleteReposOwnerRepo"
 ```
+
+**Normalization Rules:**
+- Special characters (`/`, `_`, `-`, `.`) are removed and surrounding words capitalized
+- PascalCase is converted to camelCase (e.g., `FetchAccount` → `fetchAccount`)
+- Numbers and version prefixes are preserved (e.g., `v2010/Accounts` → `v2010Accounts`)
+- Multiple consecutive separators are collapsed (e.g., `api//users` → `apiUsers`)
 
 ## Handling Tool Conflicts
 
@@ -83,17 +98,17 @@ jira_issue = agent.call_tool("createIssue", {
 **Tool Not Found:**
 ```python
 try:
-    agent.call_tool("nonexistent_tool")
+    agent.call_tool("nonexistentTool")
 except ValueError as e:
     print(e)
-    # Tool 'nonexistent_tool' not found. Available tools: search_issues, create_issue, get_user
+    # Tool 'nonexistentTool' not found. Available tools: searchIssues, createIssue, getUser
 ```
 
 **Parameter Validation:**
 ```python
 try:
     # Missing required parameter
-    agent.call_tool("create_issue", {})
+    agent.call_tool("createIssue", {})
 except ValueError as e:
     print(e)
     # Parameter validation failed: title is required

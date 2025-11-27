@@ -119,19 +119,23 @@ Each discovered tool MUST conform to the [Tool Schema](tool-schema). See the sch
 
 #### Deterministic Naming
 
-Tool names are generated using a deterministic algorithm:
+Tool names are generated using a deterministic algorithm with camelCase normalization:
 
-1. **Use operationId**: If present in OpenAPI specification
-2. **Generate from HTTP method + path**: If operationId is missing
-   - Convert path to snake_case
+1. **Use operationId with camelCase normalization**: If present in OpenAPI specification
+2. **Generate from HTTP method + path with camelCase normalization**: If operationId is missing
+   - Convert path to camelCase
    - Prefix with lowercase HTTP method
    - Replace path parameters with descriptive names
+   - Normalize special characters (/, _, -) to camelCase
 
 **Examples:**
 ```
 operationId: "listRepositories" → Tool name: "listRepositories"
-GET /repos/{owner}/{repo}/issues → Tool name: "get_repos_owner_repo_issues"  
-POST /users → Tool name: "post_users"
+operationId: "meta/root" → Tool name: "metaRoot"
+operationId: "admin_apps_approve" → Tool name: "adminAppsApprove"
+operationId: "FetchAccount" → Tool name: "fetchAccount"
+GET /repos/{owner}/{repo}/issues → Tool name: "getReposOwnerRepoIssues"  
+POST /users → Tool name: "postUsers"
 ```
 
 #### Parameter Mapping
