@@ -38,15 +38,15 @@ Configure which registry to use for API discovery:
 ```python
 from ocp_agent import OCPRegistry
 
-# Default: uses https://registry.ocp.dev
+# Default: uses https://ocp.nallenscott.dev/api/v1
 registry = OCPRegistry()
 
 # Environment variable override
-# export OCP_REGISTRY_URL=https://internal-registry.company.com
+# export OCP_REGISTRY_URL=https://internal-registry.company.com/api/v1
 registry = OCPRegistry()
 
 # Explicit URL
-registry = OCPRegistry("https://custom-registry.com")
+registry = OCPRegistry("https://custom-registry.com/api/v1")
 ```
 
 ## Error Handling & Suggestions
