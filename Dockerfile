@@ -33,7 +33,8 @@ RUN --mount=type=ssh \
     cd /tmp/ocp-registry && \
     /venv/bin/poetry install --only=main --no-root
 
-ENV PATH="/venv/bin:$PATH"
+# Add both Poetry's venv and the project's venv to PATH
+ENV PATH="/tmp/ocp-registry/.venv/bin:/venv/bin:$PATH"
 
 # Generate tools.json files from OpenAPI specs
 RUN cd /tmp/ocp-registry && python scripts/generate-tools.py
