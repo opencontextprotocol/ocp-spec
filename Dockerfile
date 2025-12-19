@@ -4,6 +4,15 @@ FROM hugomods/hugo:exts-0.147.4 AS builder
 # Install git and Python for content generation
 RUN apk add --no-cache git python3 py3-pip openssh-client
 
+# Python and Poetry environment variables
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VERSION=2.2.1 \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+
 # Set working directory
 WORKDIR /src
 
@@ -16,18 +25,19 @@ RUN --mount=type=ssh \
     ssh-keyscan github.com >> ~/.ssh/known_hosts && \
     git clone git@github.com:opencontextprotocol/ocp-registry.git /tmp/ocp-registry
 
-# Install ocp-registry dependencies (includes ocp-agent)
-RUN pip3 install poetry && \
+# Install ocp-registry dependencies using Poetry
+RUN python3 -m venv /venv && \
+    /venv/bin/pip install poetry==$POETRY_VERSION && \
     cd /tmp/ocp-registry && \
-    poetry self add poetry-plugin-export && \
-    poetry export -f requirements.txt --output requirements.txt && \
-    pip3 install --no-deps -r requirements.txt
+    /venv/bin/poetry install --only=main --no-root
+
+ENV PATH="/venv/bin:$PATH"
 
 # Generate tools.json files from OpenAPI specs
-RUN cd /tmp/ocp-registry && python3 scripts/generate-tools.py
+RUN cd /tmp/ocp-registry && python scripts/generate-tools.py
 
 # Generate registry content pages
-RUN python3 /tmp/ocp-registry/scripts/generate-content.py /src/docs/content/registry
+RUN python /tmp/ocp-registry/scripts/generate-content.py /src/docs/content/registry
 
 # Build the Hugo site from docs/ subdirectory
 RUN cd docs && hugo --gc --minify
