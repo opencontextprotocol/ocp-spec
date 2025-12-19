@@ -20,6 +20,9 @@ RUN --mount=type=ssh \
 RUN cd /tmp/ocp-registry && \
     pip3 install --break-system-packages pyyaml
 
+# Generate tools.json files from OpenAPI specs
+RUN cd /tmp/ocp-registry && python3 scripts/generate-tools.py
+
 # Generate registry content pages
 RUN python3 /tmp/ocp-registry/scripts/generate-content.py /src/docs/content/registry
 
