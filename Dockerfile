@@ -17,10 +17,11 @@ RUN --mount=type=ssh \
     git clone git@github.com:opencontextprotocol/ocp-registry.git /tmp/ocp-registry
 
 # Install ocp-registry dependencies (includes ocp-agent)
-RUN pip3 install --break-system-packages poetry && \
+RUN pip3 install poetry && \
     cd /tmp/ocp-registry && \
-    poetry config virtualenvs.create false && \
-    poetry install --only main
+    poetry self add poetry-plugin-export && \
+    poetry export -f requirements.txt --output requirements.txt && \
+    pip3 install --no-deps -r requirements.txt
 
 # Generate tools.json files from OpenAPI specs
 RUN cd /tmp/ocp-registry && python3 scripts/generate-tools.py
