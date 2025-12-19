@@ -21,9 +21,7 @@ RUN cd /tmp/ocp-registry && \
     pip3 install --break-system-packages pyyaml
 
 # Generate registry content pages
-RUN python3 /tmp/ocp-registry/scripts/generate-content.py \
-    --registry-dir /tmp/ocp-registry/data \
-    --output-dir /src/docs/content/registry
+RUN python3 /tmp/ocp-registry/scripts/generate-content.py /src/docs/content/registry
 
 # Build the Hugo site from docs/ subdirectory
 RUN cd docs && hugo --gc --minify
