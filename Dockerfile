@@ -27,7 +27,8 @@ RUN --mount=type=ssh \
     git clone git@github.com:opencontextprotocol/ocp-registry.git /tmp/ocp-registry
 
 # Install ocp-registry dependencies using Poetry
-RUN python3 -m venv /venv && \
+RUN --mount=type=ssh \
+    python3 -m venv /venv && \
     /venv/bin/pip install poetry==$POETRY_VERSION && \
     cd /tmp/ocp-registry && \
     /venv/bin/poetry install --only=main --no-root
