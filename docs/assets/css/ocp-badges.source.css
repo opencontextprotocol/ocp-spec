@@ -1,0 +1,46 @@
+/* OCP Registry Tool Badges */
+
+.ocp-badge-container {
+  @apply ocp:flex ocp:flex-wrap ocp:gap-2 ocp:mt-4;
+}
+
+.ocp-badge {
+  @apply ocp:inline-flex ocp:items-center ocp:gap-2 ocp:px-3 ocp:py-1.5 ocp:rounded-md ocp:border ocp:border-gray-200 ocp:dark:border-gray-700 ocp:transition-colors ocp:hover:bg-gray-50 ocp:dark:hover:bg-gray-900 ocp:no-underline;
+}
+
+.ocp-badge-method {
+  @apply ocp:px-1.5 ocp:py-0.5 ocp:text-xs ocp:font-medium ocp:rounded ocp:transition-colors;
+}
+
+/* Method-specific colors - very subtle bg always, slightly darker on hover */
+.ocp-badge-method.get {
+  @apply ocp:bg-cyan-50/50 ocp:text-cyan-700 ocp:dark:bg-cyan-950/30 ocp:dark:text-cyan-400 ocp:hover:bg-cyan-50 ocp:dark:hover:bg-cyan-950/50;
+}
+
+.ocp-badge-method.post {
+  @apply ocp:bg-violet-50/50 ocp:text-violet-700 ocp:dark:bg-violet-950/30 ocp:dark:text-violet-400 ocp:hover:bg-violet-50 ocp:dark:hover:bg-violet-950/50;
+}
+
+.ocp-badge-method.put {
+  @apply ocp:bg-amber-50/50 ocp:text-amber-700 ocp:dark:bg-amber-950/30 ocp:dark:text-amber-400 ocp:hover:bg-amber-50 ocp:dark:hover:bg-amber-950/50;
+}
+
+.ocp-badge-method.patch {
+  @apply ocp:bg-emerald-50/50 ocp:text-emerald-700 ocp:dark:bg-emerald-950/30 ocp:dark:text-emerald-400 ocp:hover:bg-emerald-50 ocp:dark:hover:bg-emerald-950/50;
+}
+
+.ocp-badge-method.delete {
+  @apply ocp:bg-rose-50/50 ocp:text-rose-700 ocp:dark:bg-rose-950/30 ocp:dark:text-rose-400 ocp:hover:bg-rose-50 ocp:dark:hover:bg-rose-950/50;
+}
+
+.ocp-badge-method.head {
+  @apply ocp:bg-cyan-50/50 ocp:text-cyan-700 ocp:dark:bg-cyan-950/30 ocp:dark:text-cyan-400 ocp:hover:bg-cyan-50 ocp:dark:hover:bg-cyan-950/50;
+}
+
+.ocp-badge-method.options {
+  @apply ocp:bg-gray-50/50 ocp:text-gray-700 ocp:dark:bg-gray-950/30 ocp:dark:text-gray-400 ocp:hover:bg-gray-50 ocp:dark:hover:bg-gray-950/50;
+}
+
+.ocp-badge-name {
+  @apply ocp:text-sm ocp:font-normal ocp:text-gray-700 ocp:dark:text-gray-400;
+}

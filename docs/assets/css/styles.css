@@ -1,0 +1,6 @@
+@import "tailwindcss" prefix(ocp);
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import "./ocp-badges.source.css";
+@import "./ocp-cards.source.css";

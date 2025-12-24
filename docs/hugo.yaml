@@ -68,11 +68,11 @@ enableInlineShortcodes: true
 
 menu:
   main:
+    - name: API Registry
+      pageRef: /registry
+      weight: 1
     - name: Documentation
       pageRef: /docs
-      weight: 1
-    - name: Registry
-      pageRef: /registry
       weight: 2
     - identifier: versions
       name: Versions
