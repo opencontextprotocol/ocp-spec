@@ -1,6 +1,6 @@
 ---
 title: "Tool Discovery"
-next: /docs/api-registry
+next: /docs/registry-client
 prev: /docs/getting-started
 weight: 2
 cascade:
@@ -197,4 +197,4 @@ storage.clear_cache()            # Clear all cached APIs
 
 ## Next: API Registry
 
-The cache hits in your local storage, but what about the first discovery? For popular APIs like GitHub, Stripe, and Slack, OCP's [API Registry](/docs/api-registry) provides pre-indexed specifications for instant discovery without parsing delays. Learn how the registry accelerates discovery and explore hundreds of pre-indexed APIs.
+The cache hits in your local storage, but what about the first discovery? For popular APIs like GitHub, Stripe, and Slack, OCP's [Registry Client](/docs/registry-client) provides pre-indexed specifications for instant discovery without parsing delays. Learn how the registry accelerates discovery and explore hundreds of pre-indexed APIs.

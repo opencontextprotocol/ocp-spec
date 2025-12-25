@@ -1,7 +1,7 @@
 ---
 title: "IDE Integration"
 next: /docs/ide-integration/vscode
-prev: /docs/api-registry
+prev: /docs/registry-client
 weight: 4
 cascade:
   type: docs
