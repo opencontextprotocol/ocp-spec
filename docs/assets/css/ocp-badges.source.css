@@ -42,5 +42,5 @@
 }
 
 .ocp-badge-name {
-  @apply ocp:text-sm ocp:font-normal ocp:text-gray-700 ocp:dark:text-gray-400;
+  @apply ocp:text-[13px] ocp:font-mono ocp:text-gray-700 ocp:dark:text-gray-400;
 }
