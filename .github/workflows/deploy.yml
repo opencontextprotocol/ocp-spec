@@ -81,11 +81,3 @@ jobs:
           body: ${{ steps.changelog.outputs.clean_changelog }}
           draft: false
           prerelease: false
-
-      - name: Trigger deployment to VPS
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.DEPLOY_TOKEN }}
-          repository: opencontextprotocol/ocp-server
-          event-type: deploy
-          client-payload: '{"triggered_by": "ocp-spec"}'
