@@ -42,7 +42,7 @@ Configure which registry to use for API discovery:
 ```python
 from ocp_agent import OCPRegistry
 
-# Default: uses https://ocp.nallenscott.dev/api/v1
+# Default: uses https://opencontextprotocol.io/api/v1
 registry = OCPRegistry()
 
 # Environment variable override
