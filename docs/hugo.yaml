@@ -74,22 +74,12 @@ menu:
     - name: Documentation
       pageRef: /docs
       weight: 2
-    - identifier: versions
-      name: Versions
-      weight: 3
-    - identifier: latest
-      name: Latest ↗
-      url: https://opencontextprotocol.io/versions/latest/
-      parent: versions
-      params:
-        type: link
-        icon: beaker
     - name: Search
-      weight: 4
+      weight: 3
       params:
         type: search
     - name: GitHub
-      weight: 5
+      weight: 4
       url: "https://github.com/opencontextprotocol/ocp-spec"
       params:
         icon: github
