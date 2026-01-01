@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Deploy
 
 on:
   push:
@@ -11,15 +11,28 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Conventional Changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-version-file: 'true'
+          git-message: 'chore: release {version} [skip ci]'
+          preset: 'conventionalcommits'
+          release-count: 0
+          skip-on-empty: 'true'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,6 +57,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha,prefix={{branch}}-
+            type=semver,pattern={{version}},value=${{ steps.changelog.outputs.version }},enable=${{ steps.changelog.outputs.skipped != 'true' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -55,6 +69,18 @@ jobs:
           ssh: default
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create GitHub Release
+        if: steps.changelog.outputs.skipped != 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          release_name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+          draft: false
+          prerelease: false
 
       - name: Trigger deployment to VPS
         uses: peter-evans/repository-dispatch@v3
