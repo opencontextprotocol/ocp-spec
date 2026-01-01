@@ -9,7 +9,7 @@ cascade:
 
 Schema for tools generated from OpenAPI specifications.
 
-**JSON Schema**: [`/schemas/ocp-tool.json`](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-tool.json)
+**JSON Schema**: [`/schemas/ocp-tool.json`](https://github.com/opencontextprotocol/ocp-spec/blob/main/schemas/ocp-tool.json)
 
 ## Properties
 

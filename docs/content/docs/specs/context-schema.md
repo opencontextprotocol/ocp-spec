@@ -9,7 +9,7 @@ cascade:
 
 Schema for OCP context objects carried in the OCP-Session header.
 
-**JSON Schema**: [`/schemas/ocp-context.json`](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-context.json)
+**JSON Schema**: [`/schemas/ocp-context.json`](https://github.com/opencontextprotocol/ocp-spec/blob/main/schemas/ocp-context.json)
 
 ## Properties
 

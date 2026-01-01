@@ -8,7 +8,7 @@ cascade:
 
 Schema for OCP extensions in OpenAPI specifications.
 
-**JSON Schema**: [`/schemas/ocp-openapi-extensions.json`](https://github.com/opencontextprotocol/specification/blob/main/schemas/ocp-openapi-extensions.json)
+**JSON Schema**: [`/schemas/ocp-openapi-extensions.json`](https://github.com/opencontextprotocol/ocp-spec/blob/main/schemas/ocp-openapi-extensions.json)
 
 ## Definitions
 
