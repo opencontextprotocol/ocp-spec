@@ -166,7 +166,7 @@ cascade:
 
 ${config.description}
 
-**JSON Schema**: [\`/schemas/${config.file}\`](https://github.com/opencontextprotocol/specification/blob/main/schemas/${config.file})
+**JSON Schema**: [\`/schemas/${config.file}\`](https://github.com/opencontextprotocol/ocp-spec/blob/main/schemas/${config.file})
 
 `;
 

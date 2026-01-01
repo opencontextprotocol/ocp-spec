@@ -32,7 +32,7 @@ params:
       height: 30
   editURL:
     enable: true
-    base: "https://github.com/opencontextprotocol/specification/edit/main/docs/content"
+    base: "https://github.com/opencontextprotocol/ocp-spec/edit/main/docs/content"
   footer:
     enable: true
     displayCopyright: true
@@ -90,7 +90,7 @@ menu:
         type: search
     - name: GitHub
       weight: 5
-      url: "https://github.com/opencontextprotocol/specification"
+      url: "https://github.com/opencontextprotocol/ocp-spec"
       params:
         icon: github
 
@@ -102,7 +102,7 @@ menu:
         type: separator
       weight: 100
     - name: "JSON Schemas ↗"
-      url: "https://github.com/opencontextprotocol/specification/tree/main/schemas"
+      url: "https://github.com/opencontextprotocol/ocp-spec/tree/main/schemas"
       weight: 101
     - name: "Python Library ↗"
       url: "https://github.com/opencontextprotocol/ocp-python"

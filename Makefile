@@ -27,8 +27,8 @@ serve: dev
 # Clean generated files
 clean:
 	@echo "Cleaning generated files..."
-	@rm -f content/documentation/specification/*-schema.md
-	@rm -rf public/
+	@rm -f docs/content/docs/specs/*-schema.md
+	@rm -rf docs/public/
 
 # Help
 help:
