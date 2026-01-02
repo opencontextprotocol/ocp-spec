@@ -1,6 +1,8 @@
 ---
 title: Introduction
 linkTitle: Documentation
+cascade:
+  type: docs
 ---
 
 Turn any OpenAPI spec into hundreds of agent tools instantly.
@@ -9,7 +11,7 @@ Turn any OpenAPI spec into hundreds of agent tools instantly.
 
 {{< cards >}}
 {{< card title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" link="tool-discovery/" icon="cog" >}}
-{{< card title="Registry" subtitle="Pre-indexed API catalog for speed" link="registry-client/" icon="collection" >}}
+{{< card title="Registry Client" subtitle="Pre-indexed API catalog for speed" link="registry-client/" icon="collection" >}}
 {{< card title="IDE Integration" subtitle="VS Code Language Model tools" link="ide-integration/" icon="code" >}}
 {{< card title="Context Protocol" subtitle="HTTP headers for state sharing" link="agent-context/" icon="chat" >}}
 {{< /cards >}}

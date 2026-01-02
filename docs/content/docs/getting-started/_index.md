@@ -125,7 +125,7 @@ Dive into the following sections to learn more about OCP:
 
 {{< cards >}}
 {{< card link="../tool-discovery/" title="Tool Discovery" subtitle="Auto-generate tools from OpenAPI specs" icon="cog" >}}
-{{< card link="../registry-client/" title="API Registry" subtitle="Fast lookup for popular APIs" icon="collection" >}}
+{{< card link="../registry-client/" title="Registry Client" subtitle="Fast lookup for popular APIs" icon="collection" >}}
 {{< card link="../ide-integration/" title="IDE Integration" subtitle="VS Code extension for AI agents" icon="code" >}}
 {{< card link="../agent-context/" title="Agent Context" subtitle="HTTP headers for persistent state" icon="chat" >}}
 {{< /cards >}}

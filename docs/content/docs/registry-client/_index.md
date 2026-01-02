@@ -8,7 +8,7 @@ cascade:
 ---
 
 {{< callout type="info" >}}
-This page covers the `OCPRegistry` SDK client for programmatic access to the registry. To browse available APIs and their tools, visit the [API Registry](/registry).
+This page covers the `OCPRegistry` SDK client for programmatic access to the registry. To browse available APIs and their tools, visit the [Registry](/registry).
 {{< /callout >}}
 
 Community registry providing instant access to pre-parsed API tools with intelligent discovery and error handling.
