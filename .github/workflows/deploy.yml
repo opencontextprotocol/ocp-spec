@@ -1,6 +1,7 @@
 name: Deploy
 
 on:
+  pull_request:
   workflow_dispatch:
 
 env:
@@ -8,7 +9,25 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.147.4'
+          extended: true
+      
+      - name: Build site
+        working-directory: ./docs
+        run: hugo --minify
+
   deploy:
+    needs: test
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
