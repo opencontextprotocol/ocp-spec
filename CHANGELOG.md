@@ -1,4 +1,11 @@
-## 0.1.0 (2026-01-02)
+## [0.1.1](https://github.com/opencontextprotocol/ocp-spec/compare/v0.1.0...v0.1.1) (2026-01-02)
+
+
+### Bug Fixes
+
+* update broken api-registry links to registry-client ([f4dd1ea](https://github.com/opencontextprotocol/ocp-spec/commit/f4dd1eaef796da307543c6c0e72faab855bf6eb2))
+
+## [0.1.0](https://github.com/opencontextprotocol/ocp-spec/compare/5ba6397f87d41fb8d3b9c2b61b990eb437c841ce...v0.1.0) (2026-01-02)
 
 
 ### ⚠ BREAKING CHANGES
