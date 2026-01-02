@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/opencontextprotocol/ocp-spec/compare/v0.1.1...v0.1.2) (2026-01-02)
+
+
+### Bug Fixes
+
+* update registry titles and links ([e6cb6c2](https://github.com/opencontextprotocol/ocp-spec/commit/e6cb6c2025a0f2b7d3a172cd98302cb0e542e9c3))
+
 ## [0.1.1](https://github.com/opencontextprotocol/ocp-spec/compare/v0.1.0...v0.1.1) (2026-01-02)
 
 
