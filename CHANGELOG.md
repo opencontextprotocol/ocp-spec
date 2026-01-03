@@ -1,3 +1,10 @@
+## [0.2.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.1.2...v0.2.0) (2026-01-03)
+
+
+### Features
+
+* add blog launch post and update configuration ([c9f40e4](https://github.com/opencontextprotocol/ocp-spec/commit/c9f40e4bbd61790d246be5b421fc91855f493291))
+
 ## [0.1.2](https://github.com/opencontextprotocol/ocp-spec/compare/v0.1.1...v0.1.2) (2026-01-02)
 
 
