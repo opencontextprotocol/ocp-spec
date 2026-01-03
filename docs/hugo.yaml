@@ -30,6 +30,16 @@ params:
       link: /
       width: 197
       height: 30
+  blog:
+    list:
+      displayTags: true
+  toc:
+    displayTags: true
+  params:
+  banner:
+    key: 'announcement-launch'
+    message: |
+      Open Context Protocol is live! 🚀 [Read the launch post]({{% ref "blog/2026-01-03-launch.md" %}})
   editURL:
     enable: true
     base: "https://github.com/opencontextprotocol/ocp-spec/edit/main/docs/content"
@@ -76,12 +86,16 @@ menu:
       name: Registry
       pageRef: /registry
       weight: 2
-    - name: Search
+    - identifier: blog
+      name: Blog
+      pageRef: /blog
       weight: 3
+    - name: Search
+      weight: 4
       params:
         type: search
     - name: GitHub
-      weight: 4
+      weight: 5
       url: "https://github.com/opencontextprotocol/ocp-spec"
       params:
         icon: github
