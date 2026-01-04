@@ -2,7 +2,7 @@
 FROM hugomods/hugo:exts-0.147.4 AS builder
 
 # Registry version to use for content generation (git ref: tag, branch, or commit SHA)
-ARG REGISTRY_VERSION=v0.5.1
+ARG REGISTRY_VERSION=v0.6.0
 
 # Install git and Python for content generation
 RUN apk add --no-cache git python3 py3-pip openssh-client
