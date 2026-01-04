@@ -1,3 +1,10 @@
+## [0.4.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.3.0...v0.4.0) (2026-01-04)
+
+
+### Features
+
+* add registry version argument for content generation ([71a0b91](https://github.com/opencontextprotocol/ocp-spec/commit/71a0b912f98babb9e1e41e061a1ddebce6484949))
+
 ## [0.3.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.2.0...v0.3.0) (2026-01-04)
 
 
