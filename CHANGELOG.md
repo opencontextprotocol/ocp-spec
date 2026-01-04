@@ -1,3 +1,10 @@
+## [0.3.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.2.0...v0.3.0) (2026-01-04)
+
+
+### Features
+
+* enable llms output format ([feb7516](https://github.com/opencontextprotocol/ocp-spec/commit/feb7516d24dddd5371c4b88345fd939ed9a3074a))
+
 ## [0.2.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.1.2...v0.2.0) (2026-01-03)
 
 
