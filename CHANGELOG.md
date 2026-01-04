@@ -1,3 +1,10 @@
+## [0.5.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.4.0...v0.5.0) (2026-01-04)
+
+
+### Features
+
+* update registry version to v0.6.0 ([ca4419d](https://github.com/opencontextprotocol/ocp-spec/commit/ca4419d85fdb18a418b1cfcfd6ac52f4395e40b6))
+
 ## [0.4.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.3.0...v0.4.0) (2026-01-04)
 
 
