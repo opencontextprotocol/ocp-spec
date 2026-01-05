@@ -1,3 +1,15 @@
+## [0.6.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.5.0...v0.6.0) (2026-01-05)
+
+
+### Features
+
+* add build scripts for registry content ([e1ca417](https://github.com/opencontextprotocol/ocp-spec/commit/e1ca41790cb249c4d3bb70f7bb9adccb4652ed8c))
+
+
+### Bug Fixes
+
+* streamline http descriptions in launch.md ([605bbed](https://github.com/opencontextprotocol/ocp-spec/commit/605bbed9a1d5775536ff1257b9d5f0ba81b58595))
+
 ## [0.5.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.4.0...v0.5.0) (2026-01-04)
 
 
