@@ -2,7 +2,7 @@
 FROM hugomods/hugo:exts-0.147.4 AS builder
 
 # Registry version to use for content generation (git ref: tag, branch, or commit SHA)
-ARG REGISTRY_VERSION=v0.7.0
+ARG REGISTRY_VERSION=v0.8.0
 
 # Install Node.js for content generation
 RUN apk add --no-cache nodejs npm
