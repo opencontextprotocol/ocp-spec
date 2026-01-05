@@ -1,0 +1,43 @@
+---
+{{ frontmatter | toyaml }}
+---
+
+The OCP Registry provides pre-configured OpenAPI specifications with OCP extensions, enabling your AI agents to seamlessly integrate with external services.
+
+{% raw %}{{< cards >}}
+{{< card link="catalog" title="Browse APIs" subtitle="Explore {% endraw %}{{ api_count }}{% raw %} pre-configured integrations" icon="collection" >}}
+{{< card link="authentication" title="Authentication" subtitle="Learn how to configure API credentials" icon="lock-closed" >}}
+{{< /cards >}}{% endraw %}
+
+## How It Works
+
+```python
+from ocp_agent import OCPAgent
+
+agent = OCPAgent()
+
+# Register an API with auth
+await agent.register_api(
+    'github',
+    headers={'Authorization': 'Bearer your_token'}
+)
+
+# Use any tool
+result = await agent.call_tool('reposGet', {
+    'owner': 'opencontextprotocol',
+    'repo': 'ocp-python'
+})
+```
+
+Each API in the registry includes:
+- 🛠️ **Pre-configured endpoints**: Ready to use without manual setup
+- 🔍 **Tool definitions**: Automatically discovered from OpenAPI specifications
+- 🔐 **Authentication guides**: Step-by-step credential configuration
+
+## Next
+
+Browse available APIs to get started:
+
+{% raw %}{{< cards >}}
+{{< card link="catalog" title="Browse APIs" subtitle="Explore all available integrations" icon="collection" >}}
+{{< /cards >}}{% endraw %}

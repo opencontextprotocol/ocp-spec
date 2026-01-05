@@ -1,0 +1,41 @@
+---
+{{ frontmatter | toyaml }}
+---
+
+{{ tool.description }}
+
+## Details
+
+- **Method**: `{{ tool.method | upper | default('GET') }}`
+- **Path**: `{{ tool.path | default('') }}`
+- **Operation ID**: `{{ tool.operation_id | default('N/A') }}`
+
+{% if tool.parameters %}
+## Parameters
+
+```json
+{{ tool.parameters | tojson }}
+```
+
+{% endif %}
+{% if tool.response_schema %}
+## Response Schema
+
+```json
+{{ tool.response_schema | tojson }}
+```
+
+{% endif %}
+## Usage
+
+```python
+from ocp_agent import OCPAgent
+
+agent = OCPAgent()
+await agent.register_api('{{ api_name }}')
+
+# Call this tool
+result = await agent.call_tool('{{ tool.name }}', {
+    # Add required parameters here
+})
+```

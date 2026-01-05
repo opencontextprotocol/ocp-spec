@@ -1,0 +1,29 @@
+---
+{{ frontmatter | toyaml }}
+---
+
+Discover and integrate with pre-configured APIs through the OCP Registry.
+
+{% raw %}{{< callout type="info" >}}{% endraw %}
+**Want to add your API to the registry?**
+- 👨‍💻 **Developers**: [Contribute an API](https://github.com/opencontextprotocol/ocp-registry/blob/main/CONTRIBUTING.md).. Submit a PR with your API metadata
+- 💬 **Requests**: [GitHub Discussions](https://github.com/orgs/opencontextprotocol/discussions).. Suggest APIs you'd like to see added
+{% raw %}{{< /callout >}}{% endraw %}
+
+{% for category, api_list in categories | dictsort %}
+### {{ category | title }}
+
+<div class="ocp-api-card-grid">
+{% for api in api_list | sort(attribute='display_name') %}
+<a href="{{ api.name }}/" class="ocp-api-card">
+  <div class="ocp-api-card-header">
+    <div class="ocp-api-card-icon">{% raw %}{{< icon "{% endraw %}{{ api.icon | default('globe') }}{% raw %}" >}}{% endraw %}</div>
+    <div class="ocp-api-card-title">{{ api.display_name }}</div>
+  </div>
+  <div class="ocp-api-card-description">{{ api.description }}</div>
+  <div class="ocp-api-card-meta">{{ api.tool_count }} tools</div>
+</a>
+{% endfor %}
+</div>
+
+{% endfor %}

@@ -1,0 +1,81 @@
+---
+{{ frontmatter | toyaml }}
+---
+
+All APIs in the OCP Registry require authentication to access their endpoints. This guide shows you how to configure authentication headers when using an OCP SDK or the VS Code extension.
+
+## SDK Libraries
+
+Pass authentication headers when registering an API. The SDK stores headers with the API client and automatically includes them in all requests.
+
+**Python:**
+
+```python
+from ocp_agent import OCPAgent
+
+agent = OCPAgent()
+await agent.register_api(
+    'github',
+    headers={'Authorization': 'Bearer your_token_here'}
+)
+```
+
+**JavaScript:**
+
+```javascript
+import { OCPAgent } from 'ocp-agent';
+
+const agent = new OCPAgent();
+await agent.registerApi('github', {
+  headers: { 'Authorization': 'Bearer your_token_here' }
+});
+```
+
+**Common authentication patterns:**
+- Bearer tokens: `{'Authorization': 'Bearer token'}`
+- API keys: `{'X-API-Key': 'key'}`
+- Basic auth: `{'Authorization': 'Basic base64_credentials'}`
+- Multiple headers: Pass multiple key-value pairs in the headers object
+
+For complete SDK documentation, see:
+- [Python Library](/docs/libraries/python)
+- [JavaScript Library](/docs/libraries/javascript)
+
+## VS Code Extension
+
+Configure API authentication in VS Code settings:
+
+1. Open settings (JSON mode): `Cmd/Ctrl + Shift + P` → "Preferences: Open User Settings (JSON)"
+2. Add `ocp.apiAuth` configuration:
+
+```json
+{
+  "ocp.apiAuth": {
+    "api-name": {
+      "Authorization": "Bearer your_token_here"
+    },
+    "another-api": {
+      "X-API-Key": "your_api_key",
+      "X-Custom-Header": "value"
+    }
+  }
+}
+```
+
+The extension automatically injects configured headers when the AI agent calls tools from the corresponding APIs. Credentials are stored securely in your VS Code settings and never exposed to the AI model.
+
+## Security Best Practices
+
+- **Never commit credentials** to version control
+- **Use environment variables** or secure configuration for storing tokens
+- **Rotate tokens regularly** and revoke unused ones
+- **Use least privilege** - only request necessary scopes/permissions
+- **Use test credentials** during development
+
+## Next
+
+Check individual API pages for credential details:
+
+{% raw %}{{< cards >}}
+{{< card link="../catalog" title="Browse APIs" icon="collection" subtitle="Explore APIs and their requirements" >}}
+{{< /cards >}}{% endraw %}
