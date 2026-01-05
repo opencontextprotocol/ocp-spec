@@ -43,11 +43,11 @@ See the [Authentication Guide](../../authentication) for general setup instructi
 
 This API provides **{{ tool_count }} tools** across various resource types.
 
-{% for resource_name, resource_tools in tools | groupby('resource') %}
-### {{ resource_name.split('.')[-1] }}
+{% for group in tools | groupby('resource') %}
+### {{ group[0] | resource_name }}
 
 <div class="ocp-badge-container">
-{% for tool in resource_tools | sort(attribute='name') %}
+{% for tool in group[1] | sort(attribute='name') %}
 <a href="tools/{{ tool.name | lower | replace('_', '-') | replace(' ', '-') }}" class="ocp-badge">
   <span class="ocp-badge-method {{ tool.method | lower | default('get') }}">{{ tool.method | upper | default('GET') }}</span>
   <span class="ocp-badge-name">{{ tool.name }}</span>

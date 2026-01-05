@@ -141,6 +141,11 @@ function setupNunjucks(templateDir) {
     return Object.entries(dict).sort((a, b) => a[0].localeCompare(b[0]));
   });
   
+  env.addFilter('resource_name', (name) => {
+    const segments = String(name).split('.');
+    return segments[segments.length - 1];
+  });
+  
   return env;
 }
 
