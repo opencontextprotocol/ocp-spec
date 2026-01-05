@@ -1,3 +1,10 @@
+## [0.7.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.6.0...v0.7.0) (2026-01-05)
+
+
+### Features
+
+* bump registry to v0.8.0 ([d942bff](https://github.com/opencontextprotocol/ocp-spec/commit/d942bff13c937bf4bf5894903e127b95d3a04b34))
+
 ## [0.6.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.5.0...v0.6.0) (2026-01-05)
 
 
