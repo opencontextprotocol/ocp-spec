@@ -3,7 +3,7 @@
 # Generate schema documentation from JSON schemas
 schemas:
 	@echo "Generating schema documentation..."
-	@node build_schemas.js
+	@node scripts/build-schemas.js
 
 # Build the Hugo site
 build: schemas
