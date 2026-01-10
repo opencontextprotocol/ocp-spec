@@ -4,8 +4,8 @@ __pycache__/
 *$py.class
 
 # Node.js
-node_modules/
-package-lock.json
+scripts/node_modules/
+scripts/package-lock.json
 
 # Generated registry content (created during build)
 docs/content/registry/

@@ -52,6 +52,7 @@ npm run generate-content docs/content/registry
 Install dependencies with npm:
 
 ```bash
+cd scripts
 npm install
 ```
 
@@ -76,8 +77,8 @@ The Dockerfile uses this script during the build process:
 ```dockerfile
 # Install Node.js and dependencies
 RUN apk add --no-cache nodejs npm
-COPY package.json package-lock.json* ./
-RUN npm install --production
+COPY . .
+RUN cd scripts && npm install --production
 
 # Generate content from registry
 RUN node scripts/generate-content.js \

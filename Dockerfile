@@ -10,12 +10,11 @@ RUN apk add --no-cache nodejs npm
 # Set working directory
 WORKDIR /src
 
-# Copy package files and install dependencies
-COPY package.json package-lock.json* ./
-RUN npm install --production
-
-# Copy entire repo including scripts
+# Copy entire repo
 COPY . .
+
+# Install Node.js dependencies
+RUN cd scripts && npm install --production
 
 # Generate registry content pages by fetching data from GitHub
 # Script fetches meta.yaml and tools.json files directly from the registry repo

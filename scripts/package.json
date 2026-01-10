@@ -1,15 +1,15 @@
 {
-  "name": "ocp-spec-scripts",
+  "name": "ocp-spec",
   "version": "1.0.0",
   "private": true,
   "description": "Build scripts for OCP specification site",
   "type": "module",
   "scripts": {
-    "generate-content": "node scripts/generate-content.js",
-    "build-schemas": "node scripts/build-schemas.js"
+    "generate-content": "node generate-content.js",
+    "build-schemas": "node build-schemas.js"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "nunjucks": "^3.2.4"
   },
   "engines": {
