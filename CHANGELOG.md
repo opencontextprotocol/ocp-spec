@@ -1,3 +1,10 @@
+## [0.7.1](https://github.com/opencontextprotocol/ocp-spec/compare/v0.7.0...v0.7.1) (2026-01-05)
+
+
+### Bug Fixes
+
+* add resource_name filter for api-page template ([db52274](https://github.com/opencontextprotocol/ocp-spec/commit/db52274ee3e520a4513b66896410f491cbd419c4))
+
 ## [0.7.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.6.0...v0.7.0) (2026-01-05)
 
 
