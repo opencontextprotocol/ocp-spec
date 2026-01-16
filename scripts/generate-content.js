@@ -7,18 +7,24 @@
  * using Nunjucks to generate Hugo markdown pages.
  */
 
-import { writeFile, mkdir } from 'fs/promises';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import yaml from 'js-yaml';
-import nunjucks from 'nunjucks';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { writeFile, mkdir } = require('fs/promises');
+const { join } = require('path');
+const yaml = require('js-yaml');
+const nunjucks = require('nunjucks');
 
 // Configuration
-const DEFAULT_REGISTRY_REPO = 'opencontextprotocol/ocp-registry';
-const DEFAULT_REGISTRY_REF = 'main';
+const OUTPUT_DIR = join(__dirname, '..', 'docs', 'content', 'docs', 'registry');
+const TEMPLATE_DIR = join(__dirname, 'templates');
+const REGISTRY_REPO = 'opencontextprotocol/ocp-registry';
+const REGISTRY_REF = 'main';
+
+/**
+ * Get relative path from project root
+ */
+function getRelativePath(absolutePath) {
+  const projectRoot = join(__dirname, '..');
+  return absolutePath.replace(projectRoot + '/', '');
+}
 
 /**
  * Fetch a file from GitHub raw content
@@ -67,7 +73,7 @@ async function listRegistryApis(repo, ref) {
 async function loadApiMeta(repo, ref, apiName) {
   const content = await fetchGitHubFile(repo, ref, `data/apis/${apiName}/meta.yaml`);
   if (!content) {
-    console.log(`⚠️  No meta.yaml found for ${apiName}`);
+    console.log(`Warning: No meta.yaml found for ${apiName}`);
     return null;
   }
   
@@ -85,7 +91,7 @@ async function loadApiMeta(repo, ref, apiName) {
 async function loadApiTools(repo, ref, apiName) {
   const content = await fetchGitHubFile(repo, ref, `data/apis/${apiName}/tools.json`);
   if (!content) {
-    console.log(`⚠️  No tools.json found for ${apiName}`);
+    console.log(`Warning: No tools.json found for ${apiName}`);
     return { version: null, tools: [] };
   }
   
@@ -209,7 +215,7 @@ async function generateApiPage(env, meta, apiVersion, tools, outputDir) {
     // Write content
     const outputFile = join(apiOutputDir, '_index.md');
     await writeFile(outputFile, content, 'utf8');
-    console.log(`✅ Generated API page: ${outputFile}`);
+    console.log(`✓ Generated ${getRelativePath(outputFile)}`);
     return true;
   } catch (error) {
     console.error(`❌ Error generating API page for ${meta.name}: ${error.message}`);
@@ -271,7 +277,7 @@ async function generateToolPages(env, meta, tools, outputDir) {
   }
   
   if (count > 0) {
-    console.log(`✅ Generated ${count} tool pages for ${meta.display_name}`);
+    console.log(`✓ Generated ${count} tool pages for ${meta.display_name}`);
   }
   
   return count;
@@ -295,7 +301,7 @@ async function generateRegistryIndex(env, apiCount, outputDir) {
     
     const outputFile = join(outputDir, '_index.md');
     await writeFile(outputFile, content, 'utf8');
-    console.log(`✅ Generated registry index: ${outputFile}`);
+    console.log(`✓ Generated ${getRelativePath(outputFile)}`);
     return true;
   } catch (error) {
     console.error(`❌ Error generating registry index: ${error.message}`);
@@ -327,7 +333,7 @@ async function generateCatalogPage(env, apisByCategory, outputDir) {
     
     const outputFile = join(catalogDir, '_index.md');
     await writeFile(outputFile, content, 'utf8');
-    console.log(`✅ Generated catalog page: ${outputFile}`);
+    console.log(`✓ Generated ${getRelativePath(outputFile)}`);
     return true;
   } catch (error) {
     console.error(`❌ Error generating catalog page: ${error.message}`);
@@ -355,7 +361,7 @@ async function generateAuthenticationPage(env, outputDir) {
     
     const outputFile = join(authDir, '_index.md');
     await writeFile(outputFile, content, 'utf8');
-    console.log(`✅ Generated authentication page: ${outputFile}`);
+    console.log(`✓ Generated ${getRelativePath(outputFile)}`);
     return true;
   } catch (error) {
     console.error(`❌ Error generating authentication page: ${error.message}`);
@@ -367,40 +373,24 @@ async function generateAuthenticationPage(env, outputDir) {
  * Main function
  */
 async function main() {
-  const args = process.argv.slice(2);
+  await mkdir(OUTPUT_DIR, { recursive: true });
   
-  if (args.length < 1 || args.length > 3) {
-    console.log('Usage: node generate-content.js <output_directory> [registry_repo] [registry_ref]');
-    console.log('  output_directory: Where to generate Hugo content');
-    console.log('  registry_repo: GitHub repo (default: opencontextprotocol/ocp-registry)');
-    console.log('  registry_ref: Git ref - branch/tag/commit (default: main)');
-    process.exit(1);
-  }
+  const env = setupNunjucks(TEMPLATE_DIR);
   
-  const outputDir = args[0];
-  const registryRepo = args[1] || DEFAULT_REGISTRY_REPO;
-  const registryRef = args[2] || DEFAULT_REGISTRY_REF;
-  
-  await mkdir(outputDir, { recursive: true });
-  
-  const templateDir = join(__dirname, 'templates');
-  const env = setupNunjucks(templateDir);
-  
-  console.log(`📁 Registry source: ${registryRepo}@${registryRef}`);
-  console.log(`📁 Template directory: ${templateDir}`);
-  console.log(`📁 Output directory: ${outputDir}`);
+  console.log(`Registry source: ${REGISTRY_REPO}@${REGISTRY_REF}`);
+  console.log(`Output directory: ${getRelativePath(OUTPUT_DIR)}`);
   console.log();
   
   // List all APIs from registry
-  console.log('🔍 Fetching API list from registry...');
-  const apiNames = await listRegistryApis(registryRepo, registryRef);
+  console.log('Fetching API list from registry...');
+  const apiNames = await listRegistryApis(REGISTRY_REPO, REGISTRY_REF);
   
   if (apiNames.length === 0) {
-    console.error('❌ No APIs found in registry');
+    console.error('Error: No APIs found in registry');
     process.exit(1);
   }
   
-  console.log(`✅ Found ${apiNames.length} APIs: ${apiNames.join(', ')}`);
+  console.log(`Found ${apiNames.length} APIs: ${apiNames.join(', ')}`);
   console.log();
   
   // Process all APIs
@@ -409,22 +399,22 @@ async function main() {
   const apisByCategory = {};
   
   for (const apiName of apiNames.sort()) {
-    console.log(`📦 Processing ${apiName}...`);
+    console.log(`Processing ${apiName}...`);
     
     // Load metadata
-    const meta = await loadApiMeta(registryRepo, registryRef, apiName);
+    const meta = await loadApiMeta(REGISTRY_REPO, REGISTRY_REF, apiName);
     if (!meta) continue;
     
     // Load tools
-    const { version: apiVersion, tools } = await loadApiTools(registryRepo, registryRef, apiName);
+    const { version: apiVersion, tools } = await loadApiTools(REGISTRY_REPO, REGISTRY_REF, apiName);
     
     // Generate API page
-    if (!await generateApiPage(env, meta, apiVersion, tools, outputDir)) {
+    if (!await generateApiPage(env, meta, apiVersion, tools, OUTPUT_DIR)) {
       continue;
     }
     
     // Generate tool pages
-    const toolCount = await generateToolPages(env, meta, tools, outputDir);
+    const toolCount = await generateToolPages(env, meta, tools, OUTPUT_DIR);
     totalTools += toolCount;
     
     // Track for catalog
@@ -446,20 +436,17 @@ async function main() {
   }
   
   // Generate index pages
-  console.log('📄 Generating index pages...');
-  await generateRegistryIndex(env, apis.length, outputDir);
-  await generateCatalogPage(env, apisByCategory, outputDir);
-  await generateAuthenticationPage(env, outputDir);
+  console.log('Generating index pages...');
+  await generateRegistryIndex(env, apis.length, OUTPUT_DIR);
+  await generateCatalogPage(env, apisByCategory, OUTPUT_DIR);
+  await generateAuthenticationPage(env, OUTPUT_DIR);
   
   // Summary
   console.log();
-  console.log('='.repeat(60));
-  console.log('✨ Content generation complete!');
-  console.log(`   APIs processed: ${apis.length}`);
-  console.log(`   Total tools: ${totalTools}`);
-  console.log(`   Categories: ${Object.keys(apisByCategory).length}`);
-  console.log(`   Output: ${outputDir}`);
-  console.log('='.repeat(60));
+  console.log('Content generation complete!');
+  console.log(`  APIs processed: ${apis.length}`);
+  console.log(`  Total tools: ${totalTools}`);
+  console.log(`  Categories: ${Object.keys(apisByCategory).length}`);
 }
 
 main().catch(error => {

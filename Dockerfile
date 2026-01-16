@@ -13,6 +13,12 @@ WORKDIR /src
 # Copy entire repo
 COPY . .
 
+# Install Tailwind CSS CLI
+RUN npm install -g @tailwindcss/cli
+
+# Build Tailwind CSS styles
+RUN tailwindcss -o ./styles/main.css --minify
+
 # Install Node.js dependencies
 RUN cd scripts && npm install --production
 
@@ -31,9 +37,6 @@ FROM nginx:alpine
 
 # Copy built site from builder
 COPY --from=builder /src/docs/public /usr/share/nginx/html
-
-# Copy custom nginx config (if needed)
-# COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port 80
 EXPOSE 80

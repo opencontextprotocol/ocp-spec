@@ -4,8 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SCHEMAS_DIR = path.join(__dirname, 'schemas');
-const OUTPUT_DIR = path.join(__dirname, 'docs', 'content', 'docs', 'specs');
+const SCHEMAS_DIR = path.join(__dirname, '..', 'schemas');
+const OUTPUT_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs', 'specs');
+const DOCS_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs');
 
 // Schema file mappings
 const SCHEMA_CONFIGS = [
@@ -93,11 +94,10 @@ function generateNavigation(weight) {
   const specWeight = parseInt(specWeightMatch[1]);
   
   // Find the next section after spec by scanning all docs pages
-  const docsDir = path.join(__dirname, 'docs', 'content', 'docs');
-  const docsSections = fs.readdirSync(docsDir, { withFileTypes: true })
+  const docsSections = fs.readdirSync(DOCS_DIR, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => {
-      const indexPath = path.join(docsDir, dirent.name, '_index.md');
+      const indexPath = path.join(DOCS_DIR, dirent.name, '_index.md');
       if (fs.existsSync(indexPath)) {
         const content = fs.readFileSync(indexPath, 'utf8');
         const weightMatch = content.match(/weight:\s*(\d+)/);

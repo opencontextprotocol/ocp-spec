@@ -1,9 +1,4 @@
 {
-  "name": "ocp-spec",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Build scripts for OCP specification site",
-  "type": "module",
   "scripts": {
     "generate-content": "node generate-content.js",
     "build-schemas": "node build-schemas.js"

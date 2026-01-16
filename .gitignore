@@ -4,11 +4,8 @@ __pycache__/
 *$py.class
 
 # Node.js
-scripts/node_modules/
-scripts/package-lock.json
-
-# Generated registry content (created during build)
-docs/content/registry/
+node_modules/
+package-lock.json
 
 # C extensions
 *.so
@@ -366,3 +363,9 @@ vite.config.ts.timestamp-*
 
 # Agent context files
 .agent
+
+# Hugo content
+public/
+registry/
+.hugo_build.lock
+custom.css
