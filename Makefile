@@ -41,7 +41,7 @@ clean:
 	@rm -f docs/assets/css/custom.css
 	@rm -f docs/content/docs/specs/*-schema.md
 	@rm -f docs/.hugo_build.lock
-	@rm -rf docs/content/docs/registry/
+	@rm -rf docs/content/registry/*.md
 	@rm -rf docs/public/
 
 # Help

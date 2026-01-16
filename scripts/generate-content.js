@@ -13,7 +13,7 @@ const yaml = require('js-yaml');
 const nunjucks = require('nunjucks');
 
 // Configuration
-const OUTPUT_DIR = join(__dirname, '..', 'docs', 'content', 'docs', 'registry');
+const OUTPUT_DIR = join(__dirname, '..', 'docs', 'content', 'registry');
 const TEMPLATE_DIR = join(__dirname, 'templates');
 const REGISTRY_REPO = 'opencontextprotocol/ocp-registry';
 const REGISTRY_REF = 'main';
