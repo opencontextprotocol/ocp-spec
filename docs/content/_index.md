@@ -13,7 +13,7 @@ layout: "hextra-home"
 {{< /hextra/hero-headline >}}
 
 {{< hextra/hero-subtitle style="margin-bottom: 3rem;" >}}
-  Automatic tool discovery with persistent context <br/> using only HTTP headers and open standards.
+  Automatic tool discovery and persistent context <br/> for agents, built directly on OpenAPI.
 {{< /hextra/hero-subtitle >}}
 
 {{< hextra/hero-button text="Get Started" link="docs/getting-started/" style="margin-bottom: 1.5rem;" >}}
