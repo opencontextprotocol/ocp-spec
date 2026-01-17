@@ -8,7 +8,7 @@ npm:
 # Build CSS with Tailwind
 css:
 	@echo "Building CSS..."
-	@cd docs && tailwindcss -o ./assets/css/custom.css
+	@cd docs && tailwindcss -i ./assets/css/styles.css -o ./assets/css/custom.css
 
 # Generate schema documentation
 schemas:
