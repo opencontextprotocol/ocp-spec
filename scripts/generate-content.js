@@ -290,7 +290,7 @@ async function generateRegistryIndex(env, apiCount, outputDir) {
   try {
     const frontmatter = {
       title: 'Registry',
-      description: 'Pre-configured API integrations for OCP agents',
+      description: 'Pre-indexed API integrations for OCP agents',
       weight: 1,
       type: 'docs',
       sidebar: { exclude: true }

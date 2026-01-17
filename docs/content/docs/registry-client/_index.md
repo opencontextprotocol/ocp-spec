@@ -11,7 +11,7 @@ cascade:
 This page covers the `OCPRegistry` SDK client for programmatic access to the registry. To browse available APIs and their tools, visit the [Registry](/registry).
 {{< /callout >}}
 
-Community registry providing instant access to pre-parsed API tools with intelligent discovery and error handling.
+Community registry providing instant access to pre-indexed API tools with intelligent discovery and error handling.
 
 ```python
 from ocp_agent import OCPRegistry
@@ -113,7 +113,7 @@ The registry accelerates the lookup chain from [Tool Discovery](/docs/tool-disco
 
 1. **Memory Cache** → Already registered APIs
 2. **Local Storage** → Cached from previous sessions
-3. **Registry Lookup** → Pre-parsed tools
+3. **Registry Lookup** → Pre-indexed tools
 4. **Direct OpenAPI** → Parse on demand
 
 ## Next: IDE Integration
