@@ -95,7 +95,7 @@ menu:
       pageRef: /registry
       params:
         type: link
-        icon: library
+        icon: collection
       weight: 3
     - name: Search
       weight: 4
