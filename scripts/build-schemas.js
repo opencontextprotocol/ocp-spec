@@ -5,7 +5,7 @@ const path = require('path');
 
 // Configuration
 const SCHEMAS_DIR = path.join(__dirname, '..', 'schemas');
-const OUTPUT_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs', 'specification');
+const OUTPUT_DIR = path.join(__dirname, '..', 'docs', 'content', 'specs');
 const DOCS_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs');
 
 // Schema file mappings
@@ -122,13 +122,13 @@ function generateNavigation(weight) {
   // Previous page
   if (weight === 1) {
     // First page: prev is always the parent spec page
-    navigation += '\nprev: /docs/specs/';
+    navigation += '\nprev: /specs/';
   } else {
     // Find previous page by weight
     const prevConfig = sortedConfigs[currentIndex - 1];
     if (prevConfig) {
       const prevSlug = prevConfig.outputFile.replace('.md', '/');
-      navigation += `\nprev: /docs/specs/${prevSlug}`;
+      navigation += `\nprev: /specs/${prevSlug}`;
     }
   }
   
@@ -136,14 +136,14 @@ function generateNavigation(weight) {
   if (currentIndex === sortedConfigs.length - 1) {
     // Last page: next is the section after spec
     if (nextSectionAfterSpec) {
-      navigation += `\nnext: /docs/${nextSectionAfterSpec.name}/`;
+      navigation += `\nnext: /${nextSectionAfterSpec.name}/`;
     }
   } else {
     // Find next page by weight
     const nextConfig = sortedConfigs[currentIndex + 1];
     if (nextConfig) {
       const nextSlug = nextConfig.outputFile.replace('.md', '/');
-      navigation += `\nnext: /docs/specs/${nextSlug}`;
+      navigation += `\nnext: /specs/${nextSlug}`;
     }
   }
   
@@ -404,10 +404,10 @@ if (fs.existsSync(specIndexPath)) {
   
   // Update or add next navigation to point to first schema page
   if (specContent.includes('next:')) {
-    specContent = specContent.replace(/next:\s*[^\n]+/, `next: /docs/specs/${firstSchemaSlug}`);
+    specContent = specContent.replace(/next:\s*[^\n]+/, `next: /specs/${firstSchemaSlug}`);
   } else {
     // Add next after weight line
-    specContent = specContent.replace(/(weight:\s*\d+)/, `$1\nnext: /docs/specs/${firstSchemaSlug}`);
+    specContent = specContent.replace(/(weight:\s*\d+)/, `$1\nnext: /specs/${firstSchemaSlug}`);
   }
   
   fs.writeFileSync(specIndexPath, specContent, 'utf8');

@@ -90,6 +90,10 @@ menu:
       name: Documentation
       pageRef: /docs
       weight: 1
+    - identifier: specification
+      name: Specification
+      pageRef: /specs
+      weight: 1
     - identifier: blog
       name: Blog
       pageRef: /blog
