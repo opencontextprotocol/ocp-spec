@@ -352,7 +352,7 @@ async function generateAuthenticationPage(env, outputDir) {
     const frontmatter = {
       title: 'Authentication',
       description: 'Learn how to configure authentication for OCP Registry APIs',
-      weight: 10,
+      weight: 11,
       type: 'docs'
     };
     
