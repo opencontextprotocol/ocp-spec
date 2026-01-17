@@ -5,7 +5,7 @@ const path = require('path');
 
 // Configuration
 const SCHEMAS_DIR = path.join(__dirname, '..', 'schemas');
-const OUTPUT_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs', 'specs');
+const OUTPUT_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs', 'specification');
 const DOCS_DIR = path.join(__dirname, '..', 'docs', 'content', 'docs');
 
 // Schema file mappings
