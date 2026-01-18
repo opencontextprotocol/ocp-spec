@@ -1,0 +1,18 @@
+---
+{{ frontmatter | toyaml }}
+---
+
+Browse APIs in the **{{ frontmatter.title }}** category.
+
+<div class="ocp-api-card-grid">
+{% for api in apis | sort(attribute='display_name') %}
+<a href="{{ api.href }}" class="ocp-api-card">
+  <div class="ocp-api-card-header">
+    <div class="ocp-api-card-icon">{% raw %}{{< icon "{% endraw %}{{ api.icon | default('globe') }}{% raw %}" >}}{% endraw %}</div>
+    <div class="ocp-api-card-title">{{ api.display_name }}</div>
+  </div>
+  <div class="ocp-api-card-description">{{ api.description }}</div>
+  <div class="ocp-api-card-meta">{{ api.tool_count }} tools</div>
+</a>
+{% endfor %}
+</div>

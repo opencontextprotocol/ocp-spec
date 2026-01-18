@@ -18,6 +18,45 @@ const TEMPLATE_DIR = join(__dirname, 'templates');
 const REGISTRY_REPO = 'opencontextprotocol/ocp-registry';
 const REGISTRY_REF = 'main';
 
+function titleCase(value) {
+  const s = String(value || '').trim();
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function getCategoryIcon(category) {
+  const key = String(category || '').trim().toLowerCase();
+  const map = {
+    communication: 'chat',
+    development: 'code',
+    finance: 'credit-card',
+    infrastructure: 'server',
+    productivity: 'document'
+  };
+  return map[key] || 'collection';
+}
+
+function buildApiModel(meta, apiVersion, tools, outputDir) {
+  const category = meta.category;
+  const apiName = meta.name;
+
+  const apiDir = join(outputDir, 'catalog', category, apiName);
+  const toolsDir = join(apiDir, 'tools');
+
+  return {
+    meta,
+    apiVersion,
+    tools,
+    category,
+    categoryTitle: titleCase(category),
+    paths: {
+      apiDir,
+      apiIndexFile: join(apiDir, '_index.md'),
+      toolsDir
+    }
+  };
+}
+
 /**
  * Get relative path from project root
  */
@@ -158,10 +197,10 @@ function setupNunjucks(templateDir) {
 /**
  * Generate main API page
  */
-async function generateApiPage(env, meta, apiVersion, tools, outputDir) {
+async function generateApiPage(env, apiModel) {
   try {
-    const apiOutputDir = join(outputDir, 'catalog', meta.name);
-    await mkdir(apiOutputDir, { recursive: true });
+    const { meta, apiVersion, tools } = apiModel;
+    await mkdir(apiModel.paths.apiDir, { recursive: true });
     
     // Prepare authentication data
     const authConfig = meta.auth_config || {};
@@ -213,9 +252,8 @@ async function generateApiPage(env, meta, apiVersion, tools, outputDir) {
     const content = env.render('api-page.md.j2', context);
     
     // Write content
-    const outputFile = join(apiOutputDir, '_index.md');
-    await writeFile(outputFile, content, 'utf8');
-    console.log(`✓ Generated ${getRelativePath(outputFile)}`);
+    await writeFile(apiModel.paths.apiIndexFile, content, 'utf8');
+    console.log(`✓ Generated ${getRelativePath(apiModel.paths.apiIndexFile)}`);
     return true;
   } catch (error) {
     console.error(`❌ Error generating API page for ${meta.name}: ${error.message}`);
@@ -227,15 +265,15 @@ async function generateApiPage(env, meta, apiVersion, tools, outputDir) {
 /**
  * Generate individual tool pages
  */
-async function generateToolPages(env, meta, tools, outputDir) {
+async function generateToolPages(env, apiModel) {
+  const { meta, tools } = apiModel;
   if (!tools || tools.length === 0) return 0;
   
   let count = 0;
   
   for (const tool of tools) {
     try {
-      const toolsDir = join(outputDir, 'catalog', meta.name, 'tools');
-      await mkdir(toolsDir, { recursive: true });
+      await mkdir(apiModel.paths.toolsDir, { recursive: true });
       
       // Generate frontmatter
       const frontmatter = {
@@ -267,7 +305,7 @@ async function generateToolPages(env, meta, tools, outputDir) {
       
       // Write content
       const toolFilename = tool.name.replace(/[_\s]/g, '-').toLowerCase();
-      const outputFile = join(toolsDir, `${toolFilename}.md`);
+      const outputFile = join(apiModel.paths.toolsDir, `${toolFilename}.md`);
       await writeFile(outputFile, content, 'utf8');
       count++;
     } catch (error) {
@@ -324,10 +362,17 @@ async function generateCatalogPage(env, apisByCategory, outputDir) {
       type: 'docs'
     };
     
-    const context = {
-      frontmatter,
-      categories: apisByCategory
-    };
+    const categories = Object.keys(apisByCategory)
+      .sort((a, b) => a.localeCompare(b))
+      .map(category => ({
+        name: category,
+        title: titleCase(category),
+        href: `${category}/`,
+        icon: getCategoryIcon(category),
+        api_count: apisByCategory[category].length
+      }));
+
+    const context = { frontmatter, categories };
     
     const content = env.render('catalog.md.j2', context);
     
@@ -339,6 +384,38 @@ async function generateCatalogPage(env, apisByCategory, outputDir) {
     console.error(`❌ Error generating catalog page: ${error.message}`);
     return false;
   }
+}
+
+/**
+ * Generate category pages
+ */
+async function generateCategoryPages(env, apisByCategory, outputDir) {
+  let count = 0;
+
+  for (const category of Object.keys(apisByCategory).sort((a, b) => a.localeCompare(b))) {
+    const categoryDir = join(outputDir, 'catalog', category);
+    await mkdir(categoryDir, { recursive: true });
+
+    const frontmatter = {
+      title: titleCase(category),
+      description: `APIs in the ${titleCase(category)} category`,
+      type: 'docs'
+    };
+
+    const context = {
+      frontmatter,
+      category,
+      apis: apisByCategory[category]
+    };
+
+    const content = env.render('category.md.j2', context);
+    const outputFile = join(categoryDir, '_index.md');
+    await writeFile(outputFile, content, 'utf8');
+    console.log(`✓ Generated ${getRelativePath(outputFile)}`);
+    count++;
+  }
+
+  return count;
 }
 
 /**
@@ -407,28 +484,30 @@ async function main() {
     
     // Load tools
     const { version: apiVersion, tools } = await loadApiTools(REGISTRY_REPO, REGISTRY_REF, apiName);
+
+    const apiModel = buildApiModel(meta, apiVersion, tools, OUTPUT_DIR);
     
     // Generate API page
-    if (!await generateApiPage(env, meta, apiVersion, tools, OUTPUT_DIR)) {
+    if (!await generateApiPage(env, apiModel)) {
       continue;
     }
     
     // Generate tool pages
-    const toolCount = await generateToolPages(env, meta, tools, OUTPUT_DIR);
+    const toolCount = await generateToolPages(env, apiModel);
     totalTools += toolCount;
     
-    // Track for catalog
-    const category = meta.category || 'Other';
-    if (!apisByCategory[category]) {
-      apisByCategory[category] = [];
+    // Track for catalog/category pages
+    if (!apisByCategory[meta.category]) {
+      apisByCategory[meta.category] = [];
     }
-    
-    apisByCategory[category].push({
+
+    apisByCategory[meta.category].push({
       name: meta.name,
       display_name: meta.display_name,
       description: meta.description,
       icon: meta.icon || 'globe',
-      tool_count: tools.length
+      tool_count: tools.length,
+      href: `${meta.name}/`
     });
     
     apis.push(meta);
@@ -439,6 +518,7 @@ async function main() {
   console.log('Generating index pages...');
   await generateRegistryIndex(env, apis.length, OUTPUT_DIR);
   await generateCatalogPage(env, apisByCategory, OUTPUT_DIR);
+  await generateCategoryPages(env, apisByCategory, OUTPUT_DIR);
   await generateAuthenticationPage(env, OUTPUT_DIR);
   
   // Summary
