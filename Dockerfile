@@ -1,11 +1,8 @@
 # Multi-stage build for Hugo site
-FROM hugomods/hugo:exts-0.147.4 AS builder
+FROM hugomods/hugo:exts-0.154.5 AS builder
 
 # Registry version to use for content generation (git ref: tag, branch, or commit SHA)
 ARG REGISTRY_VERSION=v0.8.0
-
-# Install Node.js for content generation
-RUN apk add --no-cache nodejs npm
 
 # Set working directory
 WORKDIR /src
@@ -14,10 +11,16 @@ WORKDIR /src
 COPY . .
 
 # Install Tailwind CSS CLI
-RUN npm install -g @tailwindcss/cli
+RUN wget https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.18/tailwindcss-linux-x64-musl \
+  && mv tailwindcss-linux-x64-musl tailwindcss \
+  && chmod +x tailwindcss \
+  && ./tailwindcss --version
 
 # Build Tailwind CSS styles
-RUN tailwindcss -o ./styles/main.css --minify
+RUN ./tailwindcss \
+  -i docs/assets/css/styles.css \
+  -o docs/assets/css/custom.css \
+  --minify
 
 # Install Node.js dependencies
 RUN cd scripts && npm install --production

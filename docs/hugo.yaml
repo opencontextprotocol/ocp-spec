@@ -13,7 +13,7 @@ outputs:
 module:
   hugoVersion:
     extended: true
-    min: "0.147.0"
+    min: "0.154.5"
   imports:
     - path: github.com/imfing/hextra
 
