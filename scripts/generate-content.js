@@ -214,7 +214,6 @@ async function generateApiPage(env, apiModel) {
       title: meta.display_name,
       description: meta.description,
       weight: 10,
-      type: 'docs',
       params: {
         api_name: meta.name,
         api_version: apiVersion,
@@ -280,7 +279,6 @@ async function generateToolPages(env, apiModel) {
         title: tool.name,
         description: tool.description || '',
         weight: 20,
-        type: 'docs',
         sidebar: { exclude: true },
         params: {
           tool_name: tool.name,
@@ -330,7 +328,7 @@ async function generateRegistryIndex(env, apiCount, outputDir) {
       title: 'Registry',
       description: 'Pre-indexed API integrations for OCP agents',
       weight: 1,
-      type: 'docs',
+      cascade: { type: 'docs' },
       sidebar: { exclude: true }
     };
     
@@ -358,8 +356,7 @@ async function generateCatalogPage(env, apisByCategory, outputDir) {
     const frontmatter = {
       title: 'Browse APIs',
       description: 'Explore all APIs available in the OCP Registry',
-      weight: 10,
-      type: 'docs'
+      weight: 10
     };
     
     const categories = Object.keys(apisByCategory)
@@ -398,8 +395,7 @@ async function generateCategoryPages(env, apisByCategory, outputDir) {
 
     const frontmatter = {
       title: titleCase(category),
-      description: `APIs in the ${titleCase(category)} category`,
-      type: 'docs'
+      description: `APIs in the ${titleCase(category)} category`
     };
 
     const context = {
@@ -429,8 +425,7 @@ async function generateAuthenticationPage(env, outputDir) {
     const frontmatter = {
       title: 'Authentication',
       description: 'Learn how to configure authentication for OCP Registry APIs',
-      weight: 11,
-      type: 'docs'
+      weight: 11
     };
     
     const context = { frontmatter };
