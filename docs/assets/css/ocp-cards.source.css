@@ -1,12 +1,6 @@
 /* OCP Registry Cards */
 
 .ocp-card-grid {
-  @apply ocp:grid ocp:grid-cols-1 ocp:md:grid-cols-2 ocp:lg:grid-cols-3 ocp:gap-4 ocp:mt-4 ocp:mb-8;
-}
-
-/* OCP Registry Cards */
-
-.ocp-card-grid {
   @apply ocp:grid ocp:gap-4 ocp:mt-4 ocp:mb-8;
 }
 
@@ -52,18 +46,13 @@
   @apply ocp:text-[10px] ocp:leading-none;
   @apply ocp:rounded-xs;
 
-  /* Brighter badge fill, cut-out text (matches page/card background) */
-  @apply ocp:text-white;
-  @apply ocp:dark:text-gray-900;
+  @apply ocp:transition-colors;
 
-  /* Subtle HUD texture (Tailwind can't express this gradient via @apply) */
-  --ocp-meta-bg: #00ABAD;
-  --ocp-meta-dot: #00797A;
+  @apply ocp:bg-teal-100/50 ocp:text-teal-700;
+  @apply ocp:dark:bg-teal-950/30 ocp:dark:text-teal-300;
 
-  background-color: var(--ocp-meta-bg);
-  background-image: radial-gradient(circle at 0.4px 0.4px, var(--ocp-meta-dot) 0.4px, transparent 0);
-  background-size: 2.5px 2.5px;
-  background-position: 0 0;
+  @apply ocp:hover:bg-teal-100;
+  @apply ocp:dark:hover:bg-teal-950/50;
 }
 
 /* API variant */

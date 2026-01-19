@@ -12,7 +12,7 @@ Browse APIs in the **{{ frontmatter.title }}** category.
 		<div class="ocp-card__title">{{ api.display_name }}</div>
 	</div>
 	<div class="ocp-card__description">{{ api.description }}</div>
-	<div class="ocp-card__meta">{{ api.tool_count }} tools</div>
+	<div class="ocp-card__meta">{% if api.tool_count == 1 %}1 tool{% else %}{{ api.tool_count }} tools{% endif %}</div>
 </a>
 {% endfor %}
 </div>
