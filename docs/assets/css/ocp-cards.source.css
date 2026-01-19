@@ -61,7 +61,7 @@
   --ocp-meta-dot: #00797A;
 
   background-color: var(--ocp-meta-bg);
-  background-image: radial-gradient(circle at 1px 1px, var(--ocp-meta-dot) 0.5px, transparent 0);
+  background-image: radial-gradient(circle at 0.4px 0.4px, var(--ocp-meta-dot) 0.4px, transparent 0);
   background-size: 2.5px 2.5px;
   background-position: 0 0;
 }
