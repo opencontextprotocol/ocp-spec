@@ -1,3 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+@config "../../tailwind.config.js";
+
 @import "tailwindcss" prefix(ocp);
 
 @custom-variant dark (&:where(.dark, .dark *));
