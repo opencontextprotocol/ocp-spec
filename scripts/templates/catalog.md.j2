@@ -10,8 +10,16 @@ Discover and integrate with pre-indexed APIs through the OCP Registry.
 - 💬 **Requests**: [GitHub Discussions](https://github.com/orgs/opencontextprotocol/discussions).. Suggest APIs you'd like to see added
 {% raw %}{{< /callout >}}{% endraw %}
 
-{% raw %}{{< cards >}}{% endraw %}
+<div class="ocp-card-grid ocp-card-grid--category">
 {% for category in categories %}
-{% raw %}{{< card link="{% endraw %}{{ category.href }}{% raw %}" title="{% endraw %}{{ category.title }}{% raw %}" subtitle="{% endraw %}{{ category.api_count }} APIs{% raw %}" icon="{% endraw %}{{ category.icon }}{% raw %}" >}}{% endraw %}
+<a href="{{ category.href }}" class="ocp-card ocp-card--category">
+	<div class="ocp-card__header">
+		<div class="ocp-card__header-left">
+			<div class="ocp-card__icon">{% raw %}{{< icon "{% endraw %}{{ category.icon }}{% raw %}" >}}{% endraw %}</div>
+			<div class="ocp-card__title">{{ category.title }}</div>
+		</div>
+		<div class="ocp-card__meta">{% if category.api_count == 1 %}1 API{% else %}{{ category.api_count }} APIs{% endif %}</div>
+	</div>
+</a>
 {% endfor %}
-{% raw %}{{< /cards >}}{% endraw %}
+</div>

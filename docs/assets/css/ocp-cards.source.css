@@ -1,30 +1,51 @@
-/* OCP Registry API Cards */
+/* OCP Registry Cards */
 
-.ocp-api-card-grid {
+.ocp-card-grid {
   @apply ocp:grid ocp:grid-cols-1 ocp:md:grid-cols-2 ocp:lg:grid-cols-3 ocp:gap-4 ocp:mt-4 ocp:mb-8;
 }
 
-.ocp-api-card {
-  @apply ocp:p-4 ocp:rounded-lg ocp:border ocp:border-gray-200 ocp:dark:border-gray-700 ocp:transition-all ocp:hover:shadow-md ocp:hover:border-gray-300 ocp:dark:hover:border-gray-600 ocp:no-underline;
+/* OCP Registry Cards */
+
+.ocp-card-grid {
+  @apply ocp:grid ocp:gap-4 ocp:mt-4 ocp:mb-8;
 }
 
-.ocp-api-card-header {
-  @apply ocp:flex ocp:items-center ocp:gap-2 ocp:mb-3;
+.ocp-card-grid--api {
+  @apply ocp:grid-cols-1 ocp:md:grid-cols-2 ocp:lg:grid-cols-3;
 }
 
-.ocp-api-card-icon {
+/* One less column than API cards at each breakpoint */
+.ocp-card-grid--category {
+  @apply ocp:grid-cols-1 ocp:md:grid-cols-1 ocp:lg:grid-cols-2;
+}
+
+.ocp-card {
+  @apply ocp:p-4 ocp:rounded-lg ocp:border ocp:border-gray-200 ocp:dark:border-gray-700;
+  @apply ocp:transition-all ocp:hover:shadow-md ocp:hover:border-gray-300 ocp:dark:hover:border-gray-600;
+  @apply ocp:no-underline;
+}
+
+.ocp-card__header {
+  @apply ocp:flex ocp:items-center ocp:gap-2;
+}
+
+.ocp-card__header-left {
+  @apply ocp:flex ocp:items-center ocp:gap-2 ocp:min-w-0;
+}
+
+.ocp-card__icon {
   @apply ocp:inline-flex ocp:text-gray-600 ocp:dark:text-gray-400 ocp:-mt-0.5;
 }
 
-.ocp-api-card-title {
+.ocp-card__title {
   @apply ocp:text-lg ocp:font-semibold ocp:text-gray-900 ocp:dark:text-gray-100;
 }
 
-.ocp-api-card-description {
-  @apply ocp:text-sm ocp:text-gray-600 ocp:dark:text-gray-400 ocp:mb-3;
+.ocp-card__description {
+  @apply ocp:text-sm ocp:text-gray-600 ocp:dark:text-gray-400;
 }
 
-.ocp-api-card-meta {
+.ocp-card__meta {
   @apply ocp:relative ocp:overflow-hidden;
   @apply ocp:inline-flex ocp:items-center ocp:px-2 ocp:py-1;
   @apply ocp:font-mono ocp:font-semibold ocp:tracking-wider;
@@ -43,4 +64,22 @@
   background-image: radial-gradient(circle at 1px 1px, var(--ocp-meta-dot) 0.5px, transparent 0);
   background-size: 2.5px 2.5px;
   background-position: 0 0;
+}
+
+/* API variant */
+.ocp-card--api .ocp-card__header {
+  @apply ocp:mb-3;
+}
+
+.ocp-card--api .ocp-card__description {
+  @apply ocp:mb-3;
+}
+
+/* Category variant (inline right HUD badge, no description) */
+.ocp-card--category .ocp-card__header {
+  @apply ocp:justify-between ocp:gap-3;
+}
+
+.ocp-card--category .ocp-card__meta {
+  @apply ocp:shrink-0;
 }

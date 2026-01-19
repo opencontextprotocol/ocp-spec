@@ -4,15 +4,15 @@
 
 Browse APIs in the **{{ frontmatter.title }}** category.
 
-<div class="ocp-api-card-grid">
+<div class="ocp-card-grid ocp-card-grid--api">
 {% for api in apis | sort(attribute='display_name') %}
-<a href="{{ api.href }}" class="ocp-api-card">
-  <div class="ocp-api-card-header">
-    <div class="ocp-api-card-icon">{% raw %}{{< icon "{% endraw %}{{ api.icon | default('globe') }}{% raw %}" >}}{% endraw %}</div>
-    <div class="ocp-api-card-title">{{ api.display_name }}</div>
-  </div>
-  <div class="ocp-api-card-description">{{ api.description }}</div>
-  <div class="ocp-api-card-meta">{{ api.tool_count }} tools</div>
+<a href="{{ api.href }}" class="ocp-card ocp-card--api">
+	<div class="ocp-card__header">
+		<div class="ocp-card__icon">{% raw %}{{< icon "{% endraw %}{{ api.icon | default('globe') }}{% raw %}" >}}{% endraw %}</div>
+		<div class="ocp-card__title">{{ api.display_name }}</div>
+	</div>
+	<div class="ocp-card__description">{{ api.description }}</div>
+	<div class="ocp-card__meta">{{ api.tool_count }} tools</div>
 </a>
 {% endfor %}
 </div>
