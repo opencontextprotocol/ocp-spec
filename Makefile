@@ -39,7 +39,7 @@ serve: dev
 clean:
 	@echo "Cleaning generated files..."
 	@rm -f docs/assets/css/custom.css
-	@rm -f docs/content/spec/*-schema.md
+	@rm -f docs/content/specs/*-schema.md
 	@rm -f docs/.hugo_build.lock
 	@rm -rf docs/content/registry/
 	@rm -rf docs/public/
