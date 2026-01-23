@@ -19,22 +19,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Generate registry content
-        run: npm run generate-content docs/content/registry
+
+      - name: Install Node.js dependencies
+        run: npm install --prefix scripts
+
+      - name: Setup Go (for Hugo modules)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
       
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.147.4'
+          hugo-version: '0.154.5'
           extended: true
+
+      - name: Install Tailwind CSS CLI
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          wget -q https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.18/tailwindcss-linux-x64 -O "$RUNNER_TEMP/bin/tailwindcss"
+          chmod +x "$RUNNER_TEMP/bin/tailwindcss"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/bin/tailwindcss" --version
       
       - name: Build site
-        working-directory: ./docs
-        run: hugo --minify
+        run: make build
 
   deploy:
     needs: test

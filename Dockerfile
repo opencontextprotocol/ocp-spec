@@ -11,8 +11,7 @@ WORKDIR /src
 COPY . .
 
 # Install Tailwind CSS CLI
-RUN wget https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.18/tailwindcss-linux-x64-musl \
-  && mv tailwindcss-linux-x64-musl tailwindcss \
+RUN wget -q https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.18/tailwindcss-linux-x64-musl -O tailwindcss \
   && chmod +x tailwindcss \
   && ./tailwindcss --version
 
