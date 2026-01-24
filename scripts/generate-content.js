@@ -393,9 +393,20 @@ async function generateCategoryPages(env, apisByCategory, outputDir) {
     const categoryDir = join(outputDir, 'catalog', category);
     await mkdir(categoryDir, { recursive: true });
 
+    // Generate TOC items for APIs in this category
+    const tocItems = apisByCategory[category]
+      .map(api => ({
+        title: api.display_name,
+        href: `#${api.slug}`
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+
     const frontmatter = {
       title: titleCase(category),
-      description: `APIs in the ${titleCase(category)} category`
+      description: `APIs in the ${titleCase(category)} category`,
+      params: {
+        tocItems
+      }
     };
 
     const context = {
@@ -502,7 +513,8 @@ async function main() {
       description: meta.description,
       icon: meta.icon || 'globe',
       tool_count: tools.length,
-      href: `${meta.name}/`
+      href: `${meta.name}/`,
+      slug: meta.name
     });
     
     apis.push(meta);
