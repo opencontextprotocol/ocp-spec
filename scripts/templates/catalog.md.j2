@@ -4,11 +4,7 @@
 
 Discover and integrate with pre-indexed APIs through the OCP Registry.
 
-{% raw %}{{< callout type="info" >}}{% endraw %}
-**Want to add your API to the registry?**
-- 👨‍💻 **Developers**: [Contribute an API](https://github.com/opencontextprotocol/ocp-registry/blob/main/CONTRIBUTING.md).. Submit a PR with your API metadata
-- 💬 **Requests**: [GitHub Discussions](https://github.com/orgs/opencontextprotocol/discussions).. Suggest APIs you'd like to see added
-{% raw %}{{< /callout >}}{% endraw %}
+## Categories
 
 <div class="ocp-card-grid ocp-card-grid--category">
 {% for category in categories %}
@@ -23,3 +19,12 @@ Discover and integrate with pre-indexed APIs through the OCP Registry.
 </a>
 {% endfor %}
 </div>
+
+## Contribute
+
+Want to add an API to the registry?
+
+{% raw %}{{< cards >}}{% endraw %}
+{% raw %}{{< card title="Open a Pull Request" subtitle="Submit a PR with API metadata" link="https://github.com/opencontextprotocol/ocp-registry/blob/main/CONTRIBUTING.md" >}}{% endraw %}
+{% raw %}{{< card title="Start a Discussion" subtitle="Suggest APIs in GitHub Discussions" link="https://github.com/orgs/opencontextprotocol/discussions" >}}{% endraw %}
+{% raw %}{{< /cards >}}{% endraw %}
