@@ -26,16 +26,3 @@
 ```
 
 {% endif %}
-## Usage
-
-```python
-from ocp_agent import OCPAgent
-
-agent = OCPAgent()
-await agent.register_api('{{ api_name }}')
-
-# Call this tool
-result = await agent.call_tool('{{ tool.name }}', {
-    # Add required parameters here
-})
-```

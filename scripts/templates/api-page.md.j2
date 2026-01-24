@@ -57,25 +57,6 @@ This API provides **{{ tool_count }} tools** across various resource types.
 
 {% endfor %}
 
-## Usage Example
-
-```python
-from ocp_agent import OCPAgent
-
-# Initialize agent
-agent = OCPAgent()
-
-# Register the {{ api.display_name }}
-api = await agent.register_api('{{ api.name }}')
-
-# List available tools
-tools = agent.list_tools('{{ api.name }}')
-print(f"Available tools: {len(tools)}")
-
-# Use a tool (example)
-# result = await agent.call_tool('tool_name', parameters)
-```
-
 ## Links
 
 - [API Documentation]({{ api.documentation_url or '#' }})
