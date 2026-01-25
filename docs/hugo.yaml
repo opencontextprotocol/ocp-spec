@@ -41,8 +41,6 @@ params:
   blog:
     list:
       displayTags: true
-  toc:
-    displayTags: true
   banner:
     key: 'announcement-launch'
     message: |
