@@ -1,0 +1,11 @@
+/* OCP Typography Overrides */
+
+/* Path display - override Hextra's code element borders */
+.ocp-path {
+  @apply ocp:inline-block ocp:px-2.5 ocp:py-1;
+  @apply ocp:text-xs ocp:font-mono;
+  @apply ocp:bg-gray-100 ocp:text-gray-700 ocp:rounded-md;
+  @apply ocp:dark:bg-gray-800 ocp:dark:text-gray-300;
+  @apply ocp:overflow-hidden ocp:text-ellipsis ocp:whitespace-nowrap;
+  @apply ocp:!border-0;
+}

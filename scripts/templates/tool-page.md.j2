@@ -4,11 +4,10 @@
 
 {{ tool.description }}
 
-## Details
-
-- **Method**: `{{ tool.method | upper | default('GET') }}`
-- **Path**: `{{ tool.path | default('') }}`
-- **Operation ID**: `{{ tool.operation_id | default('N/A') }}`
+<div class="ocp-badge-container">
+  <span class="ocp-badge ocp-badge--method {{ tool.method | lower | default('get') }}">{{ tool.method | upper | default('GET') }}</span>
+  <code class="ocp-path">{{ tool.path | default('') }}</code>
+</div>
 
 {% if tool.parameters %}
 ## Parameters

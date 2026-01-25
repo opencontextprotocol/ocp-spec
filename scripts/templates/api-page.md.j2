@@ -4,14 +4,11 @@
 
 {{ api.description }}
 
-## Overview
-
-{% if api_version %}- **Version**: {{ api_version }}
-{% endif %}- **Base URL**: `{{ api.base_url }}`
-- **Category**: {{ api.category | title }}
-- **Tools Available**: {{ tool_count }}
-- **Rate Limit**: {{ frontmatter.params.rate_limit or 'See documentation' }}
-- **Documentation**: [{{ api.documentation_url or '#' }}]({{ api.documentation_url or '#' }})
+<div class="ocp-badge-container">
+  {% if api_version %}<span class="ocp-badge ocp-badge--version">v{{ api_version }}</span>{% endif %}
+  <span class="ocp-badge ocp-badge--meta">{{ tool_count }} tools</span>
+  <a href="{{ api.documentation_url }}" class="ocp-badge ocp-badge--link">Documentation →</a>
+</div>
 
 ## Quick Start
 
@@ -48,9 +45,9 @@ This API provides **{{ tool_count }} tools** across various resource types.
 
 <div class="ocp-badge-container">
 {% for tool in group[1] | sort(attribute='name') %}
-<a href="tools/{{ tool.name | lower | replace('_', '-') | replace(' ', '-') }}" class="ocp-badge">
-  <span class="ocp-badge-method {{ tool.method | lower | default('get') }}">{{ tool.method | upper | default('GET') }}</span>
-  <span class="ocp-badge-name">{{ tool.name }}</span>
+<a href="tools/{{ tool.name | lower | replace('_', '-') | replace(' ', '-') }}" class="ocp-badge ocp-badge--tool">
+  <span class="ocp-badge__method {{ tool.method | lower | default('get') }}">{{ tool.method | upper | default('GET') }}</span>
+  <span class="ocp-badge__name">{{ tool.name }}</span>
 </a>
 {% endfor %}
 </div>
