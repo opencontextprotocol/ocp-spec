@@ -7,5 +7,5 @@
   @apply ocp:bg-gray-100 ocp:text-gray-700 ocp:rounded-md;
   @apply ocp:dark:bg-gray-800 ocp:dark:text-gray-300;
   @apply ocp:overflow-hidden ocp:text-ellipsis ocp:whitespace-nowrap;
-  @apply ocp:!border-0;
+  @apply ocp:border-0!;
 }
