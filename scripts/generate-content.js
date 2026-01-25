@@ -280,6 +280,7 @@ async function generateToolPages(env, apiModel) {
         description: tool.description || '',
         weight: 20,
         sidebar: { exclude: true },
+        displayPagination: false,
         params: {
           tool_name: tool.name,
           api_name: meta.name,
