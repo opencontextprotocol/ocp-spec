@@ -44,12 +44,7 @@
   @apply ocp:hover:bg-blue-100 ocp:dark:hover:bg-blue-950/50;
 }
 
-/* Standalone method badge variant */
-.ocp-badge--method {
-  @apply ocp:font-semibold;
-}
-
-/* Method colors - used by both .ocp-badge__method.{method} and .ocp-badge--method.{method} */
+/* Method colors - used by .ocp-badge__method.{method} */
 .get {
   @apply ocp:bg-cyan-50/50 ocp:text-cyan-700;
   @apply ocp:dark:bg-cyan-950/30 ocp:dark:text-cyan-400;
