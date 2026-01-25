@@ -4,6 +4,7 @@ title: Open Context Protocol Specification
 enableEmoji: true
 enableRobotsTXT: true
 enableGitInfo: true
+enableInlineShortcodes: true
 
 outputs:
   home: [html, llms]
@@ -79,8 +80,6 @@ markup:
       rightSingleQuote: "&rsquo;"
   highlight:
     noClasses: false
-
-enableInlineShortcodes: true
 
 menu:
   main:
