@@ -1,3 +1,38 @@
+## [0.8.0](https://github.com/opencontextprotocol/ocp-spec/compare/v0.7.1...v0.8.0) (2026-01-29)
+
+
+### Features
+
+* add about page and update navbar config ([bb1f1bc](https://github.com/opencontextprotocol/ocp-spec/commit/bb1f1bcd2075db0132ddb2882a7c98000b325894))
+* add category page generation and update templates ([57e2c82](https://github.com/opencontextprotocol/ocp-spec/commit/57e2c82c3db16fad18317dd88214a47c840a3a7a))
+* add main layout template with optional pagination control ([51fcb91](https://github.com/opencontextprotocol/ocp-spec/commit/51fcb91604eed1bee8847c1c665566c3020cee41))
+* add toc component and update templates ([cb91fcf](https://github.com/opencontextprotocol/ocp-spec/commit/cb91fcf87cfdaf1c82b446b04e903f7cfcdda12f))
+* enhance badge system and typography styles ([af58425](https://github.com/opencontextprotocol/ocp-spec/commit/af5842505ed3821bee97b230bdd99b2d6393ad8f))
+
+
+### Bug Fixes
+
+* adjust background gradient for meta badge ([c058a98](https://github.com/opencontextprotocol/ocp-spec/commit/c058a981adf9c5779f763baaac45db8d1054ae46))
+* correct border utility in typography css ([1720878](https://github.com/opencontextprotocol/ocp-spec/commit/1720878ace30e2dbadb40552bc2f02241cdbf048))
+* correct path for schema files in clean target ([833dc53](https://github.com/opencontextprotocol/ocp-spec/commit/833dc536d1dac96aff9516d2e27f139c76edd3bf))
+* disable display of 'Powered by' in footer ([73238bc](https://github.com/opencontextprotocol/ocp-spec/commit/73238bc550d0366563cf7343a6ab268b7962baa9))
+* enable inline shortcodes in hugo configuration ([e5b39b7](https://github.com/opencontextprotocol/ocp-spec/commit/e5b39b7c96c413113d24f264dbfc3134a9a283ef))
+* remove toc displayTags parameter ([0a39e29](https://github.com/opencontextprotocol/ocp-spec/commit/0a39e29443a2d2c1d20f22f9e65f99b64f2b5eb3))
+* reorder menu items and add icon for registry ([f1dfaf1](https://github.com/opencontextprotocol/ocp-spec/commit/f1dfaf1b3a8bdb59855a9bc4ea3bde0c1b07511a))
+* specify input file for Tailwind CSS build ([6e35b00](https://github.com/opencontextprotocol/ocp-spec/commit/6e35b0021a075e69915b18712067819de2c08635))
+* update card meta display for tool count ([a3e58bb](https://github.com/opencontextprotocol/ocp-spec/commit/a3e58bbdbc8cf4421c3f08ed71b1f1da67fb264e))
+* update card meta styling and tailwind config ([ace6009](https://github.com/opencontextprotocol/ocp-spec/commit/ace6009f629e85f172c887f7c3672b3b9f17be02))
+* update clean target and output directory path ([ba042aa](https://github.com/opencontextprotocol/ocp-spec/commit/ba042aaa6ceff2588a5f115927b297ccbcfdd6fd))
+* update hero badge text ([7814f4a](https://github.com/opencontextprotocol/ocp-spec/commit/7814f4a8a33132ab6be7e7130bf98f6fd8890030))
+* update Hugo version and Tailwind CSS install ([1271c08](https://github.com/opencontextprotocol/ocp-spec/commit/1271c08ef5f40dfb9a1106292770852427e28975))
+* update icon for registry menu ([294d571](https://github.com/opencontextprotocol/ocp-spec/commit/294d571a0d8b7242db89499b10344d72b98769ef))
+* update paths in Makefile and build script ([dd61e3e](https://github.com/opencontextprotocol/ocp-spec/commit/dd61e3e7b5b481572a41df33693d74beebf77d7e))
+* update subtitle for clarity ([70ee037](https://github.com/opencontextprotocol/ocp-spec/commit/70ee037f3a809409f9b3a423f1678bf6f184eb43))
+* update Tailwind CSS installation in Dockerfile and deploy workflow ([c35a9b3](https://github.com/opencontextprotocol/ocp-spec/commit/c35a9b336568c6b2904be9f7dfee8aab62bab104))
+* update terminology from 'pre-configured' to 'pre-indexed' ([3dbec4a](https://github.com/opencontextprotocol/ocp-spec/commit/3dbec4adec233c6922c1343f2dbaf9dd5ac4665f))
+* update weight for authentication page ([b7fe057](https://github.com/opencontextprotocol/ocp-spec/commit/b7fe05723b98c5d12427a77a36ac872ba48c8b42))
+* use cascade for frontmatter type in registry pages ([b9672fb](https://github.com/opencontextprotocol/ocp-spec/commit/b9672fbf97033660c360b14edce2ca818c012165))
+
 ## [0.7.1](https://github.com/opencontextprotocol/ocp-spec/compare/v0.7.0...v0.7.1) (2026-01-05)
 
 
